@@ -1,0 +1,15 @@
+import { createClient } from "@supabase/supabase-js/dist/index.cjs";
+
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+      throw new Error('Missing Supabase credentials........');
+}
+
+export const supabase = createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+)
+export default supabase;
