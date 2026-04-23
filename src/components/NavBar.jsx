@@ -31,7 +31,8 @@ export default function NavBar({ homePage = true }) {
                               </div>
                               <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                                     <div className="flex shrink-0 items-center">
-                                          <Link to="/" className='text-bold text-2xl px-5 text-rose-400 hover:text-rose-300 transition-colors'>
+                                          <i className="text-rose-400 text-2xl bg-neutral-800 rounded-lg p-1 bi bi-lightning-charge mr-2"></i>
+                                          <Link to="/Dashboard" className='text-bold text-2xl px-1 text-rose-400 text-shadow-rose-300  hover:text-rose-300 transition-colors'>
                                                 SyncTask
                                           </Link>
                                     </div>
@@ -57,7 +58,7 @@ export default function NavBar({ homePage = true }) {
                                           <a
                                                 href='/login'
                                                 type="button"
-                                                className="relative rounded-full p-1 text-gray-400 hover:text-white focus:outline-2 focus:outline-offset-2 focus:outline-red-500"
+                                                className="relative rounded-full p-1 text-white font-semibold rounded-xl shadow-lg transition-all duration-300 hover:text-red-500 hover:translate-y-0.5"
                                           >Login
                                                 <span className="absolute -inset-1.5" />
                                                 <span className="sr-only">View notifications</span>

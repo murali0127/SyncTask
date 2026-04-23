@@ -1,14 +1,33 @@
 import Button from '../ui/Button';
 import { useAppState } from "../../providers/AppProvider";
+import { useAuth } from '../../lib/context/AuthContext'
+import { LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 
 export default function Header() {
-      const { currList, currListTasks, setTask, isAIChatOpen, setIsAIChatOpen } = useAppState();
-
+      const { currList, currListTasks, setTask, isAIChatOpen, setIsAIChatOpen, deleteCurrList } = useAppState();
       const done = currListTasks.filter(task => task.done).length;
       const total = currListTasks.length;
       const percent = total > 0 ? Math.round((done / total) * 100) : 0;
 
+      // const signout = useAuth();
+
+      // async function logoutUser() {
+      //       const { data, error } = await signout
+      // }
+      const { signout } = useAuth();
+      const navigate = useNavigate();
+      const handleLogout = async () => {
+            const { data, error } = await signout();
+            if (!data) {
+                  console.log(error);
+            } else {
+                  console.log(data);
+            }
+
+            setTimeout(() => navigate('/', { state: { loggedOut: true } }), 2000);
+      }
       const PRIORITY_WEIGHT = {
             high: 3,
             medium: 2,
@@ -29,7 +48,7 @@ export default function Header() {
       };
 
       function handleSort() {
-            setTask(prevTasks => {
+            setTask((prevTasks) => {
                   const currentListTasks = prevTasks.filter(t => t.listId === currList.id);
                   const otherTasks = prevTasks.filter(t => t.listId !== currList.id);
 
@@ -47,9 +66,13 @@ export default function Header() {
                         return dateA - dateB;
                   });
 
-                  return [...sortedCurrentTasks, ...otherTasks];
+                  return [...prevTasks, ...sortedCurrentTasks];
             });
       }
+
+      // function handleDelete() {
+
+      // }
 
       if (!currList) return null;
 
@@ -57,17 +80,21 @@ export default function Header() {
             <header className="flex items-center justify-between px-4 h-14 border-b border-neutral-800 flex-shrink-0">
                   <div className="flex items-center gap-3">
                         <span className="text-2xl">{currList.icon}</span>
-                        <div>
-                              <h1 className="text-base font-semibold text-white">
-                                    {currList.name}
+                        <div className='felx flex-col'>
+                              <h1 className="font-mogra text-base font-semibold text-white">
+                                    {currList.name.toUpperCase()}
                               </h1>
                               <p className="text-xs text-neutral-500">
                                     {done} of {total} done ({percent}%)
                               </p>
                         </div>
+                        <button
+                              className='self-start mt-2 bg-red-500/40 rounded px-1 font-semibold text-xs text-orange-100 hover:bg-rose-700 hover:text-white-200 '
+                              onClick={evt => { deleteCurrList(currList.id) }}
+                        >DELETE</button>
                   </div>
 
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
                         <Button variant="ghost" size="md" onClick={handleSort}>
                               <i className="bi bi-arrow-down-up"></i> Sort
                         </Button>
@@ -78,7 +105,12 @@ export default function Header() {
                         >
                               <i class="bi bi-openai"></i>Ask AI
                         </Button>
+                        <button className="text-neutral-500 border-0 bg-transparent hover:text-neutral-300 hover:translate-x-0.5 "
+                              size="md"
+                              onClick={handleLogout}>
+                              <LogOut className='py-1' />Logout
+                        </button>
                   </div>
-            </header>
+            </header >
       )
 }

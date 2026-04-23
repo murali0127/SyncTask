@@ -1,7 +1,7 @@
 
 
 documentation
-
+scripts
 .env
 
 Profile
@@ -31,3 +31,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+.claude

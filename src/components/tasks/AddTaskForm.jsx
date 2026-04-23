@@ -3,7 +3,7 @@ import Input from "../ui/Input";
 import Button from "../ui/Button";
 import toast, { Toaster } from "react-hot-toast";
 
-export default function AddTaskForm({ onAdd }) {
+export default function AddTaskForm({ onAdd, curr_list }) {
       const [title, setTitle] = useState("");
       const [priority, setPriority] = useState('medium');
 
@@ -15,6 +15,7 @@ export default function AddTaskForm({ onAdd }) {
 
       function handleSubmit() {
             if (!title.trim()) return
+
             onAdd(
                   title.trim(),
                   priority

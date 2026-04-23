@@ -3,14 +3,16 @@ import Header from "./Header";
 import TaskList from "../tasks/TaskList";
 import { useAppState } from "../../providers/AppProvider";
 import { toast, Toaster } from 'react-hot-toast';
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 
 import AIChatPanel from "../ai/AIChatPanel";
 import { useEffect } from "react";
 const userName = 'Murali';
 
 export default function AppShell() {
-      const { currListTasks, addTasks, toggleTask, deleteTask, isAIChatOpen, setIsAIChatOpen } = useAppState();
+
+      const { currListTasks, addList, addTasks, toggleTask, deleteTask, isAIChatOpen, setIsAIChatOpen, currList } = useAppState();
+      const location = useLocation();
 
       useEffect(() => {
             if (isAIChatOpen) {
@@ -24,6 +26,12 @@ export default function AppShell() {
                         </span >
                   )
             }
+            if (location?.state?.loggedIn) {
+                  toast.success('Logged In successfully.', {
+                        icon: '👏'
+                  })
+            }
+
 
       })
       return (
@@ -45,6 +53,7 @@ export default function AppShell() {
                         <Header />
                         <div className="flex-1 flex flex-col min-h-0 bg-neutral-900 border border-neutral-800 mx-4 mb-4 mr-4 p-5 overflow-hidden rounded-lg">
                               <TaskList
+                                    list={currList}
                                     tasks={currListTasks}
                                     onAdd={addTasks}
                                     onToggle={toggleTask}

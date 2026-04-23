@@ -4,7 +4,7 @@ import AddTaskForm from "./AddTaskForm";
 
 const FILTERS = ['All', 'Active', 'Done', 'High'];
 
-export default function TaskList({ tasks, onAdd, onToggle, onDelete }) {
+export default function TaskList({ list, tasks, onAdd, onToggle, onDelete }) {
       const [filter, setFilter] = useState('All')
 
       const filtered = tasks.filter(task => {
@@ -35,7 +35,9 @@ export default function TaskList({ tasks, onAdd, onToggle, onDelete }) {
 
                   {/** ADD form */}
                   <div className="flex-shrink-0 mb-3">
-                        <AddTaskForm onAdd={onAdd} />
+                        <AddTaskForm
+                              onAdd={onAdd}
+                              curr_list={list} />
                   </div>
 
                   {/** Filter tabs */}
@@ -60,7 +62,7 @@ export default function TaskList({ tasks, onAdd, onToggle, onDelete }) {
                         {filtered.length === 0 ? (
                               <div className="flex flex-col items-center justify-center py-12 gap-3">
                                     <p className="text-sm text-neutral-500">
-                                          {filter === 'All' ? 'No tasks yet. Add one!' : `No ${filter.toLowerCase()} tasks.`}
+                                          {filter === 'All' ? 'No tasks yet. Add one!' : `No tasks.`}
                                     </p>
                               </div>
                         ) : (

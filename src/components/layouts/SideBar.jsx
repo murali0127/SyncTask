@@ -3,11 +3,11 @@ import { useAppState } from '../../providers/AppProvider';
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/react';
 import NavBarAvatar from '../ui/NavBarAvatar';
 import { useState } from 'react';
-import { PanelLeft } from 'lucide-react';
+import { PanelLeft, ListPlus } from 'lucide-react';
 import AddNewList from '../tasks/AddNewList'
 
 export default function Sidebar() {
-      const { lists, tasks, selectedListId, setSelectedListId } = useAppState();
+      const { lists, tasks, selectedListId, setSelectedListId, addList } = useAppState();
 
       //EXPLANDABLE SIDEBAR
       const [isCollapsed, setIsCollapsed] = useState(false);
@@ -22,21 +22,24 @@ export default function Sidebar() {
                   'bg-neutral-950 border-r border-neutral-800 flex flex-col h-full flex-shrink-0 gap-3 text-md transition-all duration-300 ease-in-out',
                   isExpanded ? 'w-64' : 'w-16'
             )}
-                  onMouseEnter={() => setIsHovered(true)}
-                  onMouseLeave={() => setIsHovered(false)}>
+            // onMouseEnter={() => setIsHovered(true)}
+            // onMouseLeave={() => setIsHovered(false)}
+            >
                   {/** Branding */}
                   < div size="md" className="flex items-center justify-between px-3 h-14 border-b border-neutral-800" >
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-3">
                               <button className='py-2 rounded-md hover:bg-neutral-700 transition-colors'
                                     onClick={() => setIsCollapsed(prev => !prev)}
                               >
                                     <PanelLeft size={18} className='text-neutral-500' />
                               </button>
                               <div className={clsx(
-                                    "w-8 h-8 rounded-md bg-neutral-800 flex items-center justify-center text-white text-sm font-bold",
+                                    "w-8 h-8 rounded-md mx-auto bg-gradient-to-br from-rose-500 via-transparent to-purple-500 flex items-center justify-center text-white text-sm font-bold",
                                     isExpanded ? 'opacity-100 ml-0' : 'opacity-0 ml-4'
                               )}>
-                                    ✦
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2">
+                                          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                                    </svg>
                               </div>
                               <span className={clsx(
                                     "text-base text-lg transition-all duration-200 font-semibold text-white",
@@ -79,12 +82,23 @@ export default function Sidebar() {
                   </div >
 
                   {/** Section label */}
+                  {!isExpanded &&
+                        <div className='px-1' >
+                              <Menu as="div" className="relative items-center">
+                                    <MenuButton className="flex-1 items-center rounded-md p-1 transition-colors">
+                                          <NavBarAvatar size="md" />
+                                    </MenuButton>
+                              </Menu>
+                        </div>
+                  }
                   <p className={clsx(
                         'text-xs font-semibold font-medium text-neutral-500 tracking-wide uppercase transition-all duration-300 whitespace-nowrap',
                         isExpanded ? 'opacity-100 ml-0' : 'opacity-0 ml-4'
 
                   )} >
+
                         <span className='flex items-center gap-2 text-md'>
+
 
                               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
@@ -130,7 +144,11 @@ export default function Sidebar() {
                               ))
                         }
                   </div >
-                  <AddNewList />
+                  {isExpanded ?
+                        <AddNewList newList={addList} />
+                        : <button className='mx-auto mb-2' onClick={() => setIsCollapsed(!isCollapsed)}>  <ListPlus />
+                        </button>
+                  }
             </aside >
       )
 }

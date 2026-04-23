@@ -27,15 +27,15 @@ export async function updateUserProfile(updates) {
             method: 'PATCH',
             headers: {
                   'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${getAuthToken}`,
+                  'Authorization': `Bearer ${getAuthToken()}`,
 
             },
             body: JSON.stringify(updates)
       });
       if (!response.ok) {
             const arror = await response.json()
-            console.log('ERror updating Use Profile')
-            alert('Cannot able to update Profile.')
+            console.log('Error updating User Profile')
+            alert('Cannot update Profile.')
       }
 
       return response.json();

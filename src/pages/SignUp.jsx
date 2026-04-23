@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-
+import { useAuth } from '../lib/context/AuthContext'
+import { useNavigate } from "react-router-dom";
 const cls = (...a) => a.filter(Boolean).join(" ");
 
 function FloatingInput({ id, label, type = "text", value, onChange, error }) {
@@ -51,6 +52,7 @@ function FloatingInput({ id, label, type = "text", value, onChange, error }) {
                               {label}
                         </label>
                         <input
+                              name={id}
                               id={id}
                               type={inputType}
                               value={value}
@@ -156,27 +158,68 @@ function ParticleRing() {
 export default function SignInForm() {
       const [email, setEmail] = useState("");
       const [password, setPassword] = useState("");
+      const [name, setName] = useState("");
       const [errors, setErrors] = useState({});
       const [loading, setLoading] = useState(false);
       const [success, setSuccess] = useState(false);
       const [mounted, setMounted] = useState(false);
 
+      const { signup } = useAuth();
+      const navigate = useNavigate();
+
       useEffect(() => { setTimeout(() => setMounted(true), 60); }, []);
 
       const validate = () => {
             const e = {};
+            if (name.length < 5) e.name = "name should greater then 5 characters";
             if (!email.includes("@")) e.email = "Enter a valid email address";
             if (password.length < 6) e.password = "Password must be 6+ characters";
             return e;
       };
 
-      const handleSubmit = (ev) => {
+      function showMessage(msg) {
+            alert(`${msg}`);
+      }
+
+
+      const handleSubmit = async (ev) => {
             ev.preventDefault();
             const e = validate();
             if (Object.keys(e).length) { setErrors(e); return; }
             setErrors({});
             setLoading(true);
-            setTimeout(() => { setLoading(false); setSuccess(true); }, 1800);
+
+            try {
+
+                  const { data, error } = await signup(
+                        email,
+                        password,
+                        name
+                  )
+
+                  if (error) {
+                        console.log(error)
+                        setErrors({ general: error.message || "Something went wrong, can't sign-up" });
+                        setLoading(false)
+                        return;
+                  }
+                  if (data?.user) {
+                        setErrors({
+                              general: "Signup didn't return a user. Possibly email confirmation required."
+                        });
+                        setLoading(false);
+                        return;
+                  }
+
+                  setSuccess(true);
+                  setTimeout(() => navigate('/dashboard'), 1800);
+                  navigate('/dashboard')
+
+            } catch (error) {
+                  console.error('Unexpected Error : ', error.message);
+                  setErrors({ general: "Something Wrong happended during Signing Up user." })
+                  setLoading(false);
+            }
       };
 
       return (
@@ -283,6 +326,22 @@ export default function SignInForm() {
                                     {/* Form */}
                                     {!success ? (
                                           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+                                                <div
+                                                      style={{
+                                                            opacity: mounted ? 1 : 0,
+                                                            transform: mounted ? "translateY(0)" : "translateY(12px)",
+                                                            transition: "opacity 0.5s ease 0.1s, transform 0.5s ease 0.1s",
+                                                      }}
+                                                >
+                                                      <FloatingInput
+                                                            id="name"
+                                                            label="Enter your name"
+                                                            type="name"
+                                                            value={name}
+                                                            onChange={(e) => { setName(e.target.value); setErrors((p) => ({ ...p, name: "" })); }}
+                                                            error={errors.name}
+                                                      />
+                                                </div>
                                                 <div
                                                       style={{
                                                             opacity: mounted ? 1 : 0,

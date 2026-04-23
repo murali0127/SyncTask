@@ -1,7 +1,10 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import NavBar from '../components/NavBar';
 import Footer from '../components/layouts/Footer'
+import { motion } from 'motion/react';
 import { CheckCircle2, Clock, User, Users, Zap, ArrowRight, ListTodo } from 'lucide-react'
+import { useEffect } from 'react';
+import { toast, Toaster } from 'react-hot-toast';
 
 const features = [
       {
@@ -33,8 +36,29 @@ const steps = [
 ]
 
 export default function HomePage() {
+      const navigate = useNavigate();
+      const location = useLocation();
+      useEffect(() => {
+            if (location?.state?.loggedOut) {
+                  toast.success('Logged Out successfully.', {
+                        icon: '👏'
+                  })
+            }
+
+            navigate(".", { replace: true, state: {} })
+
+      }, [])
       return (
             <div className="items-center min-h-screen max-w-screen bg-neutral-950">
+                  <Toaster
+                        position="top-center"
+                        toastOptions={{
+                              duration: 2000,
+                              style: {
+                                    background: '#333',
+                                    color: '#fff'
+                              }
+                        }} />
                   <NavBar homePage={true} />
 
                   {/* Hero Section */}
@@ -43,21 +67,32 @@ export default function HomePage() {
                         <div className="absolute inset-0 bg-gradient-to-br from-rose-500/10 via-transparent to-purple-500/10 pointer-events-none" />
                         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-rose-500/5 rounded-full blur-3xl pointer-events-none" />
 
-                        <div className="max-w-7xl mx-auto px-6 sm:px-5 lg:px-7 pt-5 pb-10 md:pt-5 md:pb-2 text-center">
+                        <motion.div
+                              initial={{ opacity: 0, y: 40 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ duration: 0.8 }}
+                              className="max-w-7xl mx-auto px-6 sm:px-5 lg:px-7 pt-5 pb-10 md:pt-5 md:pb-2 text-center">
                               {/* Badge */}
-                              <div className="inline-flex items-center gap-2 px-2 py-2 rounded-full bg-neutral-800/50 border border-neutral-700/50 text-sm text-neutral-400 mb-2">
+                              <div
+                                    initial={{ opacity: 0, y: 40 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.8 }}
+                                    className="inline-flex items-center gap-2 px-2 py-2 rounded-full bg-neutral-800/50 border border-neutral-700/50 text-sm text-neutral-400 mb-2">
                                     <ListTodo className="w-4 h-4 text-rose-400" />
                                     <span>Ai-Powered Task Management</span>
                               </div>
 
                               {/* Headline */}
-                              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 leading-tight">
+                              <motion.h1
+                                    initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 1 }}
+
+                                    className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 leading-tight">
                                     <span className="text-white">Organize your work,</span>
                                     <br />
                                     <span className="bg-gradient-to-r from-rose-400 to-purple-400 bg-clip-text text-transparent">
                                           amplify your focus
                                     </span>
-                              </h1>
+                              </motion.h1>
 
                               {/* Subheadline */}
                               <p className="text-lg md:text-xl text-neutral-400 max-w-2xl mx-auto mb-10 leading-relaxed">
@@ -86,11 +121,11 @@ export default function HomePage() {
                               </div>
 
 
-                        </div>
-                  </section>
+                        </motion.div>
+                  </section >
 
                   {/* Features Section */}
-                  <section id="features" className="h-fit flex py-16 md:py-8 bg-neutral-900/50 justify-center">
+                  < section id="features" className="h-fit flex py-16 md:py-8 bg-neutral-900/50 justify-center" >
                         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                               <div className="text-center mb-12">
                                     <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
@@ -116,10 +151,10 @@ export default function HomePage() {
                                     ))}
                               </div>
                         </div>
-                  </section>
+                  </section >
 
                   {/* How to Get Started */}
-                  <section className="h-fit flex justify-center py-10 md:py-10">
+                  < section className="h-fit flex justify-center py-10 md:py-10" >
                         <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
                               <div className="text-center mb-16">
                                     <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
@@ -143,10 +178,10 @@ export default function HomePage() {
                                     ))}
                               </div>
                         </div>
-                  </section>
+                  </section >
 
                   {/* CTA Section */}
-                  <section className="h-fit flex justify-center py-8 md:py-12 bg-gradient-to-r from-rose-500/10 via-purple-500/10 to-rose-500/10">
+                  < section className="h-fit flex justify-center py-8 md:py-12 bg-gradient-to-r from-rose-500/10 via-purple-500/10 to-rose-500/10" >
                         <div className="max-w-3xl mx-auto px-6 sm:px-8 lg:px-12 text-center">
                               <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
                                     Ready to boost your productivity?
@@ -164,10 +199,17 @@ export default function HomePage() {
                                     <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
                               </Link>
                         </div>
-                  </section>
+                  </section >
+                  {/* <motion.button
+                        className='w-fit h-25 rounded bg-rose-500' whileHover={{
+                              scale: 1.1,
+                              transition: { duration: 0.1 }
+                        }}
+                        transition={{ duration: 0.5 }}>Clicke Me
+                  </motion.button> */}
 
                   {/* Footer */}
-                  <Footer />
-            </div>
+                  < Footer />
+            </div >
       )
 }

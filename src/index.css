@@ -1,9 +1,14 @@
 @import 'tailwindcss';
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swapfamily=DM+Mono:wght@400;500&family=Syne:wght@700&display=swap&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Climate+Crisis:YEAR@2007&family=Delius&family=Luckiest+Guy&family=Mogra&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
 
 :root {
-  --font-app: 'Inter', system-ui, sans-serif;
+  --font-app: 'Inter', system-ui, sans-serif, 'Climate';
+}
+
+@theme {
+  --font-mogra: 'Mogra', sans-serif;
+  --font-funky: 'Mogra', 'Climate Crisis', sans-serif
 }
 
 * {

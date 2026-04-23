@@ -1,4 +1,8 @@
 import { useState, useEffect } from "react";
+import { useAuth } from "../lib/context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { validate } from "uuid";
+
 
 const cls = (...a) => a.filter(Boolean).join(" ");
 
@@ -159,6 +163,10 @@ export default function LoginForm() {
       const [success, setSuccess] = useState(false);
       const [mounted, setMounted] = useState(false);
 
+      const { login } = useAuth();
+      const navigate = useNavigate();
+
+
       useEffect(() => { setTimeout(() => setMounted(true), 60); }, []);
 
       const validate = () => {
@@ -168,13 +176,22 @@ export default function LoginForm() {
             return e;
       };
 
-      const handleSubmit = (ev) => {
+      const handleSubmit = async (ev) => {
             ev.preventDefault();
             const e = validate();
             if (Object.keys(e).length) { setErrors(e); return; }
             setErrors({});
             setLoading(true);
-            setTimeout(() => { setLoading(false); setSuccess(true); }, 1800);
+
+            const { data, error } = await login(email, password);
+
+            if (error) {
+                  setErrors({ general: error.message || error })
+                  setLoading(false);
+            } else {
+                  setSuccess(true);
+                  setTimeout(() => navigate('/dashboard', { state: { loggedIn: true } }), 2000)
+            }
       };
 
       return (

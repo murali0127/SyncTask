@@ -82,6 +82,14 @@ export function AppProvider({ children }) {
                   [...previous, newList] //Copy Previous and Update it
             )
       }
+      function deleteCurrList(list_id) {
+            setTask((prevTask) => {
+                  return prevTask.filter(task => task.listId !== list_id);
+            })
+            setList((prevList) => {
+                  return prevList.filter(list => list.id !== list_id);
+            })
+      }
 
       //FUNCTION TO UPDATE USER
       function updateUserProfile(updates) {
@@ -100,7 +108,7 @@ export function AppProvider({ children }) {
             selectedListId, setSelectedListId,
             currList, currListTasks,
             addTasks, toggleTask, deleteTask, addList,
-            user, updateUserProfile,
+            user, updateUserProfile, deleteCurrList,
             isAIChatOpen, setIsAIChatOpen
       }), [user, lists, tasks, selectedListId, setTask, setList, isAIChatOpen])
 
