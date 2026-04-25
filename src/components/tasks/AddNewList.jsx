@@ -10,7 +10,7 @@ const randomColor = () => {
       return `rgb(${r},${g},${b})`;
 
 }
-export default function AddNewList({ newList }) {
+export default function AddNewList({ newList, onClose }) {
       const [emoji, setEmoji] = useState('🎉');
       const [list, setList] = useState({ title: "", icon: "" })
 
@@ -21,6 +21,10 @@ export default function AddNewList({ newList }) {
       function handleSubmit(evt) {
             evt.preventDefault();
             const color = randomColor();
+            if (!list.title || list.title.trim().length <= 2) {
+                  toast.error('Invalid List Name.');
+                  return;
+            }
             newList(
                   list.title,
                   list.icon,
@@ -28,7 +32,7 @@ export default function AddNewList({ newList }) {
             )
             notify();
 
-
+            onClose();
       }
 
       const notify = () => {
@@ -96,3 +100,4 @@ export default function AddNewList({ newList }) {
             </>
       )
 }
+

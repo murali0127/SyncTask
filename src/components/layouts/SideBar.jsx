@@ -4,7 +4,8 @@ import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/react';
 import NavBarAvatar from '../ui/NavBarAvatar';
 import { useState } from 'react';
 import { PanelLeft, ListPlus } from 'lucide-react';
-import AddNewList from '../tasks/AddNewList'
+import AddNewList from '../tasks/AddNewList';
+import ListModel from '../tasks/ListModel';
 import { Link } from 'react-router-dom';
 
 export default function Sidebar() {
@@ -14,9 +15,13 @@ export default function Sidebar() {
       const [isCollapsed, setIsCollapsed] = useState(false);
       const [isHovered, setIsHovered] = useState(false);
 
+      const [isModelOpen, setIsModelOpen] = useState(false);
+
+
       const isExpanded = !isCollapsed || isHovered;
 
       const countForList = id => tasks.filter(task => task.listId == id && !task.done).length;
+
 
       return (
             <aside className={clsx(
@@ -148,10 +153,18 @@ export default function Sidebar() {
                         }
                   </div >
                   {isExpanded ?
-                        <AddNewList newList={addList} />
-                        : <button className='mx-auto mb-2' onClick={() => setIsCollapsed(!isCollapsed)}>  <ListPlus />
+                        <button
+                              onClick={() => setIsModelOpen(true)}
+                              className="mx-2 mb-2 px-3 py-2 rounded-lg bg-neutral-800 hover:bg-neutral-700"
+                        > + New List</button>
+                        : <button className='mx-auto mb-2' onClick={() => setIsModelOpen(true)}>  <ListPlus />
                         </button>
                   }
+                  <ListModel
+                        isOpen={isModelOpen}
+                        onClose={() => setIsModelOpen(false)}
+                        newList={addList} />
+
             </aside >
       )
 }
