@@ -3,6 +3,7 @@ import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import NavBarAvatar from './ui/NavBarAvatar';
 import clsx from 'clsx';
 import { Link, NavLink } from 'react-router-dom';
+import DashBoard from '../pages/DashBoard';
 
 const navigation = [
       { name: 'Dashboard', href: '/dashboard' },
@@ -16,7 +17,7 @@ export default function NavBar({ homePage = true }) {
       return (
             <Disclosure
                   as="nav"
-                  className="relative bg-neutral-900 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-white/10"
+                  className="relative bg-black-900 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-white/10"
             >
                   <div className="max-w-auto mx-auto px-6 sm:px-8 lg:px-12">
                         <div className="relative flex h-16 items-center justify-between">
@@ -29,13 +30,17 @@ export default function NavBar({ homePage = true }) {
                                           <XMarkIcon aria-hidden="true" className="hidden size-6 group-data-open:block" />
                                     </DisclosureButton>
                               </div>
-                              <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-                                    <div className="flex shrink-0 items-center">
-                                          <i className="text-rose-400 text-2xl bg-neutral-800 rounded-lg p-1 bi bi-lightning-charge mr-2"></i>
-                                          <Link to="/Dashboard" className='text-bold text-2xl px-1 text-rose-400 text-shadow-rose-300  hover:text-rose-300 transition-colors'>
-                                                SyncTask
-                                          </Link>
+                              <div className="flex flex-1 gap-1 items-center justify-center sm:items-stretch sm:justify-start">
+                                    <div className={clsx(
+                                          "flex w-8 h-8 rounded-md mx-auto bg-gradient-to-br from-rose-500 via-transparent to-purple-500 flex items-center justify-center text-white text-sm font-bold",
+                                    )}>
+                                          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2">
+                                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                                          </svg>
                                     </div>
+                                    <Link to="/Dashboard" className='text-bold font-mono text-2xl px-1 text-rose-400 text-shadow-rose-300  hover:text-rose-300 transition-colors'>
+                                          SyncTask
+                                    </Link>
                                     <div className="flex flex-1 hidden sm:flex justify-center">
                                           <div className="flex space-x-4 gap-4">
                                                 {navigation.map((item) => (
@@ -43,8 +48,8 @@ export default function NavBar({ homePage = true }) {
                                                             key={item.name}
                                                             to={item.href}
                                                             className={({ isActive }) => clsx(
-                                                                  isActive ? 'text-white' : 'text-gray-300 hover:bg-white/5 hover:text-white',
-                                                                  'rounded-md px-3 py-2 text-md font-medium transition-colors',
+                                                                  isActive ? 'text-white' : 'text-gray-300',
+                                                                  'rounded-md px-3 py-2 text-md font-medium transition-colors hover:text-white',
                                                             )}
                                                       >
                                                             {item.name}
@@ -69,7 +74,7 @@ export default function NavBar({ homePage = true }) {
                                     <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                                           <button
                                                 type="button"
-                                                className="relative rounded-full p-1 text-gray-400 hover:text-white focus:outline-2 focus:outline-offset-2 focus:outline-indigo-500"
+                                                className="relative rounded-full p-1 text-gray-400 hover:text-white focus:outline-2 focus:outline-offset-2 focus:outline-rose-500/30"
                                           >
                                                 <span className="absolute -inset-1.5" />
                                                 <span className="sr-only">View notifications</span>
@@ -78,42 +83,16 @@ export default function NavBar({ homePage = true }) {
 
                                           {/* Profile dropdown */}
                                           <Menu as="div" className="relative ml-3">
-                                                <MenuButton className="relative flex rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
-                                                      <span className="absolute -inset-1.5" />
-                                                      <span className="sr-only">Open user menu</span>
-                                                      <NavBarAvatar />
-                                                </MenuButton>
 
-                                                <MenuItems
-                                                      transition
-                                                      className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-gray-800 py-1 outline -outline-offset-1 outline-white/10 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+                                                <button
+                                                      title='Singout'
+                                                      // onClick={handleSignOut}
+                                                      className="block rounded-xl px-4 py-2 text-md font-semibold text-gray-300 data-focus:outline-hidden hover:text-white hover:translate-x-0.5 transition-all"
                                                 >
-                                                      <MenuItem>
-                                                            <Link
-                                                                  to="#"
-                                                                  className="block px-4 py-2 text-sm text-gray-300 data-focus:bg-white/5 data-focus:outline-hidden"
-                                                            >
-                                                                  Your profile
-                                                            </Link>
-                                                      </MenuItem>
-                                                      <MenuItem>
-                                                            <Link
-                                                                  to="#"
-                                                                  className="block px-4 py-2 text-sm text-gray-300 data-focus:bg-white/5 data-focus:outline-hidden"
-                                                            >
-                                                                  Settings
-                                                            </Link>
-                                                      </MenuItem>
-                                                      <MenuItem>
-                                                            <Link
-                                                                  to="#"
-                                                                  className="block px-4 py-2 text-sm text-gray-300 data-focus:bg-white/5 data-focus:outline-hidden"
-                                                            >
-                                                                  Sign out
-                                                            </Link>
-                                                      </MenuItem>
-                                                </MenuItems>
+                                                      Sign out
+                                                </button>
                                           </Menu>
+
                                     </div>
                               }
                         </div>
@@ -135,6 +114,6 @@ export default function NavBar({ homePage = true }) {
                               ))}
                         </div>
                   </DisclosurePanel>
-            </Disclosure>
+            </Disclosure >
       )
 }

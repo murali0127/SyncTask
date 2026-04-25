@@ -3,16 +3,18 @@ import Header from "./Header";
 import TaskList from "../tasks/TaskList";
 import { useAppState } from "../../providers/AppProvider";
 import { toast, Toaster } from 'react-hot-toast';
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useNavigate, replace } from "react-router-dom";
 
 import AIChatPanel from "../ai/AIChatPanel";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 const userName = 'Murali';
 
 export default function AppShell() {
 
       const { currListTasks, addList, addTasks, toggleTask, deleteTask, isAIChatOpen, setIsAIChatOpen, currList } = useAppState();
       const location = useLocation();
+      const navigate = useNavigate();
+      const toastedRef = useRef(false);   //(Persistent storage)CACHES THE STATE , UNLIKE STATE, IT DOESN'T RE-RENDERS -> which has a property .current() -> PROVIDE THE CACHED CURRENT STATE
 
       useEffect(() => {
             if (isAIChatOpen) {
@@ -26,14 +28,17 @@ export default function AppShell() {
                         </span >
                   )
             }
-            if (location?.state?.loggedIn) {
+      }, [isAIChatOpen])
+      useEffect(() => {
+
+            if (location?.state?.loggedIn && !toastedRef.current) {
                   toast.success('Logged In successfully.', {
                         icon: '👏'
                   })
+                  toastedRef.current = true;   //MARKS AS DONE.
             }
-
-
-      })
+            navigate(location.pathname, ({ replace: true, state: {} }))
+      }, [location, navigate])
       return (
             <div className="flex h-screen max-w-screen gap-1 overflow-hidden bg-neutral-950">
                   <Toaster

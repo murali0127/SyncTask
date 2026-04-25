@@ -1,10 +1,17 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { supabase } from '../supabase-client';
 import { useAuth } from './AuthContext';
+import { validateTodo } from "../db/models/Todo";
 
-const TodoContext = createContext({});
+const TodoContext = createContext(null);
 
-export const useTodo = () => useContext(TodoContext);
+export const useTodo = () => {
+      const ctx = useContext(TodoContext);
+      if (!ctx) {
+            throw new Error("Use Todo Must be used inside a TodoProvider.")
+      }
+}
+
 
 export default function TodoProvider({ children }) {
       const { user } = useAuth();
@@ -19,16 +26,17 @@ export default function TodoProvider({ children }) {
             }
 
             fetchTodo();
-
+            //CONNECTING THE REALTIME DATABASE TO HANDLE CHANGE OF EVENTS USING SUPABASE CHANNEL
+            const userId = user?.id;
             const channel = supabase
-                  .channel('todos-chanegs')
+                  .channel(`todos-${userId}`)
                   .on(
                         'postgres_changes',
                         {
                               event: '*',
                               schema: 'public',
                               table: 'todos',
-                              filter: `user_id=eq.${user.id}`
+                              filter: `user_id=eq.${user?.id}`
                         },
                         (payload) => {
                               if (payload.eventType == 'INSERT') {
@@ -42,18 +50,20 @@ export default function TodoProvider({ children }) {
                   )
                   .subscribe();
 
+            //REMOVING PREV CHANNEL CONNECTION -> TO OVERCOME TOO MANY OPEN CHANNELS
             return () => supabase.removeChannel(channel)
-      }, [user]);
+      }, [user?.id]);
 
 
+      const extractError = (err) => err?.message ?? "An unexpected error occurs!";  //NORMALIZE THE ERROR OBJECT.
 
       const fetchTodo = async () => {
+            setError(null);
             try {
 
                   if (!user) return;
 
                   setLoading(true);
-                  setError(null);
 
                   const { data, error } = await supabase
                         .from('todos')
@@ -62,21 +72,37 @@ export default function TodoProvider({ children }) {
                         .order('created_at', { ascending: false }) //NEW FIRST
                   if (error) {
                         console.log(error.message);
+                        setError(extractError(error));
                         return;
                   }
                   setTodo(data);
             } catch (err) {
                   console.log(err.message);
-                  setError(err);
+                  setError(extractError(err));
                   return;
             } finally {
                   setLoading(false);
             }
       }
       const addTodo = async (title, options = {}) => {
+            setError(null)
+
+            const todoData = {
+                  user_id: user.id,
+                  title,
+                  ...options
+            };
+            //VALIDATE TODO DATA
+            const validation = validateTodo(todoData);
+            if (!validation.isValid) {
+                  setError(extractError(validation.errors.join(',')));
+                  return;
+            }
+
+
             try {
 
-                  const { data, error } = await supabase
+                  const { error } = await supabase  //data -> Has been Automatically Handled by Supabase.
                         .from('todos')
                         .insert({
                               user_id: user.id,
@@ -90,17 +116,20 @@ export default function TodoProvider({ children }) {
 
                   if (error) {
                         console.log(error);
+                        setError(extractError(error));
                         return;
                   }
                   console.log('Data added to todo successfully.')
-                  return { data, error: null }
+                  return { error: null }
             } catch (err) {
                   console.log(err.message);
+                  setError(extractError(err));
                   return;
             }
       }
 
       const updateTodo = async (id, updates) => {
+            setError(null);
             try {
 
                   const { data, error } = await supabase
@@ -112,6 +141,7 @@ export default function TodoProvider({ children }) {
                         .single()
                   if (error) {
                         console.log(error.message);
+                        setError(extractError(error));
                         return
                   }
                   console.log('Todo List Updated Successfully.');
@@ -127,9 +157,10 @@ export default function TodoProvider({ children }) {
       }
 
       const deleteTodo = async (id) => {
+            setError(null);
             try {
 
-                  const { data, error } = await supabase
+                  const { error } = await supabase
                         .from('todos')
                         .delete()
                         .eq('id', id)
@@ -141,7 +172,7 @@ export default function TodoProvider({ children }) {
                         return;
                   }
                   console.log('Todo has been Deleted from the Table....')
-                  return { data, error: null }
+                  return { error: null }
             } catch (err) {
                   console.log(err.message);
                   return;
@@ -156,6 +187,7 @@ export default function TodoProvider({ children }) {
             addTodo,
             updateTodo,
             deleteTodo,
+            toggleTodo,
             refreshTodos: fetchTodo
 
       }

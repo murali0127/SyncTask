@@ -5,6 +5,7 @@ import NavBarAvatar from '../ui/NavBarAvatar';
 import { useState } from 'react';
 import { PanelLeft, ListPlus } from 'lucide-react';
 import AddNewList from '../tasks/AddNewList'
+import { Link } from 'react-router-dom';
 
 export default function Sidebar() {
       const { lists, tasks, selectedListId, setSelectedListId, addList } = useAppState();
@@ -45,7 +46,7 @@ export default function Sidebar() {
                                     "text-base text-lg transition-all duration-200 font-semibold text-white",
                                     isExpanded ? 'opacity-100 ml-0' : 'opacity-0 ml-4'
                               )}
-                              >FlowTask</span>
+                              >SyncTask</span>
                         </div>
 
                         {/** User Menu */}
@@ -86,7 +87,9 @@ export default function Sidebar() {
                         <div className='px-1' >
                               <Menu as="div" className="relative items-center">
                                     <MenuButton className="flex-1 items-center rounded-md p-1 transition-colors">
-                                          <NavBarAvatar size="md" />
+                                          <Link to="/profile">
+                                                <NavBarAvatar size="md" />
+                                          </Link>
                                     </MenuButton>
                               </Menu>
                         </div>

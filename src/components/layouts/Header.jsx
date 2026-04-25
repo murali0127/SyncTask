@@ -105,10 +105,12 @@ export default function Header() {
                         >
                               <i class="bi bi-openai"></i>Ask AI
                         </Button>
-                        <button className="text-neutral-500 border-0 bg-transparent hover:text-neutral-300 hover:translate-x-0.5 "
+                        <button
+                              title="Logout"
+                              className="text-neutral-500 border-0 bg-transparent hover:text-neutral-300 hover:translate-x-0.5 "
                               size="md"
                               onClick={handleLogout}>
-                              <LogOut className='py-1' />Logout
+                              <LogOut className='py-1' />
                         </button>
                   </div>
             </header >

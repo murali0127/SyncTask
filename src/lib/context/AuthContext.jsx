@@ -2,35 +2,43 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../supabase-client';
 
 
-const AuthContext = createContext({});
+const AuthContext = createContext(null);
 
 export const useAuth = () => useContext(AuthContext);
 
 export default function AuthProvider({ children }) {
       const [user, setUser] = useState(null);
+      const [profile, setProfile] = useState(null);
       const [loading, setLoading] = useState(true);
       const [error, setError] = useState(null);
 
+      const extractError = (err) => err?.message ?? "An unexpected error occured!"; //IMPLICIT RETURN -> If {} not used.
 
       useEffect(() => {
-            const getSession = async () => {
-                  try {
-
-                        const { data: { session }, error } = await supabase.auth.getSession();
-                        setUser(session?.user ?? null)
-                  } catch (err) {
-                        setError(err.message);
-                  } finally {
-                        setLoading(false)
-                  }
-            };
-
-            getSession();
-
             const { data: { subscription } } = supabase.auth.onAuthStateChange(
                   async (event, session) => {
-                        setUser(session?.user ?? null);
-                        setLoading(false)
+                        const currUser = session?.user ?? null;
+                        setUser(currUser);
+
+                        if (currUser) {
+                              const { data, error } = await supabase
+                                    .from('profiles')
+                                    .select('*')
+                                    .eq('id', currUser.id)
+                                    .maybeSingle();   //Friendlier Version of ".single() --> states that expecting for only one Row, it is very Strict. So the friendlier version .maybeSingle() is used"
+                              //SET NEW USER
+                              if (!error) {
+                                    setProfile(data);
+                              }
+                              else {
+                                    setError(extractError(error.message));
+                              }
+                        } else {
+                              setProfile(null);   //NOE CURRENT USER
+                        }
+                        if (event === 'INITIAL_SESSION') {
+                              setLoading(false)
+                        }
                   }
             );
 
@@ -39,6 +47,9 @@ export default function AuthProvider({ children }) {
 
 
       async function signup(email, password, name) {
+
+
+            setError(null);            // SignUp --> User Created --> E-mail Confirmation --> User Clicks confirmation link --> Session created --> THEN sigged In (NEW User created).
             try {
 
                   const { data, error } = await supabase.auth.signUp({
@@ -54,6 +65,7 @@ export default function AuthProvider({ children }) {
                         return { data: null, error };
                   }
                   return { data, error: null };
+
             } catch (err) {
                   console.error(err);
                   return { data: null, error: err.message };
@@ -61,6 +73,7 @@ export default function AuthProvider({ children }) {
       }
 
       async function login(email, password) {
+            setError(null);
             try {
 
                   const { data, error } = await supabase.auth.signInWithPassword({
@@ -68,14 +81,14 @@ export default function AuthProvider({ children }) {
                   })
                   if (error) {
                         console.log(error.message);
-                        setError(error);
-                        return { data: null, error };
+                        setError(extractError(error));
+                        return { data: null, error: error };
                   }
                   setError(null);
                   return { data, error: null }
             } catch (err) {
                   console.log(err);
-                  setError(err);
+                  setError(extractError(err));
                   return { data: null, error: err.message };
             }
       }
@@ -85,20 +98,20 @@ export default function AuthProvider({ children }) {
                   const { data, error } = await supabase.auth.signOut();
                   if (error) {
                         console.log(error);
-                        setError(error);
+                        setError(extractError(error));
                         return { data: null, error: error.message };
                   }
                   setError(null);
                   return { data: 'Log out successfull.', error: null };
             } catch (err) {
                   console.log(err.message);
-                  setError(err);
+                  setError(extractError(err));
                   return { data: null, error: err.message };
             }
       }
 
       const value = {
-            user, loading, error, signup, login, signout
+            user, profile, loading, error, signup, login, signout
       }
 
       return (

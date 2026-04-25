@@ -1,8 +1,19 @@
 import { User } from "lucide-react";
 
-export default function Footer() {
+const ExternalLink = ({ href, children, className }) => {
       return (
-            <footer className="border-t border-neutral-800 bg-neutral-900">
+            <a
+                  href="https://www.linkedin.com/in/murali-dharan-s/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={className}
+            >{children}</a>
+      )
+}
+export default function Footer() {
+
+      return (
+            <footer className="border-t border-neutral-800 bg-black-900">
                   <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-6">
 
                         {/* Brand */}
@@ -14,28 +25,16 @@ export default function Footer() {
                         </p>
 
                         {/* Links */}
-                        <div className="flex items-center gap-6 text-neutral-400 text-sm">
-                              <a
-                                    href="https://github.com/murali0127/SyncTask"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex items-center gap-2 hover:text-white transition-colors"
-                              >
-                                    <i className="bi bi-github" />
-                                    GitHub
-                              </a>
+                        <div className="flex items-center gap-6 text-neutral-200 text-sm">
 
-                              <a
-                                    href="https://www.linkedin.com/in/murali-dharan-s/"
-                                    className="flex items-center gap-2 hover:text-white transition-colors"
-                              >
-                                    <i className="bi bi-linkedin" />
-                                    LinkedIn
-                              </a>
+                              <ExternalLink href="https://github.com/murali0127" className="flex items-center gap-2 hover:text-neutral-400 transition-colors"><i className="bi bi-github" />
+                                    GitHub</ExternalLink>
+
+                              <ExternalLink href="https://www.linkedin.com/in/murali-dharan-s/" className="flex items-center gap-1 hover:text-neutral-400 transition-colors" ><i className="bi bi-linkedin mr-1" />LinkedIn</ExternalLink>
 
                               <a
                                     href="#"
-                                    className="flex items-center gap-1 hover:text-white transition-colors"
+                                    className="flex items-center gap-1 hover:text-neutral-400 transition-colors"
                               >
                                     <User className="w-4 h-4" />
                                     Contact

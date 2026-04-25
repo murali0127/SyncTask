@@ -3,6 +3,8 @@ import DashBoard from './pages/DashBoard';
 import HomePage from './pages/HomePage';
 import LoginForm from './pages/Login'
 import SignInForm from './pages/SignUp';
+import UserProfile from './Profile/Userprofile';
+import ProfileEditForm from './Profile/ProfileEditForm'
 
 function App() {
   return (
@@ -13,6 +15,8 @@ function App() {
           <Route path="login" element={<LoginForm />} />
           <Route path="signup" element={<SignInForm />} />
           <Route path="dashboard" element={<DashBoard />} />
+          <Route path="profile" element={<UserProfile />} />
+          <Route path="profile/editProfile" element={<ProfileEditForm />} />
         </Route>
       </Routes>
     </div>

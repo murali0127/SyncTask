@@ -118,6 +118,6 @@ export function AppProvider({ children }) {
 
 export function useAppState() {
       const ctx = useContext(AppContext);
-      if (!ctx) console.log('UseAppState must be used inside AppProvider.');
+      if (!ctx) throw new Error('UseAppState must be used inside AppProvider.');
       return ctx
 }

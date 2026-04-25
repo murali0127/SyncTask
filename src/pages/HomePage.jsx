@@ -2,31 +2,15 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import NavBar from '../components/NavBar';
 import Footer from '../components/layouts/Footer'
 import { motion } from 'motion/react';
-import { CheckCircle2, Clock, User, Users, Zap, ArrowRight, ListTodo } from 'lucide-react'
+import { CheckCircle2, Clock, Users, Zap, ArrowRight, ListTodo } from 'lucide-react'
 import { useEffect } from 'react';
 import { toast, Toaster } from 'react-hot-toast';
 
 const features = [
-      {
-            icon: <Zap className="w-6 h-6" />,
-            title: "Lightning Fast",
-            description: "Create, organize, and complete tasks in seconds. No clutter, no distractions."
-      },
-      {
-            icon: <Users className="w-6 h-6" />,
-            title: "Team Collaboration",
-            description: "Share lists, assign tasks, and stay in sync with your team effortlessly."
-      },
-      {
-            icon: <Clock className="w-6 h-6" />,
-            title: "Smart Reminders",
-            description: "Never miss a deadline with intelligent notifications and due date tracking."
-      },
-      {
-            icon: <CheckCircle2 className="w-6 h-6" />,
-            title: "Track Progress",
-            description: "Visualize your productivity with beautiful analytics and progress insights."
-      }
+      { icon: <Zap className="w-5 h-5" />, title: "Lightning Fast", description: "Create, organize, and complete tasks in seconds. No clutter, no distractions." },
+      { icon: <Users className="w-5 h-5" />, title: "Team Collaboration", description: "Share lists, assign tasks, and stay in sync with your team effortlessly." },
+      { icon: <Clock className="w-5 h-5" />, title: "Smart Reminders", description: "Never miss a deadline with intelligent notifications and due date tracking." },
+      { icon: <CheckCircle2 className="w-5 h-5" />, title: "Track Progress", description: "Visualize productivity with beautiful analytics and progress insights." }
 ]
 
 const steps = [
@@ -35,181 +19,216 @@ const steps = [
       { num: "03", title: "Get things done", desc: "Focus on what matters and celebrate your achievements." }
 ]
 
+const containerVariants = {
+      hidden: {},
+      show: { transition: { staggerChildren: 0.1 } }
+}
+
+const fadeUp = {
+      hidden: { opacity: 0, y: 24 },
+      show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } }
+}
+
 export default function HomePage() {
       const navigate = useNavigate();
       const location = useLocation();
+
       useEffect(() => {
             if (location?.state?.loggedOut) {
-                  toast.success('Logged Out successfully.', {
-                        icon: '👏'
-                  })
+                  toast.success('Logged out successfully.', { icon: '👏' })
             }
-
             navigate(".", { replace: true, state: {} })
-
       }, [])
+
       return (
-            <div className="items-center min-h-screen max-w-screen bg-neutral-950">
+            <div className="min-h-screen max-w-screen bg-[#141111] text-neutral-200">
                   <Toaster
                         position="top-center"
                         toastOptions={{
                               duration: 2000,
-                              style: {
-                                    background: '#333',
-                                    color: '#fff'
-                              }
-                        }} />
+                              style: { background: '#1a1a1e', color: '#e8e8e8', border: '0.5px solid rgba(255,255,255,0.1)' }
+                        }}
+                  />
                   <NavBar homePage={true} />
 
-                  {/* Hero Section */}
-                  <section className="flex relative overflow-hidden justify-center h-112 ">
-                        {/* Background gradients */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-rose-500/10 via-transparent to-purple-500/10 pointer-events-none" />
-                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-rose-500/5 rounded-full blur-3xl pointer-events-none" />
+                  {/* ── Hero ── */}
+                  <section className="relative flex flex-col items-center justify-center px-6 pt-24 pb-20 text-center overflow-hidden">
+                        {/* Subtle radial glow behind headline */}
+                        <div className="pointer-events-none absolute inset-0">
+                              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[750px] h-[510px] rounded-full bg-rose-500/[0.07] blur-3xl" />
+                              <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[300px] h-[200px] rounded-full bg-purple-500/[0.06] blur-2xl" />
+                        </div>
 
                         <motion.div
-                              initial={{ opacity: 0, y: 40 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ duration: 0.8 }}
-                              className="max-w-7xl mx-auto px-6 sm:px-5 lg:px-7 pt-5 pb-10 md:pt-5 md:pb-2 text-center">
+                              variants={containerVariants}
+                              initial="hidden"
+                              animate="show"
+                              className="relative z-10 max-w-3xl"
+                        >
                               {/* Badge */}
-                              <div
-                                    initial={{ opacity: 0, y: 40 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.8 }}
-                                    className="inline-flex items-center gap-2 px-2 py-2 rounded-full bg-neutral-800/50 border border-neutral-700/50 text-sm text-neutral-400 mb-2">
-                                    <ListTodo className="w-4 h-4 text-rose-400" />
-                                    <span>Ai-Powered Task Management</span>
-                              </div>
+                              <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-xs text-neutral-500 mb-7">
+                                    <ListTodo className="w-3.5 h-3.5 text-rose-400" />
+                                    AI-Powered Task Management
+                              </motion.div>
 
-                              {/* Headline */}
+                              {/* Headline — use a display weight, italic accent */}
                               <motion.h1
-                                    initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 1 }}
-
-                                    className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 leading-tight">
-                                    <span className="text-white">Organize your work,</span>
-                                    <br />
-                                    <span className="bg-gradient-to-r from-rose-400 to-purple-400 bg-clip-text text-transparent">
+                                    variants={fadeUp}
+                                    className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-5 leading-[1.12]"
+                                    style={{ fontFamily: "'Fraunces', serif" }}   // swap for any display font in your project
+                              >
+                                    <span className="text-white">Organize your work,</span><br />
+                                    <span className="bg-gradient-to-r from-rose-400 to-purple-400 bg-clip-text text-transparent italic">
                                           amplify your focus
                                     </span>
                               </motion.h1>
 
-                              {/* Subheadline */}
-                              <p className="text-lg md:text-xl text-neutral-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-                                    SyncTask helps you capture ideas, organize projects, and accomplish more.
-                                    The simple yet powerful way to manage your tasks and boost productivity.
-                              </p>
+                              <motion.p variants={fadeUp} className="text-base md:text-lg text-neutral-500 max-w-xl mx-auto mb-10 leading-relaxed">
+                                    SyncTask helps you capture ideas, organize projects, and accomplish more —
+                                    the modern way to stay on top of your work.
+                              </motion.p>
 
-                              {/* CTA Buttons */}
-                              <div className="flex flex-col sm:flex-row items-center justify-center gap-8">
+                              {/* CTAs */}
+                              <motion.div variants={fadeUp} className="flex flex-col sm:flex-row items-center justify-center gap-3">
                                     <Link
                                           to="/dashboard"
-                                          className="group inline-flex items-center gap-2 px-6 py-3 md:px-6 md:py-4 w-fit h-8 bg-gradient-to-br text-white hover:bg-pink-500/80 hover:text-black font-semibold rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-rose-500/25"
+                                          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-br from-rose-500 to-rose-600 text-white text-sm font-semibold shadow-lg shadow-rose-500/20 hover:shadow-rose-500/30 hover:from-rose-400 hover:to-rose-500 transition-all duration-200"
                                     >
-                                          Get Started
-                                          <span>
-                                                <i class="bi bi-arrow-right"></i>
-                                          </span>
-
+                                          Get Started Free
+                                          <ArrowRight className="w-4 h-4" />
                                     </Link>
+
                                     <a
                                           href="#features"
-                                          className="px-6 py-3 md:px-8 md:py-4 text-neutral-300 hover:text-white font-medium  hover:border-neutral-600 hover:text-neutral-700/50 transition-all"
+                                          className="inline-flex items-center gap-1.5 px-5 py-3 rounded-xl text-sm text-neutral-400 border border-white/[0.08] hover:border-white/[0.15] hover:text-neutral-200 transition-all duration-200"
                                     >
                                           See Features
                                     </a>
-                              </div>
-
-
+                              </motion.div>
                         </motion.div>
-                  </section >
+                  </section>
 
-                  {/* Features Section */}
-                  < section id="features" className="h-fit flex py-16 md:py-8 bg-neutral-900/50 justify-center" >
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                              <div className="text-center mb-12">
-                                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                                          Everything you need to stay organized
+                  {/* Thin separator */}
+                  <div className="mx-8 bg-white/[0.05]" />
+
+                  {/* ── Features ── */}
+                  <section id="features" className="py-20 px-6">
+                        <div className="max-w-5xl mx-auto">
+                              <motion.div
+                                    initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.6 }} viewport={{ once: true }}
+                                    className="mb-12"
+                              >
+                                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-rose-400 mb-3">Features</p>
+                                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 leading-snug">
+                                          Everything you need<br className="hidden md:block" /> to stay organized
                                     </h2>
-                                    <p className="text-neutral-400 max-w-2xl mx-auto text-lg">
+                                    <p className="text-neutral-500 text-base max-w-lg">
                                           Powerful features designed to help you work smarter, not harder.
                                     </p>
-                              </div>
+                              </motion.div>
 
-                              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-6">
-                                    {features.map((feature) => (
-                                          <div
-                                                key={feature.title}
-                                                className="group p-4 lg:p-4 rounded-2xl bg-neutral-800/30 border border-neutral-800 hover:border-rose-500/50 hover:bg-neutral-800/50 transition-all duration-300"
+                              <motion.div
+                                    variants={containerVariants}
+                                    initial="hidden"
+                                    whileInView="show"
+                                    viewport={{ once: true }}
+                                    className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4"
+                              >
+                                    {features.map((f) => (
+                                          <motion.div
+                                                key={f.title}
+                                                variants={fadeUp}
+                                                className="group p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-rose-500/30 hover:bg-white/[0.04] transition-all duration-300 cursor-default"
                                           >
-                                                <div className="w-12 h-12 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
-                                                      {feature.icon}
+                                                <div className="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                                                      {f.icon}
                                                 </div>
-                                                <h3 className="text-lg font-semibold text-white mb-3">{feature.title}</h3>
-                                                <p className="text-neutral-400 text-sm leading-relaxed">{feature.description}</p>
-                                          </div>
+                                                <h3 className="text-sm font-semibold text-white mb-2">{f.title}</h3>
+                                                <p className="text-neutral-500 text-xs leading-relaxed">{f.description}</p>
+                                          </motion.div>
                                     ))}
-                              </div>
+                              </motion.div>
                         </div>
-                  </section >
+                  </section>
 
-                  {/* How to Get Started */}
-                  < section className="h-fit flex justify-center py-10 md:py-10" >
-                        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-                              <div className="text-center mb-16">
-                                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                  <div className="mx-8 h-px bg-white/[0.05]" />
+
+                  {/* ── How it works ── */}
+                  <section className="py-20 px-6">
+                        <div className="max-w-5xl mx-auto">
+                              <motion.div
+                                    initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.6 }} viewport={{ once: true }}
+                                    className="mb-12"
+                              >
+                                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-rose-400 mb-3">How it works</p>
+                                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 leading-snug">
                                           Get started in 3 easy steps
                                     </h2>
-                                    <p className="text-neutral-400 text-lg">
-                                          No complicated setup. No learning curve. Just results.
-                                    </p>
-                              </div>
+                                    <p className="text-neutral-500 text-base">No complicated setup. No learning curve. Just results.</p>
+                              </motion.div>
 
-                              <div className="grid md:grid-cols-3 gap-12 lg:gap-16">
-                                    {steps.map((step, index) => (
-                                          <div key={index} className="relative text-center md:text-left">
-                                                {index < steps.length - 1 && (
-                                                      <div className="hidden md:block absolute top-8 left-full w-full h-px bg-gradient-to-r from-neutral-700 to-transparent" style={{ transform: 'translateX(50%)' }} />
-                                                )}
-                                                <div className="text-5xl md:text-6xl font-bold text-neutral-800 mb-4">{step.num}</div>
-                                                <h3 className="text-xl font-semibold text-white mb-3">{step.title}</h3>
-                                                <p className="text-neutral-400 leading-relaxed">{step.desc}</p>
-                                          </div>
+                              <div className="flex flex-col divide-y divide-white/[0.05]">
+                                    {steps.map((step, i) => (
+                                          <motion.div
+                                                key={i}
+                                                initial={{ opacity: 0, x: -16 }}
+                                                whileInView={{ opacity: 1, x: 0 }}
+                                                transition={{ duration: 0.5, delay: i * 0.1 }}
+                                                viewport={{ once: true }}
+                                                className="flex items-start gap-6 py-6"
+                                          >
+                                                <span
+                                                      className="text-5xl font-bold text-white/[0.3] leading-none select-none shrink-0"
+                                                      style={{ fontFamily: "'Fraunces', serif" }}
+                                                >
+                                                      {step.num}
+                                                </span>
+                                                <div className="pt-1">
+                                                      <h3 className="text-base font-semibold text-white mb-1.5">{step.title}</h3>
+                                                      <p className="text-sm text-neutral-500 leading-relaxed">{step.desc}</p>
+                                                </div>
+                                          </motion.div>
                                     ))}
                               </div>
                         </div>
-                  </section >
+                  </section>
 
-                  {/* CTA Section */}
-                  < section className="h-fit flex justify-center py-8 md:py-12 bg-gradient-to-r from-rose-500/10 via-purple-500/10 to-rose-500/10" >
-                        <div className="max-w-3xl mx-auto px-6 sm:px-8 lg:px-12 text-center">
-                              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                                    Ready to boost your productivity?
-                              </h2>
-                              <p className="mt-6 text-neutral-400 mb-10 text-lg ">
-                                    Connect with friends, family, fellow members and peers and be productive together.
-                              </p>
-                              <Link
-                                    to="/dashboard"
-                                    className="inline-flex inline-flex items-center gap-2 px-10 py-3 md:px-8 md:py-4 
-  text-white font-semibold rounded-xl 
-  shadow-lg transition-all duration-300 
-  hover:text-pink-500 hover:translate-x-2" >
-                                    Start Free Today
-                                    <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
-                              </Link>
+                  {/* ── CTA Band ── */}
+                  <section className="px-6 pb-20">
+                        <div className="max-w-5xl mx-auto">
+                              <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.6 }}
+                                    viewport={{ once: true }}
+                                    className="relative overflow-hidden rounded-2xl border border-rose-500/20 bg-gradient-to-br from-rose-500/[0.08] via-purple-500/[0.06] to-transparent px-8 py-12 text-center"
+                              >
+                                    {/* Soft glow inside card */}
+                                    <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                                          <div className="w-64 h-32 rounded-full bg-rose-500/[0.12] blur-2xl" />
+                                    </div>
+                                    <div className="relative z-10">
+                                          <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 leading-snug">
+                                                Ready to boost your productivity?
+                                          </h2>
+                                          <p className="text-neutral-500 mb-8 max-w-md mx-auto text-sm leading-relaxed">
+                                                Connect with friends, family, and peers — be productive together.
+                                          </p>
+                                          <Link
+                                                to="/dashboard"
+                                                className="inline-flex items-center gap-2 px-7 py-3 rounded-xl bg-gradient-to-br from-rose-500 to-rose-600 text-white text-sm font-semibold shadow-lg shadow-rose-500/20 hover:shadow-rose-500/35 hover:from-rose-400 hover:to-rose-500 transition-all duration-200"
+                                          >
+                                                Start Free Today
+                                                <ArrowRight className="w-4 h-4" />
+                                          </Link>
+                                    </div>
+                              </motion.div>
                         </div>
-                  </section >
-                  {/* <motion.button
-                        className='w-fit h-25 rounded bg-rose-500' whileHover={{
-                              scale: 1.1,
-                              transition: { duration: 0.1 }
-                        }}
-                        transition={{ duration: 0.5 }}>Clicke Me
-                  </motion.button> */}
+                  </section>
 
-                  {/* Footer */}
-                  < Footer />
+                  <Footer />
             </div >
       )
 }
