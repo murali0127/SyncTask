@@ -1,4 +1,4 @@
-﻿import { createContext, useContext, useState, useEffect } from 'react';
+﻿import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { supabase } from '../supabase-client.jsx';
 
 
@@ -12,9 +12,17 @@ export default function AuthProvider({ children }) {
       const [loading, setLoading] = useState(true);
       const [error, setError] = useState(null);
 
+      //CACHES USER DATA
+      const userDataCache = useRef(new Map());
+
       const extractError = (err) => err?.message ?? "An unexpected error occured!";
 
       const fetchOrCreateProfile = async (currUser) => {
+            //RETURN FROM STATE CACHE
+            if (userDataCache.has(currUser)) {
+                  console.log('User Already Exists on Cache.');
+                  return userDataCache.current.get(currUser.id);
+            }
             try {
                   const { data, error } = await supabase
                         .from('profiles')
@@ -28,11 +36,12 @@ export default function AuthProvider({ children }) {
                         throw error;
                   }
                   if (data) {
+                        //Store in cache
+                        userDataCache.current.set(currUser.id, data);
                         return data;
                   }
 
-                  //CREATE ONE
-
+                  //ELSE CREATE ONE
                   const { data: newProfile, error: createError } = await supabase
                         .from('profiles')
                         .upsert({
@@ -48,6 +57,7 @@ export default function AuthProvider({ children }) {
                         console.log(createError);
                         throw createError;
                   }
+                  userDataCache.current.set(newProfile.id, newProfile)
                   return newProfile;
             }
             catch (err) {
@@ -56,6 +66,14 @@ export default function AuthProvider({ children }) {
                   return null;
             }
       };
+
+      //HELPER TO UPDATE userDataCache
+      const updateUserDataCache = (userId, updatedUserData) => {
+            const existingData = userDataCache.current.has(userId) || {};
+            const updatedData = { ...existingData, updatedUserData };
+            userDataCache.current.set(userId, updatedData);
+            setProfile(userDataCache);
+      }
 
       useEffect(() => {
             let isMounted = true; //Flag -> THAT PREVENT STATE UPDATE
@@ -205,20 +223,20 @@ export default function AuthProvider({ children }) {
       }
 
       async function signout() {
-            setError(null);
+            // setError(null);
             try {
-                  const { data, error } = await supabase.auth.signOut();
+                  const { error } = await supabase.auth.signOut();
                   if (error) {
                         console.log(error);
                         setError(extractError(error));
-                        return { data: null, error: error };
+                        return { error: error };
                   }
                   setError(null);
-                  return { data: 'Log out successfull.', error: null };
+                  return { error: null };
             } catch (err) {
                   console.log(err.message);
                   setError(extractError(err));
-                  return { data: null, error: err };
+                  return { error: err };
             }
       }
 
