@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../lib/context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { validate } from "uuid";
 import { toast, Toaster } from 'react-hot-toast';
 import { EnhancedAuthBackground, AuthCardWrapper } from "../components/ui/FloatingUIElements";
 import "../styles/auth-floating-ui.css";
@@ -168,10 +167,16 @@ export default function LoginForm() {
 
       const { login } = useAuth();
       const navigate = useNavigate();
+      // Ref to hold the pending redirect timer so we can cancel it on unmount
+      const timerRef = useRef(null);
+
+      // Cleanup: cancel any pending redirect if component unmounts before the 1s delay
+      useEffect(() => {
+            return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+      }, []);
 
 
       useEffect(() => { setTimeout(() => setMounted(true), 60); }, []);
-
       const validate = () => {
             const e = {};
             if (!email.includes("@")) e.email = "Enter a valid email address";
@@ -188,15 +193,16 @@ export default function LoginForm() {
             const { data, error } = await login(email, password);
 
             if (error) {
-                  setErrors({ general: error.message || error.message })
-                  toast.error(error.message);
-                  setEmail("");
-                  setPassword("");
+                  setErrors({ general: error?.message || 'Login failed.' })
+                  toast.error(error?.message || 'Login failed.');
                   setLoading(false);
             } else {
                   setSuccess(true);
-
-                  setTimeout(() => navigate('/dashboard', { state: { loggedIn: true } }), 1000)
+                  // Navigate after a short delay so the success UI is visible
+                  timerRef.current = setTimeout(() => {
+                        navigate('/dashboard', { state: { loggedIn: true } });
+                        setLoading(false);
+                  }, 1000);
             }
       };
 
@@ -323,7 +329,7 @@ export default function LoginForm() {
                                                             <FloatingInput
                                                                   id="email"
                                                                   label="Email address"
-                                                                  type="email"
+                                                                  type="text"
                                                                   value={email}
                                                                   onChange={(e) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: "" })); }}
                                                                   error={errors.email}
@@ -368,7 +374,7 @@ export default function LoginForm() {
                                                                   // background: loading
                                                                   //       ? "rgba(239,68,68,0.5)"
                                                                   //       : "linear-gradient(135deg, #0000f, #7f1d1d 50%, #0a0a0a)",
-                                                                  background: loading ? "rgba(255, 211, 213, 0.85)" : "rgba(255, 211, 213, 0.75)",
+                                                                  backgroundColor: loading ? "rgba(255, 211, 213, 0.85)" : "rgba(255, 211, 213, 0.75)",
                                                                   border: "1px solid rgba(255,255,255,0.08)",
                                                                   boxShadow: loading ? "none" : "0 0 30px rgba(93, 28, 106, 0.85), 0 0 60px rgba(255, 133, 187, 0.6)",
                                                                   backgroundSize: "200% 100%",
@@ -390,11 +396,11 @@ export default function LoginForm() {
                                                                         <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                                                               <path d="M21 12a9 9 0 1 1-6.219-8.56" />
                                                                         </svg>
-                                                                        Loging in…
+                                                                        Logging in…
                                                                   </span>
                                                             ) : (
                                                                   <span className="flex items-center justify-center gap-2">
-                                                                        Login In
+                                                                        Log   In
                                                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                                                               <path d="M5 12h14M12 5l7 7-7 7" />
                                                                         </svg>

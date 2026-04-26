@@ -41,3 +41,24 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #525252;
 }
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  /* shorthand for top:0, left:0, etc */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(6px);
+
+  z-index: 9999;
+}
+
+.modal-content {
+  width: 420px;
+  background: #1e1e1e;
+  padding: 20px;
+  border-radius: 12px;
+}

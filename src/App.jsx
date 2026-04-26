@@ -5,6 +5,7 @@ import LoginForm from './pages/Login'
 import SignInForm from './pages/SignUp';
 import UserProfile from './Profile/Userprofile';
 import ProfileEditForm from './Profile/ProfileEditForm'
+import ProtectedRoutes from './routes/ProtectedRoutes';
 
 function App() {
   return (
@@ -14,7 +15,11 @@ function App() {
           <Route index element={<HomePage />} />
           <Route path="login" element={<LoginForm />} />
           <Route path="signup" element={<SignInForm />} />
-          <Route path="dashboard" element={<DashBoard />} />
+          <Route path="dashboard" element={
+            <ProtectedRoutes>
+              <DashBoard />
+            </ProtectedRoutes>
+          } />
           <Route path="profile" element={<UserProfile />} />
           <Route path="profile/editProfile" element={<ProfileEditForm />} />
         </Route>

@@ -19,6 +19,7 @@ export default function Header() {
       const { signout } = useAuth();
       const navigate = useNavigate();
       const handleLogout = async () => {
+
             const { data, error } = await signout();
             if (!data) {
                   console.log(error);

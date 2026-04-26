@@ -3,11 +3,11 @@ import { User } from "lucide-react";
 const ExternalLink = ({ href, children, className }) => {
       return (
             <a
-                  href="https://www.linkedin.com/in/murali-dharan-s/"
+                  href={href}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={className}
-            >{children}</a>
+            > {children}</a >
       )
 }
 export default function Footer() {

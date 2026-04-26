@@ -38,7 +38,7 @@ export default function AppShell() {
                   toastedRef.current = true;   //MARKS AS DONE.
             }
             navigate(location.pathname, ({ replace: true, state: {} }))
-      }, [location, navigate])
+      }, [location.pathname, navigate])
       return (
             <div className="flex h-screen max-w-screen gap-1 overflow-hidden bg-neutral-950">
                   <Toaster

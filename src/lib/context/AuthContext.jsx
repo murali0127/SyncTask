@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '../supabase-client';
+﻿import { createContext, useContext, useState, useEffect } from 'react';
+import { supabase } from '../supabase-client.jsx';
 
 
 const AuthContext = createContext(null);
@@ -12,46 +12,145 @@ export default function AuthProvider({ children }) {
       const [loading, setLoading] = useState(true);
       const [error, setError] = useState(null);
 
-      const extractError = (err) => err?.message ?? "An unexpected error occured!"; //IMPLICIT RETURN -> If {} not used.
+      const extractError = (err) => err?.message ?? "An unexpected error occured!";
+
+      const fetchOrCreateProfile = async (currUser) => {
+            try {
+                  const { data, error } = await supabase
+                        .from('profiles')
+                        .select('*')
+                        .eq('id', currUser.id)
+                        .maybeSingle()
+
+
+                  if (error) {
+                        console.log(error);
+                        throw error;
+                  }
+                  if (data) {
+                        return data;
+                  }
+
+                  //CREATE ONE
+
+                  const { data: newProfile, error: createError } = await supabase
+                        .from('profiles')
+                        .upsert({
+                              id: currUser.id,
+                              email: currUser.email,
+                              name: currUser.name,
+                              created_at: currUser,
+                              role: currUser.role
+                        })
+                        .select()
+                        .single()
+                  if (createError) {
+                        console.log(createError);
+                        throw createError;
+                  }
+                  return newProfile;
+            }
+            catch (err) {
+                  console.log('Profile error : ', err.message);
+                  setError(extractError(err));
+                  return null;
+            }
+      };
 
       useEffect(() => {
+            let isMounted = true; //Flag -> THAT PREVENT STATE UPDATE
+
+            // onAuthStateChange fires immediately with INITIAL_SESSION event, giving the current session — no need for a separate getSession() call.
             const { data: { subscription } } = supabase.auth.onAuthStateChange(
                   async (event, session) => {
-                        const currUser = session?.user ?? null;
-                        setUser(currUser);
 
-                        if (currUser) {
-                              const { data, error } = await supabase
-                                    .from('profiles')
-                                    .select('*')
-                                    .eq('id', currUser.id)
-                                    .maybeSingle();   //Friendlier Version of ".single() --> states that expecting for only one Row, it is very Strict. So the friendlier version .maybeSingle() is used"
-                              //SET NEW USER
-                              if (!error) {
-                                    setProfile(data);
+                        if (!isMounted) return;
+
+                        setLoading(true);
+                        try {
+
+
+                              const currUser = session?.user ?? null;
+                              setUser(currUser);
+
+                              if (currUser) {
+                                    const profileData = await fetchOrCreateProfile(currUser);
+                                    if (!isMounted) setProfile(profileData);
+                              } else {
+                                    if (!isMounted) {
+                                          setUser(null);
+                                          setProfile(null);
+                                          setError(null);
+                                    }
                               }
-                              else {
-                                    setError(extractError(error.message));
-                              }
-                        } else {
-                              setProfile(null);   //NOE CURRENT USER
+                        } catch (error) {
+                              console.error('Auth state change error : ', error.message);
+                              if (!isMounted) setError(extractError(error));
+                        } finally {
+                              if (isMounted) setLoading(false);
                         }
-                        if (event === 'INITIAL_SESSION') {
-                              setLoading(false)
-                        }
+                  });
+
+
+            const safetyTimeout = setTimeout(() => {
+                  if (!isMounted) {
+                        console.warn('Auth timeout....');
+                        setLoading(false);
                   }
-            );
+            }, 3000)
 
-            return () => subscription.unsubscribe();
-      }, [])
+            return () => {
+                  isMounted = false;
+                  subscription.unsubscribe();
+                  clearTimeout(safetyTimeout);
+
+            };
+      }, []);
+
+
+
+      //                         // Auto-create profile for new users
+      //                         console.log('Creating new profile for user:', currUser.id);
+      //                         const { data: newProfile, error: createError } = await supabase
+      //                               .from('profiles')
+      //                               .upsert({
+      //                                     id: currUser.id,
+      //                                     email: currUser.email,
+      //                                     name: currUser.user_metadata?.name || currUser.email.split('@')[0],
+      //                                     created_at: new Date().toISOString(),
+      //                                     role: 'user'
+      //                               })
+      //                               .select()
+      //                               .single();
+
+      //                         if (createError) {
+      //                               console.error('Profile creation error:', createError);
+      //                               setError(extractError(createError));
+      //                         } else {
+      //                               setProfile(newProfile);
+      //                               setError(null);
+      //                         }
+      //                   } else {
+      //                         console.log('Profile found:', data);
+      //                         setProfile(data);
+      //                         setError(null);
+      //                   }
+      //             } else {
+      //             setProfile(null);
+      //                         setError(null);
+      //       }
+
+      //                   setLoading(false);
+      // }
+      // );
+
+      //       return () => subscription.unsubscribe();
+      // }, [])
 
 
       async function signup(email, password, name) {
-
-
-            setError(null);            // SignUp --> User Created --> E-mail Confirmation --> User Clicks confirmation link --> Session created --> THEN sigged In (NEW User created).
+            setError(null);
             try {
-
                   const { data, error } = await supabase.auth.signUp({
                         email: email,
                         password: password,
@@ -64,6 +163,20 @@ export default function AuthProvider({ children }) {
                         console.error(error)
                         return { data: null, error };
                   }
+                  if (data?.user) {
+                        const { error: profileError } = await supabase
+                              .from('profiles')
+                              .insert({
+                                    id: data.user.id,
+                                    email: email,
+                                    name: name,
+                                    created_at: new Date(),
+                                    role: 'user'
+                              });
+                        if (profileError && profileError.code !== 'PGRST204') {
+                              console.error('Profile creation failed : ', profileError);
+                        }
+                  }
                   return { data, error: null };
 
             } catch (err) {
@@ -75,7 +188,6 @@ export default function AuthProvider({ children }) {
       async function login(email, password) {
             setError(null);
             try {
-
                   const { data, error } = await supabase.auth.signInWithPassword({
                         email, password
                   })
@@ -84,7 +196,6 @@ export default function AuthProvider({ children }) {
                         setError(extractError(error));
                         return { data: null, error: error };
                   }
-                  setError(null);
                   return { data, error: null }
             } catch (err) {
                   console.log(err);
@@ -92,21 +203,22 @@ export default function AuthProvider({ children }) {
                   return { data: null, error: err.message };
             }
       }
-      async function signout() {
-            try {
 
+      async function signout() {
+            setError(null);
+            try {
                   const { data, error } = await supabase.auth.signOut();
                   if (error) {
                         console.log(error);
                         setError(extractError(error));
-                        return { data: null, error: error.message };
+                        return { data: null, error: error };
                   }
                   setError(null);
                   return { data: 'Log out successfull.', error: null };
             } catch (err) {
                   console.log(err.message);
                   setError(extractError(err));
-                  return { data: null, error: err.message };
+                  return { data: null, error: err };
             }
       }
 
@@ -119,5 +231,4 @@ export default function AuthProvider({ children }) {
                   {children}
             </AuthContext.Provider>
       )
-
 }

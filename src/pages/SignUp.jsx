@@ -211,12 +211,14 @@ export default function SignInForm() {
                               general: "Signup didn't return a user. Possibly email confirmation required."
                         });
                         setLoading(false);
+                        showMessage("📧 Confirmation email sent! Click the link to verify your email.");
                         return;
                   }
-                  showMessage("Please check your e-mail for confirmation.")
-                  console.log('Please Check Your Mail.')
-                  setSuccess(true);
-                  setTimeout(() => navigate('/login'), 1000);
+                  if (data?.user && data?.session) {
+                        showMessage("SignUp Sucessfull Redirecting to Login Page...")
+                        setSuccess(true);
+                        setTimeout(() => navigate('/login'), 1000);
+                  }
 
             } catch (error) {
                   console.error('Unexpected Error : ', error.message);

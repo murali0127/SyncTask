@@ -10,6 +10,7 @@ export const useTodo = () => {
       if (!ctx) {
             throw new Error("Use Todo Must be used inside a TodoProvider.")
       }
+      return ctx;
 }
 
 
@@ -48,10 +49,11 @@ export default function TodoProvider({ children }) {
                               }
                         }
                   )
-                  .subscribe();
+            channel.subscribe();  //subscribe to start listening.
 
             //REMOVING PREV CHANNEL CONNECTION -> TO OVERCOME TOO MANY OPEN CHANNELS
-            return () => supabase.removeChannel(channel)
+            return () => supabase.removeChannel(channel);
+
       }, [user?.id]);
 
 
