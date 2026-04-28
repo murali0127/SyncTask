@@ -16,7 +16,7 @@ const sideBarItems = [
 ]
 
 export default function Sidebar() {
-      const { lists, todos, selectedListId, setSelectedListId, createList } = useAppState();
+      const { lists, currentList, todos, selectedListId, setSelectedListId, createList } = useAppState();
 
       //EXPLANDABLE SIDEBAR
       const [isCollapsed, setIsCollapsed] = useState(false);
@@ -32,7 +32,6 @@ export default function Sidebar() {
       function handleClick() {
             toast.error('Working on it. Coming soon.');
       }
-
       return (
             <aside className={clsx(
                   'bg-neutral-950 border-r border-neutral-800 flex flex-col h-full flex-shrink-0 gap-3 text-md transition-all duration-300 ease-in-out',
@@ -98,7 +97,8 @@ export default function Sidebar() {
                   </div >
 
                   {/** Section label */}
-                  {!isExpanded &&
+                  {
+                        !isExpanded &&
                         <div className='px-1' >
                               <Menu as="div" className="relative items-center">
                                     <MenuButton className="flex-1 items-center rounded-md p-1 transition-colors">
@@ -109,40 +109,41 @@ export default function Sidebar() {
                               </Menu>
                         </div>
                   }
-                  {isExpanded ?
-                        <div className='flex flex-col gap-1 felx-1 px-'>
-                              {
-                                    sideBarItems.map(item => (
-                                          <a
-                                                key={item.id}
-                                                onClick={handleClick}
-                                                className='text-neutral-400 flex items-center gap-3 px-3 py-2 rounded-lg w-full text-left text-md  hover:bg-neutral-800/90 hover:text-neutral-300 rounded-2xl w-fit transition-all'
-                                          >
+                  {
+                        isExpanded ?
+                              <div className='flex flex-col gap-1 felx-1 px-'>
+                                    {
+                                          sideBarItems.map(item => (
+                                                <a
+                                                      key={item.id}
+                                                      onClick={handleClick}
+                                                      className='text-neutral-400 flex items-center gap-3 px-3 py-2 rounded-lg w-full text-left text-md  hover:bg-neutral-800/90 hover:text-neutral-300 rounded-2xl w-fit transition-all'
+                                                >
 
-                                                {item.name === 'Sync' ? <PlugZap /> : <BriefcaseBusiness />}
-                                                {item.name}
-                                          </a>
-                                    ))
-                              }
+                                                      {item.name === 'Sync' ? <PlugZap /> : <BriefcaseBusiness />}
+                                                      {item.name}
+                                                </a>
+                                          ))
+                                    }
 
-                        </div>
-                        :
-                        <div className='flex flex-col gap-1 felx-1 px-'>
-                              {
-                                    sideBarItems.map(item => (
-                                          <a
-                                                key={item.id}
-                                                onClick={handleClick}
-                                                // href={item.name === 'Sync' ? `/:${user_id}/sync_task` : `'/:${user_id}/workspace`}
-                                                className='text-neutral-400 flex items-center gap-3 px-3 py-2 rounded-lg w-full text-left text-md hover:bg-neutral-800/90 hover:text-neutral-300 rounded-2xl w-fit transition-all'
-                                          >
+                              </div>
+                              :
+                              <div className='flex flex-col gap-1 felx-1 px-'>
+                                    {
+                                          sideBarItems.map(item => (
+                                                <a
+                                                      key={item.id}
+                                                      onClick={handleClick}
+                                                      // href={item.name === 'Sync' ? `/:${user_id}/sync_task` : `'/:${user_id}/workspace`}
+                                                      className='text-neutral-400 flex items-center gap-3 px-3 py-2 rounded-lg w-full text-left text-md hover:bg-neutral-800/90 hover:text-neutral-300 rounded-2xl w-fit transition-all'
+                                                >
 
-                                                {item.name === 'Sync' ? <PlugZap /> : <BriefcaseBusiness />}
-                                          </a>
-                                    ))
-                              }
+                                                      {item.name === 'Sync' ? <PlugZap /> : <BriefcaseBusiness />}
+                                                </a>
+                                          ))
+                                    }
 
-                        </div>
+                              </div>
                   }
                   <p className={clsx(
                         'text-xs font-semibold font-medium text-neutral-500 tracking-wide uppercase transition-all duration-300 whitespace-nowrap',
@@ -182,7 +183,7 @@ export default function Sidebar() {
                                           <span className={clsx(
                                                 "flex-1 truncate transition-all duration-200 whitespace-nowrap",
                                                 isExpanded ? "opacity-100 ml-0" : "opacity-0 -ml-4"
-                                          )}>{list.name}</span>
+                                          )}>{list.list_title}</span>
                                           {countForList(list.id) > 0 && (
                                                 <span className={clsx(
                                                       'rounded-full px-2 py-0.5 text-xs font-medium  text-neutral-300',

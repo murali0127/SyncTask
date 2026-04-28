@@ -1,46 +1,69 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from '../lib/supabase-client.jsx';
 import { listService } from "../services/listService";
+import { useAuth } from "../lib/context/AuthContext";
 
 
 export function useList() {
       const [lists, setLists] = useState([]);
       const [loading, setLoading] = useState(true);
       const [error, setError] = useState(null);
+      const [listTable, setListTable] = useState('list');
+      const { user } = useAuth();
 
       const fetchLists = useCallback(async () => {
+            if (!user?.id) {
+                  setLists([]);
+                  setLoading(false);
+                  setError(null);
+                  return;
+            }
             try {
                   setLoading(true);
                   setError(null);
-                  const data = await listService.fetchLists();
-                  setLists(data);
+                  const { data, table } = await listService.fetchLists(user.id);
+                  setLists(data || []);
+                  if (table) setListTable(table);
             } catch (err) {
                   setError(err.message);
             } finally {
                   setLoading(false);
             }
-      }, []);
+      }, [user?.id]);
 
       // Realtime subscription — mirrors the pattern from your TodoContext
       useEffect(() => {
+            if (!user?.id) {
+                  setLists([]);
+                  setLoading(false);
+                  setError(null);
+                  return;
+            }
             fetchLists();
 
             const channel = supabase
                   .channel('list-changes')
                   .on(
                         'postgres_changes',
-                        { event: '*', schema: 'public', table: 'list' },
+                        { event: '*', schema: 'public', table: listTable, filter: `user_id=eq.${user.id}` },
                         () => fetchLists() // re-fetch on any change
                   )
                   .subscribe();
 
             return () => supabase.removeChannel(channel);
-      }, [fetchLists]);
+      }, [fetchLists, user?.id, listTable]);
 
       const createList = async (payload) => {
-            const newList = await listService.createList(payload);
-            setLists((prev) => [...prev, newList]); // optimistic update
-            return newList;
+            try {
+
+                  const newList = await listService.createList(payload);
+                  setLists((prev) => [...prev, newList]); // optimistic update
+                  return newList;
+            } catch (err) {
+                  const message = err?.message || err?.details || 'Failed to create list.';
+                  setError(message);
+                  return { error: message };
+            }
       };
 
       const updateList = async (id, updates) => {

@@ -97,7 +97,7 @@ export default function TodoProvider({ children }) {
                         return;
                   }
                   console.log(data);
-                  // console.error(error);
+                  console.error(error);
                   setTodo(data);
             } catch (err) {
                   console.log(err.message);
@@ -109,6 +109,8 @@ export default function TodoProvider({ children }) {
       }
       const addTodo = async (title, options = {}) => {
             setError(null)
+
+            console.log(options)
 
             const todoData = {
                   user_id: user.id,

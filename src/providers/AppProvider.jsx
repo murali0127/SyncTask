@@ -250,14 +250,14 @@ export default function AppProvider({ children }) {
       }, [deleteTodo]);
 
 
-      const createListWithValidation = useCallback(async (name, icon = '📋', color = '#3b82f6') => {
+      const createListWithValidation = useCallback(async (name, icon, color) => {
             if (!name || !name.trim()) {
                   return { success: false, error: 'List name cannot be empty' };
             }
 
             try {
                   const result = await createList({
-                        name: name.trim(),
+                        list_title: name.trim(),
                         icon,
                         color,
                         user_id: user?.id

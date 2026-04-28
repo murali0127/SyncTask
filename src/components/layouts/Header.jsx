@@ -43,7 +43,7 @@ export default function Header() {
                         <span className="text-2xl">{currentList.icon}</span>
                         <div className='felx flex-col'>
                               <h1 className="font-mogra text-base font-semibold text-white">
-                                    {currentList.name.toUpperCase()}
+                                    {currentList.list_title}
                               </h1>
                               <p className="text-xs text-neutral-500">
                                     {done} of {total} done ({percent}%)

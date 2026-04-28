@@ -18,18 +18,22 @@ export default function AddNewList({ newList, onClose }) {
             console.log(list)
       }, [])
 
-      function handleSubmit(evt) {
+      async function handleSubmit(evt) {
             evt.preventDefault();
             const color = randomColor();
             if (!list.title || list.title.trim().length <= 2) {
                   toast.error('Invalid List Name.');
                   return;
             }
-            newList(
+            const result = await newList(
                   list.title,
-                  list.icon,
+                  list.icon || '📋',
                   color
-            )
+            );
+            if (result?.success === false || result?.error) {
+                  toast.error(result?.error || 'Could not create list.');
+                  return;
+            }
             notify();
 
             onClose();
@@ -62,6 +66,7 @@ export default function AddNewList({ newList, onClose }) {
                                     })}
                               >
                                     <option value=""></option>
+                                    <option value="📋">📋</option>
                                     <option value="🧑‍💻" >🧑‍💻</option>
                                     <option value="💼">💼</option>
                                     <option value="🎉">🎉</option>
