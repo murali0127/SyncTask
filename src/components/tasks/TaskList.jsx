@@ -7,15 +7,15 @@ const FILTERS = ['All', 'Active', 'Done', 'High'];
 export default function TaskList({ list, tasks, onAdd, onToggle, onDelete }) {
       const [filter, setFilter] = useState('All')
 
-      const filtered = tasks.filter(task => {
-            if (filter === 'Active') return !task.done
-            if (filter === 'Done') return task.done
+      const filtered = (tasks || []).filter(task => {
+            if (filter === 'Active') return !task.completed
+            if (filter === 'Done') return task.completed
             if (filter === 'High') return task.priority === 'high'
             return true
       })
 
-      const done = tasks.reduce((acc, task) => acc + (task.done ? 1 : 0), 0);
-      const total = tasks.length;
+      const done = (tasks || []).reduce((acc, task) => acc + (task.completed ? 1 : 0), 0);
+      const total = tasks?.length || 0;
       const pct = total ? Math.round((done / total) * 100) : 0
 
       return (

@@ -11,7 +11,7 @@ export default function ListModel({ isOpen, onClose, newList }) {
                         className="modal-content"
                         onClick={(e) => e.stopPropagation()}
                   >
-                        <h2 className="text-lg font-semibold mb-4 text-white">
+                        <h2 className="ml-32 text-lg font-semibold mb-4 text-white">
                               Create New List
                         </h2>
 
@@ -19,7 +19,7 @@ export default function ListModel({ isOpen, onClose, newList }) {
 
                         <button
                               onClick={onClose}
-                              className="mt-3 text-sm text-neutral-400 hover:text-white"
+                              className="ml-77 mt-3 p-2 font-semibold text-md text-neutral-400 rounded-2xl bg-neutral-700 hover:text-white"
                         >
                               Cancel
                         </button>

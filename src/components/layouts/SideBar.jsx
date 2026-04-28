@@ -3,25 +3,35 @@ import { useAppState } from '../../providers/AppProvider';
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/react';
 import NavBarAvatar from '../ui/NavBarAvatar';
 import { useState } from 'react';
-import { PanelLeft, ListPlus } from 'lucide-react';
+import { PanelLeft, ListPlus, PlugZap, BriefcaseBusiness } from 'lucide-react';
 import AddNewList from '../tasks/AddNewList';
 import ListModel from '../tasks/ListModel';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
+
+
+const sideBarItems = [
+      { id: 1, name: 'Sync' },
+      { id: 2, name: 'Workspace' }
+]
 
 export default function Sidebar() {
-      const { lists, tasks, selectedListId, setSelectedListId, addList } = useAppState();
+      const { lists, todos, selectedListId, setSelectedListId, createList } = useAppState();
 
       //EXPLANDABLE SIDEBAR
       const [isCollapsed, setIsCollapsed] = useState(false);
-      const [isHovered, setIsHovered] = useState(false);
+      const [isHovered] = useState(false);
 
       const [isModelOpen, setIsModelOpen] = useState(false);
 
 
       const isExpanded = !isCollapsed || isHovered;
 
-      const countForList = id => tasks.filter(task => task.listId == id && !task.done).length;
+      const countForList = id => todos.filter(task => task.list_id === id && !task.completed).length;
 
+      function handleClick() {
+            toast.error('Working on it. Coming soon.');
+      }
 
       return (
             <aside className={clsx(
@@ -34,10 +44,10 @@ export default function Sidebar() {
                   {/** Branding */}
                   < div size="md" className="flex items-center justify-between px-3 h-14 border-b border-neutral-800" >
                         <div className="flex items-center gap-3">
-                              <button className='py-2 rounded-md hover:bg-neutral-700 transition-colors'
+                              <button className='py-2 rounded-md transition-colors'
                                     onClick={() => setIsCollapsed(prev => !prev)}
                               >
-                                    <PanelLeft size={18} className='text-neutral-500' />
+                                    <PanelLeft size={18} className='text-neutral-500 hover:text-white transition-all' />
                               </button>
                               <div className={clsx(
                                     "w-8 h-8 rounded-md mx-auto bg-gradient-to-br from-rose-500 via-transparent to-purple-500 flex items-center justify-center text-white text-sm font-bold",
@@ -99,9 +109,44 @@ export default function Sidebar() {
                               </Menu>
                         </div>
                   }
+                  {isExpanded ?
+                        <div className='flex flex-col gap-1 felx-1 px-'>
+                              {
+                                    sideBarItems.map(item => (
+                                          <a
+                                                key={item.id}
+                                                onClick={handleClick}
+                                                className='text-neutral-400 flex items-center gap-3 px-3 py-2 rounded-lg w-full text-left text-md  hover:bg-neutral-800/90 hover:text-neutral-300 rounded-2xl w-fit transition-all'
+                                          >
+
+                                                {item.name === 'Sync' ? <PlugZap /> : <BriefcaseBusiness />}
+                                                {item.name}
+                                          </a>
+                                    ))
+                              }
+
+                        </div>
+                        :
+                        <div className='flex flex-col gap-1 felx-1 px-'>
+                              {
+                                    sideBarItems.map(item => (
+                                          <a
+                                                key={item.id}
+                                                onClick={handleClick}
+                                                // href={item.name === 'Sync' ? `/:${user_id}/sync_task` : `'/:${user_id}/workspace`}
+                                                className='text-neutral-400 flex items-center gap-3 px-3 py-2 rounded-lg w-full text-left text-md hover:bg-neutral-800/90 hover:text-neutral-300 rounded-2xl w-fit transition-all'
+                                          >
+
+                                                {item.name === 'Sync' ? <PlugZap /> : <BriefcaseBusiness />}
+                                          </a>
+                                    ))
+                              }
+
+                        </div>
+                  }
                   <p className={clsx(
                         'text-xs font-semibold font-medium text-neutral-500 tracking-wide uppercase transition-all duration-300 whitespace-nowrap',
-                        isExpanded ? 'opacity-100 ml-0' : 'opacity-0 ml-4'
+                        isExpanded ? 'opacity-100 mx-0 ml-3' : 'opacity-0 ml-4'
 
                   )} >
 
@@ -111,7 +156,7 @@ export default function Sidebar() {
                               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
                               </svg>
-                              My Lists
+                              My List
                         </span>
 
                   </p >
@@ -152,18 +197,19 @@ export default function Sidebar() {
                               ))
                         }
                   </div >
-                  {isExpanded ?
-                        <button
-                              onClick={() => setIsModelOpen(true)}
-                              className="mx-2 mb-2 px-3 py-2 rounded-lg bg-neutral-800 hover:bg-neutral-700"
-                        > + New List</button>
-                        : <button className='mx-auto mb-2' onClick={() => setIsModelOpen(true)}>  <ListPlus />
-                        </button>
+                  {
+                        isExpanded ?
+                              <button
+                                    onClick={() => setIsModelOpen(true)}
+                                    className="mx-2 mb-2 px-3 py-2 rounded-lg bg-neutral-800 hover:bg-neutral-700"
+                              > + New List</button>
+                              : <button className='mx-auto mb-2' onClick={() => setIsModelOpen(true)}>  <ListPlus />
+                              </button>
                   }
                   <ListModel
                         isOpen={isModelOpen}
                         onClose={() => setIsModelOpen(false)}
-                        newList={addList} />
+                        newList={createList} />
 
             </aside >
       )

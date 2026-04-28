@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../lib/context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast, Toaster } from 'react-hot-toast';
 import { EnhancedAuthBackground, AuthCardWrapper } from "../components/ui/FloatingUIElements";
 import "../styles/auth-floating-ui.css";
@@ -169,18 +169,29 @@ export default function LoginForm() {
       const navigate = useNavigate();
       // Ref to hold the pending redirect timer so we can cancel it on unmount
       const timerRef = useRef(null);
+      const location = useLocation();
 
       // Cleanup: cancel any pending redirect if component unmounts before the 1s delay
       useEffect(() => {
             return () => { if (timerRef.current) clearTimeout(timerRef.current); };
       }, []);
 
+      const hasNotified = useRef(false);
+      //Make a Toast if A user doesn't Logged in - by Protected Routes
+      useEffect(() => {
+
+            if (location?.state?.reason === 'unauthorized' && !hasNotified.current) {
+                  toast.error('Please Login to Continue.')
+            }
+            hasNotified.current = true;
+      }, [location?.state]);
+
 
       useEffect(() => { setTimeout(() => setMounted(true), 60); }, []);
       const validate = () => {
             const e = {};
             if (!email.includes("@")) e.email = "Enter a valid email address";
-            if (password.length < 6) e.password = "Password must be 6+ characters";
+            if (password.length < 6) e.password = "Invalid Password. Try a strong password.";
             return e;
       };
       const handleSubmit = async (ev) => {

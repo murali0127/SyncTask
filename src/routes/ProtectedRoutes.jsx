@@ -3,18 +3,26 @@ import { useAuth } from '../lib/context/AuthContext';
 import { useEffect, useState } from 'react';
 import { EnhancedAuthBackground } from '../components/ui/FloatingUIElements';
 import '../styles/auth-floating-ui.css';
+
 const ProtectedRoutes = ({ children }) => {
-      const { user, profile, loading } = useAuth();
+      const { user, loading, error } = useAuth();
       const location = useLocation();
 
       const [timedOut, setTimedOut] = useState(false);
 
       useEffect(() => {
-            const timer = setTimeout(() => {
-                  setTimedOut(false);
-            }, 3000);
+            // Reset timeout state for every new loading cycle.
+            const resetTimer = setTimeout(() => setTimedOut(false), 0);
+            if (!loading) {
+                  return () => clearTimeout(resetTimer);
+            }
 
-            return () => clearTimeout(timer);
+            const timer = setTimeout(() => setTimedOut(true), 3000);
+
+            return () => {
+                  clearTimeout(resetTimer);
+                  clearTimeout(timer);
+            };
       }, [loading])
 
       //SPINNER
@@ -29,7 +37,6 @@ const ProtectedRoutes = ({ children }) => {
                               justifyContent: 'center',
                               minHeight: '100vh',
                               gap: '12px',
-                              background: '#0f172a',
                               color: '#f8fafc'
                         }}>
                               <svg
@@ -54,44 +61,110 @@ const ProtectedRoutes = ({ children }) => {
       if (timedOut && loading) {
             console.error('Auth loading timed out — check AuthContext/Supabase connection');
             return (
-                  <div style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        minHeight: '100vh',
-                        gap: '16px',
-                        background: '#0f172a',
-                        color: '#f8fafc'
-                  }}>
-                        <p style={{ fontFamily: 'DM Mono, monospace', color: '#fb7185' }}>
-                              ⚠ Auth timed out
-                        </p>
-                        <p style={{ fontFamily: 'DM Mono, monospace', fontSize: '12px', color: '#64748b' }}>
-                              Could not verify your session. Check your connection.
-                        </p>
-                        <button
-                              onClick={() => window.location.href = '/login'}
-                              style={{
-                                    padding: '8px 20px',
-                                    background: 'rgba(251,113,133,0.15)',
-                                    border: '1px solid rgba(251,113,133,0.3)',
-                                    borderRadius: '8px',
-                                    color: '#fb7185',
-                                    fontFamily: 'DM Mono, monospace',
-                                    fontSize: '12px',
-                                    cursor: 'pointer'
-                              }}
-                        >
-                              Go to Login
-                        </button>
-                  </div>
+                  <EnhancedAuthBackground>
+
+                        <div style={{
+                              display: 'flex',
+                              flexDirection: 'column',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              minHeight: '100vh',
+                              gap: '16px',
+                              background: '#0f172a',
+                              color: '#f8fafc'
+                        }}>
+                              <p style={{ fontFamily: 'DM Mono, monospace', color: '#fb7185' }}>
+                                    ⚠ Auth timed out
+                              </p>
+                              <p style={{ fontFamily: 'DM Mono, monospace', fontSize: '12px', color: '#64748b' }}>
+                                    {error || 'Could not verify your session. Check your connection.'}
+                              </p>
+                              <button
+                                    onClick={() => window.location.href = '/login'}
+                                    style={{
+                                          padding: '8px 20px',
+                                          background: 'rgba(251,113,133,0.15)',
+                                          border: '1px solid rgba(251,113,133,0.3)',
+                                          borderRadius: '8px',
+                                          color: '#fb7185',
+                                          fontFamily: 'DM Mono, monospace',
+                                          fontSize: '12px',
+                                          cursor: 'pointer'
+                                    }}
+                              >
+                                    Go to Login
+                              </button>
+                        </div>
+                  </EnhancedAuthBackground>
+            );
+      }
+      // Auth resolved with explicit error from AuthContext.
+      if (error && !loading) {
+            return (
+                  <EnhancedAuthBackground>
+                        <div style={{
+                              display: 'flex',
+                              flexDirection: 'column',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              minHeight: '100vh',
+                              gap: '16px',
+                              color: '#f8fafc',
+                              textAlign: 'center',
+                              padding: '0 24px'
+                        }}>
+                              <p style={{ fontFamily: 'DM Mono, monospace', color: '#fb7185' }}>
+                                    ⚠ Authentication Error
+                              </p>
+                              <p style={{ fontFamily: 'DM Mono, monospace', fontSize: '12px', color: '#94a3b8', maxWidth: '560px' }}>
+                                    {error}
+                              </p>
+                              <div style={{ display: 'flex', gap: '10px' }}>
+                                    <button
+                                          onClick={() => window.location.reload()}
+                                          style={{
+                                                padding: '8px 20px',
+                                                background: 'rgba(148,163,184,0.15)',
+                                                border: '1px solid rgba(148,163,184,0.3)',
+                                                borderRadius: '8px',
+                                                color: '#cbd5e1',
+                                                fontFamily: 'DM Mono, monospace',
+                                                fontSize: '12px',
+                                                cursor: 'pointer'
+                                          }}
+                                    >
+                                          Retry
+                                    </button>
+                                    {!user && (
+                                          <button
+                                                onClick={() => window.location.href = '/login'}
+                                                style={{
+                                                      padding: '8px 20px',
+                                                      background: 'rgba(251,113,133,0.15)',
+                                                      border: '1px solid rgba(251,113,133,0.3)',
+                                                      borderRadius: '8px',
+                                                      color: '#fb7185',
+                                                      fontFamily: 'DM Mono, monospace',
+                                                      fontSize: '12px',
+                                                      cursor: 'pointer'
+                                                }}
+                                          >
+                                                Go to Login
+                                          </button>
+                                    )}
+                              </div>
+                        </div>
+                  </EnhancedAuthBackground>
             );
       }
       //Auth resolved But No User
       if (!user) {
-            return <Navigate to="/" state={{ from: location }} replace />
+            return <Navigate to="/login"
+                  state={{ from: location, reason: 'unauthorized' }}
+                  replace />
       }
+
+      // console.log(user);
 
       //AUTHORIZED
       return children;

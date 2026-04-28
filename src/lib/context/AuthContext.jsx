@@ -1,7 +1,6 @@
 ﻿import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { supabase } from '../supabase-client.jsx';
 
-
 const AuthContext = createContext(null);
 
 export const useAuth = () => useContext(AuthContext);
@@ -11,117 +10,111 @@ export default function AuthProvider({ children }) {
       const [profile, setProfile] = useState(null);
       const [loading, setLoading] = useState(true);
       const [error, setError] = useState(null);
-
-      //CACHES USER DATA
       const userDataCache = useRef(new Map());
 
-      const extractError = (err) => err?.message ?? "An unexpected error occured!";
+      const extractError = (err) => err?.message ?? "An unexpected error occurred!";
+      const profileFallback = (currUser) => ({
+            id: currUser.id,
+            email: currUser.email,
+            name: currUser.user_metadata?.name || currUser.email?.split('@')?.[0] || 'User',
+            role: 'user'
+      });
 
-      const fetchOrCreateProfile = async (currUser) => {
-            //RETURN FROM STATE CACHE
-            if (userDataCache.has(currUser)) {
-                  console.log('User Already Exists on Cache.');
-                  return userDataCache.current.get(currUser.id);
-            }
-            try {
-                  const { data, error } = await supabase
-                        .from('profiles')
-                        .select('*')
-                        .eq('id', currUser.id)
-                        .maybeSingle()
-
-
-                  if (error) {
-                        console.log(error);
-                        throw error;
-                  }
-                  if (data) {
-                        //Store in cache
-                        userDataCache.current.set(currUser.id, data);
-                        return data;
-                  }
-
-                  //ELSE CREATE ONE
-                  const { data: newProfile, error: createError } = await supabase
-                        .from('profiles')
-                        .upsert({
-                              id: currUser.id,
-                              email: currUser.email,
-                              name: currUser.name,
-                              created_at: currUser,
-                              role: currUser.role
-                        })
-                        .select()
-                        .single()
-                  if (createError) {
-                        console.log(createError);
-                        throw createError;
-                  }
-                  userDataCache.current.set(newProfile.id, newProfile)
-                  return newProfile;
-            }
-            catch (err) {
-                  console.log('Profile error : ', err.message);
-                  setError(extractError(err));
-                  return null;
-            }
+      const withTimeout = (promise, timeoutMs = 6000, label = "Operation") => {
+            return Promise.race([
+                  promise,
+                  new Promise((_, reject) =>
+                        setTimeout(() => reject(new Error(`${label} timed out after ${timeoutMs}ms`)), timeoutMs)
+                  )
+            ]);
       };
 
-      //HELPER TO UPDATE userDataCache
-      const updateUserDataCache = (userId, updatedUserData) => {
-            const existingData = userDataCache.current.has(userId) || {};
-            const updatedData = { ...existingData, updatedUserData };
-            userDataCache.current.set(userId, updatedData);
-            setProfile(userDataCache);
-      }
+      const fetchOrCreateProfile = async (currUser) => {
+            if (!currUser?.id) return null;
+            if (userDataCache.current.has(currUser.id)) {
+                  return userDataCache.current.get(currUser.id);
+            }
+
+            const { data, error: readError } = await supabase
+                  .from('profiles')
+                  .select('*')
+                  .eq('id', currUser.id)
+                  .maybeSingle();
+
+            if (readError) throw readError;
+            if (data) {
+                  userDataCache.current.set(currUser.id, data);
+                  return data;
+            }
+
+            const { data: newProfile, error: createError } = await supabase
+                  .from('profiles')
+                  .upsert({
+                        id: currUser.id,
+                        email: currUser.email,
+                        name: currUser.user_metadata?.name || currUser.email?.split('@')?.[0] || 'User',
+                        created_at: new Date().toISOString(),
+                        role: 'user'
+                  })
+                  .select()
+                  .single();
+
+            if (createError) throw createError;
+            userDataCache.current.set(currUser.id, newProfile);
+            return newProfile;
+      };
 
       useEffect(() => {
-            let isMounted = true; //Flag -> THAT PREVENT STATE UPDATE
+            let isMounted = true;
 
-            // onAuthStateChange fires immediately with INITIAL_SESSION event, giving the current session — no need for a separate getSession() call.
-            const { data: { subscription } } = supabase.auth.onAuthStateChange(
-                  async (event, session) => {
-
+            const syncSession = async (session) => {
+                  setLoading(true);
+                  try {
+                        const currUser = session?.user ?? null;
                         if (!isMounted) return;
+                        setUser(currUser);
+                        let hadProfileIssue = false;
 
-                        setLoading(true);
-                        try {
-
-
-                              const currUser = session?.user ?? null;
-                              setUser(currUser);
-
-                              if (currUser) {
-                                    const profileData = await fetchOrCreateProfile(currUser);
-                                    if (!isMounted) setProfile(profileData);
-                              } else {
-                                    if (!isMounted) {
-                                          setUser(null);
-                                          setProfile(null);
-                                          setError(null);
+                        if (currUser) {
+                              try {
+                                    const profileData = await withTimeout(
+                                          fetchOrCreateProfile(currUser),
+                                          6000,
+                                          "Profile synchronization"
+                                    );
+                                    if (isMounted) setProfile(profileData || profileFallback(currUser));
+                              } catch (profileErr) {
+                                    if (isMounted) {
+                                          // Keep user signed in with safe fallback profile even if profile table fetch is slow/failing.
+                                          setProfile(profileFallback(currUser));
+                                          setError(`Profile sync issue: ${extractError(profileErr)}`);
+                                          hadProfileIssue = true;
                                     }
                               }
-                        } catch (error) {
-                              console.error('Auth state change error : ', error.message);
-                              if (!isMounted) setError(extractError(error));
-                        } finally {
-                              if (isMounted) setLoading(false);
+                        } else if (isMounted) {
+                              setProfile(null);
                         }
-                  });
-
-
-            const safetyTimeout = setTimeout(() => {
-                  if (!isMounted) {
-                        console.warn('Auth timeout....');
-                        setLoading(false);
+                        if (isMounted && currUser && !hadProfileIssue) {
+                              // Clear previous auth errors after a successful signed-in session sync.
+                              setError(null);
+                        }
+                  } catch (err) {
+                        if (isMounted) setError(extractError(err));
+                  } finally {
+                        if (isMounted) setLoading(false);
                   }
-            }, 3000)
+            };
+
+            supabase.auth.getSession().then(({ data }) => syncSession(data.session));
+
+            const { data: { subscription } } = supabase.auth.onAuthStateChange(
+                  async (_event, session) => {
+                        await syncSession(session);
+                  });
 
             return () => {
                   isMounted = false;
                   subscription.unsubscribe();
-                  clearTimeout(safetyTimeout);
-
             };
       }, []);
 
@@ -188,7 +181,7 @@ export default function AuthProvider({ children }) {
                                     id: data.user.id,
                                     email: email,
                                     name: name,
-                                    created_at: new Date(),
+                                    created_at: new Date().toISOString(),
                                     role: 'user'
                               });
                         if (profileError && profileError.code !== 'PGRST204') {

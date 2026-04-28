@@ -1,11 +1,12 @@
 import { useState } from "react";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 
-export default function AddTaskForm({ onAdd, curr_list }) {
+export default function AddTaskForm({ onAdd }) {
       const [title, setTitle] = useState("");
       const [priority, setPriority] = useState('medium');
+      const [dueDate, setDueDate] = useState('');
 
       function handleChange(evt) {
             setTitle(evt.target.value);
@@ -13,24 +14,30 @@ export default function AddTaskForm({ onAdd, curr_list }) {
 
       }
 
-      function handleSubmit() {
+      async function handleSubmit() {
             if (!title.trim()) return
 
-            onAdd(
+            const result = await onAdd(
                   title.trim(),
-                  priority
-            )
+                  {
+                        priority,
+                        due_date: dueDate || null
+                  }
+            );
 
-            setTitle("")
-      }
+            if (result?.success === false) {
+                  toast.error(result.error || 'Could not add task.');
+                  return;
+            }
 
-      const notify = () => {
             toast.success('Added a new Task.....', {
                   duration: 2000,
                   position: "top-center",
-                  // icon: '🎉',
                   removeDelay: 1000
-            })
+            });
+            setTitle("");
+            setDueDate('');
+            setPriority('medium');
       }
 
       return (
@@ -56,13 +63,13 @@ export default function AddTaskForm({ onAdd, curr_list }) {
                         </select>
                         <div className="flex items-center gap-3">
                               <select
-                                    value={priority}
-                                    onChange={evt => setPriority(evt.target.value)}
+                                    value={dueDate}
+                                    onChange={evt => setDueDate(evt.target.value)}
                                     className="bg-neutral-800 border border-neutral-700 rounded-lg px-2 py-1.5
                                      text-sm text-neutral-400 outline-none cursor-pointer
                                      focus:border-neutral-600"
                               >
-                                    <option value="Done" className="bg-neutral-800">Due date</option>
+                                    <option value="" className="bg-neutral-800">Due date</option>
                                     <option value="Today" className="bg-neutral-800">Today</option>
                                     <option value="Tomorrow" className="bg-neutral-800">Tomorrow</option>
                                     <option value="Day 2" className="bg-neutral-800">Day 2</option>
@@ -76,7 +83,7 @@ export default function AddTaskForm({ onAdd, curr_list }) {
                               <Button
                                     variant="default"
                                     size='md'
-                                    onClick={() => { handleSubmit(); notify() }}
+                                    onClick={handleSubmit}
                                     disabled={!title.trim()
                                     }
 

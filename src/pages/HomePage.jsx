@@ -3,7 +3,7 @@ import NavBar from '../components/NavBar';
 import Footer from '../components/layouts/Footer'
 import { motion } from 'motion/react';
 import { CheckCircle2, Clock, Users, Zap, ArrowRight, ListTodo } from 'lucide-react'
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { toast, Toaster } from 'react-hot-toast';
 
 const features = [
@@ -33,11 +33,14 @@ export default function HomePage() {
       const navigate = useNavigate();
       const location = useLocation();
 
+
+      const isLoggedOut = useRef(false);
+
       useEffect(() => {
-            if (location?.state?.loggedOut) {
+            if (location?.state?.loggedOut && !isLoggedOut.current) {
                   toast.success('Logged out successfully.', { icon: '👏' })
             }
-            navigate(".", { replace: true, state: {} })
+            isLoggedOut.current = true;
       }, [])
 
       return (

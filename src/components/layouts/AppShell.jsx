@@ -3,42 +3,50 @@ import Header from "./Header";
 import TaskList from "../tasks/TaskList";
 import { useAppState } from "../../providers/AppProvider";
 import { toast, Toaster } from 'react-hot-toast';
-import { Outlet, useLocation, useNavigate, replace } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import AIChatPanel from "../ai/AIChatPanel";
 import { useEffect, useRef } from "react";
-const userName = 'Murali';
+
 
 export default function AppShell() {
 
-      const { currListTasks, addList, addTasks, toggleTask, deleteTask, isAIChatOpen, setIsAIChatOpen, currList } = useAppState();
+      const {
+            user,
+            currentList,
+            currentListTodos,
+            addTodo,
+            toggleTodo,
+            deleteTodo,
+            isAIChatOpen,
+            setIsAIChatOpen
+      } = useAppState();
+
       const location = useLocation();
       const navigate = useNavigate();
       const toastedRef = useRef(false);   //(Persistent storage)CACHES THE STATE , UNLIKE STATE, IT DOESN'T RE-RENDERS -> which has a property .current() -> PROVIDE THE CACHED CURRENT STATE
 
       useEffect(() => {
-            if (isAIChatOpen) {
-
-                  toast(
-                        < span className="flex items-center gap-2" >
-                              <i className="bi bi-openai text-white-400"></i>
-                              <p>
-                                    Hey {userName}. How can i help you.
-                              </p>
-                        </span >
-                  )
-            }
-      }, [isAIChatOpen])
+            if (!isAIChatOpen) return;
+            const displayName = user?.user_metadata?.name || user?.email || "there";
+            toast(
+                  <span className="flex items-center gap-2">
+                        <i className="bi bi-openai text-white-400"></i>
+                        <p>Hey {displayName}. How can I help you?</p>
+                  </span>
+            );
+      }, [isAIChatOpen, user]);
       useEffect(() => {
-
             if (location?.state?.loggedIn && !toastedRef.current) {
                   toast.success('Logged In successfully.', {
                         icon: '👏'
                   })
                   toastedRef.current = true;   //MARKS AS DONE.
             }
-            navigate(location.pathname, ({ replace: true, state: {} }))
-      }, [location.pathname, navigate])
+            if (location.state && Object.keys(location.state).length > 0) {
+                  navigate(location.pathname, { replace: true, state: {} });
+            }
+      }, [location.pathname, navigate, location.state])
       return (
             <div className="flex h-screen max-w-screen gap-1 overflow-hidden bg-neutral-950">
                   <Toaster
@@ -58,11 +66,11 @@ export default function AppShell() {
                         <Header />
                         <div className="flex-1 flex flex-col min-h-0 bg-neutral-900 border border-neutral-800 mx-4 mb-4 mr-4 p-5 overflow-hidden rounded-lg">
                               <TaskList
-                                    list={currList}
-                                    tasks={currListTasks}
-                                    onAdd={addTasks}
-                                    onToggle={toggleTask}
-                                    onDelete={deleteTask}
+                                    list={currentList}
+                                    tasks={currentListTodos}
+                                    onAdd={addTodo}
+                                    onToggle={toggleTodo}
+                                    onDelete={deleteTodo}
                               />
                               <Outlet />
                         </div>

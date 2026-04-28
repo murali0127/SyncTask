@@ -2,18 +2,28 @@ import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuIt
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import NavBarAvatar from './ui/NavBarAvatar';
 import clsx from 'clsx';
-import { Link, NavLink } from 'react-router-dom';
-import DashBoard from '../pages/DashBoard';
-
+import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../lib/context/AuthContext';
 const navigation = [
       { name: 'Dashboard', href: '/dashboard' },
       { name: 'Team', href: '#' },
-      { name: 'Projects', href: '#' },
+      { name: 'Workspace', href: '#' },
       { name: 'Calendar', href: '#' },
 ]
 
 
 export default function NavBar({ homePage = true }) {
+      const { user, signout } = useAuth();
+      const navigate = useNavigate();
+      async function handleLogout() {
+            const { error } = await signout();
+            if (error) {
+                  console.log(error);
+                  return;
+            } else {
+                  setTimeout(() => navigate('/', { state: { loggedOut: true } }), 200);
+            }
+      }
       return (
             <Disclosure
                   as="nav"
@@ -58,18 +68,20 @@ export default function NavBar({ homePage = true }) {
                                           </div>
                                     </div>
                               </div>
-                              {homePage ?
+                              {(homePage && user) &&
                                     < div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                                          <a
-                                                href='/login'
-                                                type="button"
+                                          <button
+                                                onClick={handleLogout}
+                                                type="logout"
                                                 className="relative rounded-full p-1 text-white font-semibold rounded-xl shadow-lg transition-all duration-300 hover:text-red-500 hover:translate-y-0.5"
-                                          >Login
+                                          >Logout
                                                 <span className="absolute -inset-1.5" />
                                                 <span className="sr-only">View notifications</span>
-                                          </a>
+                                          </button>
                                     </div>
-                                    :
+                              }
+                              {(!homePage && user) &&
+
 
                                     <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                                           <button
@@ -94,6 +106,20 @@ export default function NavBar({ homePage = true }) {
                                           </Menu>
 
                                     </div>
+                              }
+                              {(homePage && !user) &&
+                                    < div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                                          <a
+                                                href='/login'
+                                                type="button"
+                                                className="relative rounded-full p-1 text-white font-semibold rounded-xl shadow-lg transition-all duration-300 hover:text-red-500 hover:translate-y-0.5"
+                                          >Login
+                                                <span className="absolute -inset-1.5" />
+                                                <span className="sr-only">View notifications</span>
+                                          </a>
+                                    </div>
+
+
                               }
                         </div>
                   </div>

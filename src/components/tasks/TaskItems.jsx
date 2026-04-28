@@ -10,13 +10,26 @@ const PRIORITY_CONFIG = {
 }
 
 export default function TaskItems({ task, onToggle, onDelete }) {
-      const config = PRIORITY_CONFIG[task.priority];
+      const safeTask = task || {};
+      const safePriority = PRIORITY_CONFIG[safeTask.priority] ? safeTask.priority : 'medium';
+      const config = PRIORITY_CONFIG[safePriority];
 
       const notify = () => {
-            toast.error("Deleted a task.", {
+            toast.success("Deleted a task.", {
                   duration: 2000,
                   position: 'top-center'
             })
+      }
+
+      async function handleDelete(evt) {
+            evt.stopPropagation();
+            if (!safeTask.id) return;
+            const result = await onDelete(safeTask.id);
+            if (result?.success === false) {
+                  toast.error(result.error || "Delete failed.");
+                  return;
+            }
+            notify();
       }
 
       return (
@@ -25,9 +38,9 @@ export default function TaskItems({ task, onToggle, onDelete }) {
                         'group relative flex items-center gap-3 h-15',
                         'bg-neutral-800/50 border border-neutral-700/50 rounded-lg px-3 py-3',
                         'hover:bg-neutral-800 transition-all duration-150 cursor-pointer',
-                        task.done && 'opacity-50'
+                        safeTask.completed && 'opacity-50'
                   )}
-                  onClick={() => onToggle(task.id)}
+                  onClick={() => onToggle(safeTask?.id, !safeTask?.completed)}
             >
                   {/* Priority indicator bar */}
                   <div className={clsx(
@@ -38,37 +51,37 @@ export default function TaskItems({ task, onToggle, onDelete }) {
                   {/* Checkbox */}
                   <div className={clsx(
                         'w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-all',
-                        task.done
+                        safeTask.completed
                               ? 'bg-neutral-400 border-neutral-400'
                               : 'border-neutral-600 bg-transparent hover:border-neutral-500'
                   )
                   }>
-                        {task.done && <span className="text-black text-xs font-medium">✓</span>}
+                        {safeTask.completed && <span className="text-black text-xs font-medium">✓</span>}
                   </div>
 
                   {/* Task content */}
                   <div className='flex-1 min-w-0 gap-2'>
                         <p className={clsx(
                               'text-sm font-medium truncate',
-                              task.done ? 'line-through text-neutral-500' : 'text-neutral-200'
+                              safeTask.completed ? 'line-through text-neutral-500' : 'text-neutral-200'
                         )}>
-                              {task.title}
+                              {safeTask.title || 'Untitled task'}
                         </p>
                         <div className="flex items-center gap-2 mt-1">
                               <span className={clsx(
                                     'w-1.5 h-1.5 rounded-full',
                                     config.dot
                               )} />
-                              {task.due && (
-                                    <span className="text-xs text-neutral-500">{task.due}</span>
+                              {safeTask.due_date && (
+                                    <span className="text-xs text-neutral-500">{safeTask.due_date}</span>
                               )}
                               <span className={clsx(
                                     'text-xs px-2 py-0.5 rounded',
-                                    task.priority === 'high' && 'bg-red-500/20 text-red-400',
-                                    task.priority === 'medium' && 'bg-orange-500/20 text-orange-400',
-                                    task.priority === 'low' && 'bg-green-500/20 text-green-400'
+                                    safePriority === 'high' && 'bg-red-500/20 text-red-400',
+                                    safePriority === 'medium' && 'bg-orange-500/20 text-orange-400',
+                                    safePriority === 'low' && 'bg-green-500/20 text-green-400'
                               )}>
-                                    {task.priority}
+                                    {safePriority}
                               </span>
                         </div>
                   </div >
@@ -83,7 +96,7 @@ export default function TaskItems({ task, onToggle, onDelete }) {
                                     'text-neutral-500 hover:text-red-400 mr-4'
                               )
                         }
-                        onClick={evt => { evt.stopPropagation(); onDelete(task.id); notify() }}
+                        onClick={handleDelete}
                         title="Delete task"
                   >
                         <CircleX />
