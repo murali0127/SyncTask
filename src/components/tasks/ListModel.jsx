@@ -1,7 +1,7 @@
 import AddNewList from "./AddNewList";
 import ReactDOM from 'react-dom';
 
-export default function ListModel({ isOpen, onClose, newList }) {
+export default function ListModel({ isOpen, onClose }) {
       if (!isOpen) {
             return null;
       }
@@ -15,7 +15,7 @@ export default function ListModel({ isOpen, onClose, newList }) {
                               Create New List
                         </h2>
 
-                        <AddNewList newList={newList} onClose={onClose} />
+                        <AddNewList onClose={onClose} />
 
                         <button
                               onClick={onClose}

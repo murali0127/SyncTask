@@ -184,9 +184,9 @@ export default function Sidebar() {
                                                 "flex-1 truncate transition-all duration-200 whitespace-nowrap",
                                                 isExpanded ? "opacity-100 ml-0" : "opacity-0 -ml-4"
                                           )}>{list.list_title}</span>
-                                          {countForList(list.id) > 0 && (
+                                          {countForList(list.id) && (
                                                 <span className={clsx(
-                                                      'rounded-full px-2 py-0.5 text-xs font-medium  text-neutral-300',
+                                                      'rounded-full px-2 py-0.5 text-xs font-medium text-neutral-300',
                                                       selectedListId === list.id
                                                             ? 'text-neutral-300'
                                                             : 'text-neutral-500'
@@ -210,7 +210,7 @@ export default function Sidebar() {
                   <ListModel
                         isOpen={isModelOpen}
                         onClose={() => setIsModelOpen(false)}
-                        newList={createList} />
+                  />
 
             </aside >
       )

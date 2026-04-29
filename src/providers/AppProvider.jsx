@@ -257,7 +257,7 @@ export default function AppProvider({ children }) {
 
             try {
                   const result = await createList({
-                        list_title: name.trim(),
+                        title: name.trim(),
                         icon,
                         color,
                         user_id: user?.id

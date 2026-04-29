@@ -46,7 +46,7 @@ export default function AddTaskForm({ onAdd }) {
             setFormData((prev) => {
                   return { ...prev, [name]: value }
             });
-            // console.log(formData);
+            console.log(formData);
 
       }
 
