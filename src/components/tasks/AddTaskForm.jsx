@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
 import toast from "react-hot-toast";
-import { MessageSquareDiff } from 'lucide-react';
+import { MessageSquareDiff, CalendarDays, X } from 'lucide-react';
+import { DayPicker } from 'react-day-picker';
+import { format } from 'date-fns'
 
 const INITIAL_DATA = {
       title: "",
@@ -11,14 +13,32 @@ const INITIAL_DATA = {
       dueDate: ""
 };
 
+
 export default function AddTaskForm({ onAdd }) {
 
-      // const [title, setTitle] = useState("");
-      // const [priority, setPriority] = useState('medium');
-      // const [dueDate, setDueDate] = useState('');
-      // const [description, setDecription] = useState("");
       const [formData, setFormData] = useState(INITIAL_DATA);
       const [isPanelOpen, setIsPanelOpen] = useState(false);
+      const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+
+      const calendarRef = useRef(null);
+
+      useEffect(() => {
+            function handleOutside(e) {
+                  if (!calendarRef.current) return;
+                  if (!calendarRef.current.contains(e.target)) {
+                        setIsCalendarOpen(false);
+                  }
+            }
+
+            if (isCalendarOpen) {
+                  document.addEventListener("mousedown", handleOutside);
+            }
+
+            return () => {
+                  document.removeEventListener("mousedown", handleOutside);
+            };
+      }, [isCalendarOpen]);
+
 
       function handleChange(evt) {
             const name = evt.target.name;
@@ -30,6 +50,16 @@ export default function AddTaskForm({ onAdd }) {
 
       }
 
+      function handleDateSelect(date) {
+            setFormData((prev) => ({ ...prev, dueDate: date ?? null }));
+            setIsCalendarOpen(false);
+      }
+
+      function clearDate(evt) {
+            evt.stopPropagation();
+            setFormData((prev) => ({ ...prev, dueDate: null }))
+      }
+
       async function handleSubmit() {
             // evt.preventDefault();
             if (!formData.title.trim()) return
@@ -38,7 +68,7 @@ export default function AddTaskForm({ onAdd }) {
                   formData.title.trim(),
                   {
                         priority: formData.priority,
-                        due_date: formData.dueDate || null,
+                        due_date: formData.dueDate ? format(formData.dueDate, "yyyy-MM-dd") : null,
                         description: formData.description || null
                   }
             );
@@ -56,6 +86,8 @@ export default function AddTaskForm({ onAdd }) {
             setFormData(INITIAL_DATA);
             // setIsPanelOpen(false);
       }
+
+      const dueDateLabel = formData.dueDate ? format(formData.dueDate, 'yyyy-MM-dd') : null;
 
       return (
             <>
@@ -94,26 +126,67 @@ export default function AddTaskForm({ onAdd }) {
                                     <option value="medium" className="bg-neutral-800">🟠 Medium</option>
                                     <option value="low" className="bg-neutral-800">🟢 Low</option>
                               </select>
-                              <div className="flex items-center gap-3">
-                                    <select
-                                          name="dueDate"
-                                          value={formData.dueDate}
-                                          onChange={handleChange}
-                                          className="bg-neutral-800 border border-neutral-700 rounded-lg px-2 py-1.5
-                                     text-sm text-neutral-400 outline-none cursor-pointer
-                                     focus:border-neutral-600"
+                              {/** DATE PICKER */}
+                              <div ref={calendarRef} className="flex relative items-center gap-3">
+                                    <button
+                                          onClick={() => setIsCalendarOpen(prev => !prev)}
+                                          title="Set due date"
+                                          className={`flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs transition-all duration-150 border ${dueDateLabel
+                                                ? "bg-rose-700/40 border-rose-700/50 text-violet-300"
+                                                : "bg-neutral-800 border-neutral-600/50 text-neutral-400  hover:border-neutral-500 hover:text-neutral-300"
+                                                }`}
                                     >
-                                          <option value="" className="bg-neutral-800">Due date</option>
-                                          <option value="Today" className="bg-neutral-800">Today</option>
-                                          <option value="Tomorrow" className="bg-neutral-800">Tomorrow</option>
-                                          <option value="Day 2" className="bg-neutral-800">Day 2</option>
-                                          <option value="Friday" className="bg-neutral-800">Friday</option>
-                                          <option value="Sunday" className="bg-neutral-800">Sunday</option>
-                                          <option value="This week" className="bg-neutral-800">This week</option>
-                                          <option value="Next week" className="bg-neutral-800">Next week</option>
-                                          <option value="This month" className="bg-neutral-800">This month</option>
-                                          <option value="Next month" className="bg-neutral-800">Next month</option>
-                                    </select>
+                                          <CalendarDays size={13} />
+                                          <span className="text-sm">{dueDateLabel ?? "Due date"}</span>
+                                          {dueDateLabel && (
+                                                <span
+                                                      role="button"
+                                                      onClick={clearDate}
+                                                      className="ml-0.5 opacity-60 hover:opacity-100 transition-opacity"
+                                                >
+                                                      <X size={11} />
+                                                </span>
+                                          )}
+                                    </button>
+                                    {isCalendarOpen && (
+                                          <div className="absolute right-0 top-full mt-2 z-50 bg-neutral-800 border border-neutral-700 shadow-2xl rounded-2xl p-3 min-w-[280px]">
+                                                <DayPicker
+                                                      mode="single"
+                                                      selected={formData.dueDate}
+                                                      onSelect={handleDateSelect}
+                                                      disabled={{ before: new Date() }}
+                                                      classNames={{
+                                                            root: "text-neutral-200 text-sm",
+                                                            months: "relative",
+                                                            month: "relative overflow-hidden",
+                                                            month_caption: "flex justify-center items-center mb-2 font-semibold text-neutral-100 overflow-hidden",
+                                                            nav: "flex items-center gap-1",
+                                                            button_previous: "p-1 rounded hover:bg-neutral-700 text-neutral-400 hover:text-neutral-200 transition-colors",
+                                                            button_next: "p-1 rounded hover:bg-neutral-700 text-neutral-400 hover:text-neutral-200 transition-colors",
+                                                            weeks: "border-collapse",
+                                                            weekdays: "text-neutral-500 text-xs",
+                                                            weekday: "w-8 h-8 text-center font-medium",
+                                                            week: "",
+                                                            day: "w-8 h-8 text-center rounded-lg",
+                                                            day_button: "w-8 h-8 rounded-lg hover:bg-neutral-700 transition-colors flex items-center justify-center text-sm",
+                                                            selected: "bg-rose-700/40 text-white rounded-lg hover:bg-rose-700",
+                                                            today: "font-bold text-rose-400",
+                                                            disabled: "opacity-30 cursor-not-allowed",
+                                                            outside: "opacity-30",
+                                                      }}
+                                                      footer={
+                                                            <button
+                                                                  onClick={() => setIsCalendarOpen(false)}
+                                                                  className="mt-2 w-full text-xs bg-rose-700/40 text-white hover:text-neutral-300 py-1 hover:bg-rose-700/40 rounded-lg transition-colors"
+                                                            >
+                                                                  Cancel
+                                                            </button>
+                                                      }
+                                                />
+                                          </div>
+                                    )}
+
+
                                     <Button
                                           title="Add Task"
                                           variant="default"
