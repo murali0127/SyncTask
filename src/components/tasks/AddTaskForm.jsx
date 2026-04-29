@@ -191,7 +191,7 @@ export default function AddTaskForm({ onAdd }) {
                                           title="Add Task"
                                           variant="default"
                                           size='md'
-                                          onClick={() => handleSubmit}
+                                          onClick={handleSubmit}
                                           disabled={!formData.title.trim()
                                           }
 
