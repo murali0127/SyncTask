@@ -62,7 +62,6 @@ const ProtectedRoutes = ({ children }) => {
             console.error('Auth loading timed out — check AuthContext/Supabase connection');
             return (
                   <EnhancedAuthBackground>
-
                         <div style={{
                               display: 'flex',
                               flexDirection: 'column',
@@ -70,8 +69,7 @@ const ProtectedRoutes = ({ children }) => {
                               justifyContent: 'center',
                               minHeight: '100vh',
                               gap: '16px',
-                              background: '#0f172a',
-                              color: '#f8fafc'
+                              color: '#EEEEEE'
                         }}>
                               <p style={{ fontFamily: 'DM Mono, monospace', color: '#fb7185' }}>
                                     ⚠ Auth timed out

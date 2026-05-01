@@ -2,7 +2,7 @@ import { useState } from "react";
 import TaskItems from "./TaskItems";
 import AddTaskForm from "./AddTaskForm";
 
-const FILTERS = ['All', 'Active', 'Done', 'High'];
+const FILTERS = ['All', 'Active', 'Done', 'High', 'Medium', 'Low'];
 
 export default function TaskList({ list, tasks, onAdd, onToggle, onDelete }) {
       const [filter, setFilter] = useState('All')
@@ -11,6 +11,8 @@ export default function TaskList({ list, tasks, onAdd, onToggle, onDelete }) {
             if (filter === 'Active') return !task.completed
             if (filter === 'Done') return task.completed
             if (filter === 'High') return task.priority === 'high'
+            if (filter === 'Medium') return task.priority === 'medium'
+            if (filter === 'Low') return task.priority === 'low'
             return true
       })
 

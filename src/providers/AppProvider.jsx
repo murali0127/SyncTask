@@ -165,6 +165,7 @@ export default function AppProvider({ children }) {
                   const today = new Date();
                   return created.toDateString() === today.toDateString() && t.completed;
             }).length;
+            const currentList = lists.length;
 
             return {
                   totalTodos: userTodos.length,
@@ -172,7 +173,8 @@ export default function AppProvider({ children }) {
                   completedToday,
                   averagePriority: userTodos.length > 0
                         ? (userTodos.filter(t => t.priority === 'high').length / userTodos.length * 100).toFixed(1)
-                        : 0
+                        : 0,
+                  currentList
             };
       }, [todo, user]);
 

@@ -2,7 +2,7 @@ import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuIt
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import NavBarAvatar from './ui/NavBarAvatar';
 import clsx from 'clsx';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../lib/context/AuthContext';
 const navigation = [
       { name: 'Dashboard', href: '/dashboard' },
@@ -14,6 +14,8 @@ const navigation = [
 
 export default function NavBar({ homePage = true }) {
       const { user, signout } = useAuth();
+      const location = useLocation();
+      const isProfileRoute = location.pathname.toLowerCase().includes('/profile');
       const navigate = useNavigate();
       async function handleLogout() {
             const { error } = await signout();
@@ -27,7 +29,10 @@ export default function NavBar({ homePage = true }) {
       return (
             <Disclosure
                   as="nav"
-                  className="relative bg-black-900 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-white/10"
+                  className={clsx(
+                        "fixed top-0 left-0 right-0  z-50 relative after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-white/10",
+                        isProfileRoute ? 'bg-neutral-900' : 'bg-transparent'
+                  )}
             >
                   <div className="max-w-auto mx-auto px-6 sm:px-8 lg:px-12">
                         <div className="relative flex h-16 items-center justify-between">
