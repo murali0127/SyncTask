@@ -1,7 +1,9 @@
 import Button from '../ui/Button';
 import { useAppState } from "../../providers/AppProvider";
-import { LogOut } from 'lucide-react';
+import { LogOut, CalendarDays, ClipboardCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import MyCalendar from '../ui/calendar';
 
 
 export default function Header() {
@@ -14,8 +16,12 @@ export default function Header() {
             setIsAIChatOpen,
             deleteList,
             setSelectedListId,
-            signout
+            signout,
+            setViewMode
       } = useAppState();
+
+      const [calendarOpen, setCalendarOpen] = useState(false);
+
       const done = currentListTodos.filter(task => task.completed).length;
       const total = currentListTodos.length;
       const percent = total > 0 ? Math.round((done / total) * 100) : 0;
@@ -56,6 +62,26 @@ export default function Header() {
                   </div>
 
                   <div className="flex items-center gap-2">
+
+                        {!calendarOpen ? <CalendarDays
+                              className='text-neutral-500 hover:text-neutral-300 hover:translate-x-0.5 '
+                              size="20px"
+                              onClick={() => {
+                                    setViewMode('calendar');
+                                    setCalendarOpen(!calendarOpen);
+                              }}
+                        />
+                              : <ClipboardCheck
+                                    className='text-neutral-500 hover:text-neutral-300 hover:translate-x-0.5 '
+                                    size="20px"
+                                    onClick={() => {
+                                          setViewMode('list');
+                                          setCalendarOpen(!calendarOpen);
+                                    }}
+                              />
+                        }
+                        {/* {calendarIsOpen &&
+                              <MyCalendar />} */}
                         <Button
                               variant="ghost"
                               size="md"

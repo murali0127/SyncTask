@@ -1,0 +1,153 @@
+.myCustomHeight {
+      height: 75vh;
+      min-height: 400px;
+      max-height: 800px;
+      width: 100%;
+      padding: 1rem;
+      box-sizing: border-box;
+
+      border-radius: 16px;
+      overflow: hidden;
+
+      background-color: #242432;
+      border: 1px solid #030303;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.rbc-calendar {
+      height: 100% !important;
+      background-color: #2c2c36;
+      color: #e0e0e0;
+      font-family: inherit;
+      border-radius: 16px;
+}
+
+/*  TOOLBAR (Month/Week/Day + navigation)  */
+.rbc-toolbar {
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      background-color: #31313c;
+      border-bottom: 1px solid #2e2e3e;
+}
+
+.rbc-toolbar-label {
+      font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+      font-weight: 600;
+      color: #e0e0e0;
+      flex-grow: 1;
+      text-align: center;
+}
+
+/* Toolbar buttons */
+.rbc-toolbar button {
+      color: #a0a0b0;
+      background: transparent;
+      border: 1px solid #d7d7e6;
+      border-radius: 8px;
+      padding: 0.35rem 0.75rem;
+      font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+      cursor: pointer;
+      transition: all 0.2s ease;
+}
+
+.rbc-toolbar button:hover {
+      background-color: #2e2e3e;
+      color: #ffffff;
+}
+
+.rbc-toolbar button.rbc-active {
+      background-color: #c6342c;
+      color: #ffffff;
+      border-color: #c6342c;
+}
+
+/*  HEADER ROW (Sun, Mon, Tue...)  */
+.rbc-header {
+      padding: 0.5rem 0;
+      background-color: #232328;
+      color: #c6342c;
+      font-size: clamp(0.7rem, 1.5vw, 0.85rem);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid #2e2e3e;
+}
+
+/*  DATE CELLS  */
+.rbc-date-cell {
+      color: #a0a0b0;
+      font-size: clamp(0.7rem, 1.2vw, 0.85rem);
+      padding: 0.25rem 0.5rem;
+}
+
+.rbc-date-cell.rbc-now {
+      color: #c6342c;
+      font-weight: 700;
+}
+
+.rbc-off-range-bg {
+      background-color: #1b1b1f;
+      /* dimmed bg for days outside current month */
+}
+
+.rbc-today {
+      background-color: #241814 !important;
+      /* highlight today's column */
+}
+
+/*  EVENTS */
+.rbc-event {
+      background-color: #c6342c;
+      border: none;
+      border-radius: 6px;
+      padding: 2px 6px;
+      font-size: clamp(0.65rem, 1.2vw, 0.78rem);
+      font-weight: 500;
+      color: #ffffff;
+      transition: filter 0.2s ease;
+}
+
+.rbc-event:hover {
+      filter: brightness(1.2);
+      cursor: pointer;
+}
+
+.rbc-event.rbc-selected {
+      background-color: #89130d;
+      outline: 2px solid #ffffff;
+}
+
+/*  GRID LINES  */
+.rbc-month-view,
+.rbc-time-view,
+.rbc-agenda-view {
+      border: none;
+      /* remove default outer border — wrapper handles it */
+}
+
+.rbc-day-bg+.rbc-day-bg,
+.rbc-month-row+.rbc-month-row,
+.rbc-header+.rbc-header {
+      border-color: #2e2e3e;
+}
+
+/* ─── MOBILE BREAKPOINT ───────────────────────────────── */
+@media (max-width: 640px) {
+      .myCalendarHeight {
+            height: 65vh;
+            padding: 0.5rem;
+            border-radius: 12px;
+      }
+
+      /* Hide Week and Day buttons on mobile — too cramped */
+      .rbc-toolbar button:nth-child(4),
+      .rbc-toolbar button:nth-child(5) {
+            display: none;
+      }
+
+      .rbc-event {
+            font-size: 0.6rem;
+            padding: 1px 3px;
+      }
+}

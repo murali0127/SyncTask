@@ -62,3 +62,9 @@ body {
   padding: 20px;
   border-radius: 12px;
 }
+
+
+.myContainerHeigth {
+  height: 700px;
+  background-color: white
+}

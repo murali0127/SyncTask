@@ -49,6 +49,7 @@ export default function AppProvider({ children }) {
 
       // View mode (list view vs kanban board vs calendar)
       const [viewMode, setViewMode] = useState('list');
+
       // Options: 'list', 'kanban', 'calendar'
 
       const currentList = useMemo(() => {
@@ -400,7 +401,7 @@ export default function AppProvider({ children }) {
             user, profile, isAuthenticated, userStats,
             lists, listStats, currentList, selectedListId,
             todo, currentListTodos, sortedTodos, taskStats,
-            sortBy, searchText, viewMode, isAIChatOpen,
+            sortBy, searchText, viewMode, setViewMode, isAIChatOpen,
             addTodoWithValidation, updateTodoWithValidation, toggleTodo, deleteTodoWithValidation, fetchTodo,
             createListWithValidation, updateList, deleteList, refetchLists,
             signup, login, signout,

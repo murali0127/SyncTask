@@ -6,6 +6,7 @@ import SignInForm from './pages/SignUp';
 import UserProfile from './Profile/Userprofile';
 import ProfileEditForm from './Profile/ProfileEditForm'
 import ProtectedRoutes from './routes/ProtectedRoutes';
+import MyCalendar from './components/ui/calendar';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route index element={<HomePage />} />
           <Route path="login" element={<LoginForm />} />
           <Route path="signup" element={<SignInForm />} />
+          <Route path="calendar" element={<MyCalendar />} />
           <Route path="dashboard" element={
             <ProtectedRoutes>
               <DashBoard />

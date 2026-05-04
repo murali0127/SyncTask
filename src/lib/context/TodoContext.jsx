@@ -212,10 +212,13 @@ export default function TodoProvider({ children }) {
 
       };
 
+      const generalTodos = todo.filter(t => t.list_id === null);
+
       const value = {
             todo,
             loading,
             error,
+            generalTodos,
             addTodo,
             updateTodo,
             deleteTodo,

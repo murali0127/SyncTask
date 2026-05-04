@@ -6,7 +6,8 @@ import { toast, Toaster } from 'react-hot-toast';
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import AIChatPanel from "../ai/AIChatPanel";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import MyCalendar from "../ui/calendar";
 
 
 export default function AppShell() {
@@ -19,8 +20,11 @@ export default function AppShell() {
             toggleTodo,
             deleteTodo,
             isAIChatOpen,
-            setIsAIChatOpen
+            setIsAIChatOpen,
+            viewMode
       } = useAppState();
+
+      // const [calendarIsOpen, setCalendarIsOpen] = useState(false);
 
       const location = useLocation();
       const navigate = useNavigate();
@@ -65,23 +69,26 @@ export default function AppShell() {
                   <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
                         <Header />
                         <div className="flex-1 flex flex-col min-h-0 bg-neutral-900 border border-neutral-800 mx-4 mb-4 mr-4 p-5 overflow-hidden rounded-lg">
-                              <TaskList
-                                    list={currentList}
-                                    tasks={currentListTodos}
-                                    onAdd={addTodo}
-                                    onToggle={toggleTodo}
-                                    onDelete={deleteTodo}
-                              />
+                              {viewMode == 'list' ?
+                                    <TaskList
+                                          list={currentList}
+                                          tasks={currentListTodos}
+                                          onAdd={addTodo}
+                                          onToggle={toggleTodo}
+                                          onDelete={deleteTodo}
+                                    />
+                                    : <MyCalendar data={currentListTodos} />}
                               <Outlet />
                         </div>
-                  </main>
+                  </main >
 
                   {/** AI CHAT PANEL */}
-                  <AIChatPanel
+                  < AIChatPanel
                         isOpen={isAIChatOpen}
-                        onClose={() => setIsAIChatOpen(false)}
+                        onClose={() => setIsAIChatOpen(false)
+                        }
                   />
-            </div>
+            </div >
 
       )
 }
