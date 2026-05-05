@@ -6,9 +6,9 @@ import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../lib/context/AuthContext';
 const navigation = [
       { name: 'Dashboard', href: '/dashboard' },
-      { name: 'Team', href: '#' },
-      { name: 'Workspace', href: '#' },
-      { name: 'Calendar', href: '/calendar' },
+      // { name: 'Features', href: '#features' },
+      // { name: 'Workspace', href: '#' },
+      // { name: 'Calendar', href: '/calendar' },
 ]
 
 

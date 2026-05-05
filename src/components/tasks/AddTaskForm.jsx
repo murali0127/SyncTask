@@ -60,6 +60,19 @@ export default function AddTaskForm({ onAdd }) {
             setFormData((prev) => ({ ...prev, dueDate: null }))
       }
 
+      // IF NOT SET DUE_DATE TO TODAY
+
+      function getTommorowDate() {
+            const now = new Date();
+            now.setDate(now.getDate() + 1)
+            now.setUTCHours(0, 0, 0, 0);
+            const date = now.toISOString()
+                  .replace('T', ' ')
+                  .split('.')[0]
+                  + '+00';
+            return date;
+      }
+
       async function handleSubmit() {
             // evt.preventDefault();
             if (!formData.title.trim()) return
@@ -68,7 +81,7 @@ export default function AddTaskForm({ onAdd }) {
                   formData.title.trim(),
                   {
                         priority: formData.priority,
-                        due_date: formData.dueDate ? format(formData.dueDate, "yyyy-MM-dd") : null,
+                        due_date: formData.dueDate ? format(formData.dueDate, "yyyy-MM-dd") : getTommorowDate(),
                         description: formData.description || null
                   }
             );

@@ -9,6 +9,8 @@ import { EnhancedAuthBackground } from "../components/ui/FloatingUIElements";
 import '../styles/auth-floating-ui.css';
 
 import { MapPinned, CalendarDays } from "lucide-react";
+import { Navigate, Link, replace } from "react-router-dom";
+import EditProfileEditForm from "./ProfileEditForm";
 
 // ─── Inject global keyframe animations ─────────────────────────────────────
 const STYLES = `
@@ -459,7 +461,9 @@ export default function UserProfile() {
                                                       </div>
 
                                                       {/* Edit profile button */}
-                                                      <button className="mt-2 w-full text-md font-mono font-semibold text-white hover:text-neutral-300 py-1 hover:bg-rose-700 rounded-lg transition-colors border border-neutral-800">
+                                                      <button
+                                                            className="mt-2 w-full text-md font-mono font-semibold text-white hover:text-neutral-300 py-1 hover:bg-rose-700 rounded-lg transition-colors border border-neutral-800"
+                                                            onClick={() => <Navigate to="/profile/editProfile" />}>
                                                             Edit Profile
                                                       </button>
                                                 </div>
@@ -575,8 +579,9 @@ export default function UserProfile() {
                                                 <Card delay={100} accentColor="rgba(251,191,36,0.2)">
                                                       <SectionLabel color="rgba(251,191,36,0.7)">Recent Activity</SectionLabel>
                                                       <div style={{ display: "flex", flexDirection: "column" }}>
+
                                                             {[
-                                                                  { icon: "✓", label: "Completed 'Design tokens'", time: "2m ago", bg: "rgba(74,222,128,0.12)" },
+                                                                  { icon: "✓", label: `Completed`, time: "2m ago", bg: "rgba(74,222,128,0.12)" },
                                                                   { icon: "+", label: "Created 'Sprint Review' list", time: "1h ago", bg: "rgba(56,189,248,0.12)" },
                                                                   { icon: "→", label: "Moved task to Done", time: "3h ago", bg: "rgba(165,180,252,0.12)" },
                                                                   { icon: "✎", label: "Edited 'Auth flow' task", time: "1d ago", bg: "rgba(251,191,36,0.12)" },
