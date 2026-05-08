@@ -469,30 +469,6 @@ export default function UserProfile() {
                                                 </div>
                                           </Card>
 
-                                          {/* Theme & Preferences */}
-                                          <Card delay={80} accentColor="rgba(165,180,252,0.3)">
-                                                <SectionLabel color="rgba(165,180,252,0.8)">Preferences</SectionLabel>
-                                                <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-                                                      {[
-                                                            { key: "darkMode", label: "Dark Mode" },
-                                                            { key: "aiSuggestions", label: "AI Suggestions" },
-                                                            { key: "emailNotifications", label: "Email Notifications" },
-                                                            { key: "desktopAlerts", label: "Desktop Alerts" },
-                                                            { key: "compactView", label: "Compact View" },
-                                                            { key: "workspaceInvites", label: "Workspace Invites", last: true },
-                                                      ].map(({ key, label, last }) => (
-                                                            <div key={key} style={{
-                                                                  display: "flex", justifyContent: "space-between", alignItems: "center",
-                                                                  padding: "11px 0",
-                                                                  borderBottom: last ? "none" : `1px solid ${C.border}`,
-                                                                  fontSize: 12.5, color: C.textSecondary,
-                                                            }}>
-                                                                  <span>{label}</span>
-                                                                  <Toggle on={prefs[key]} onChange={() => toggle(key)} />
-                                                            </div>
-                                                      ))}
-                                                </div>
-                                          </Card>
 
                                           {/* Account Settings */}
                                           <Card delay={140} accentColor="rgba(216,64,64,0.2)" style={{ border: `1px solid ${C.accent2Border}` }}>
@@ -576,30 +552,27 @@ export default function UserProfile() {
                                                 </Card>
 
                                                 {/* Activity */}
-                                                <Card delay={100} accentColor="rgba(251,191,36,0.2)">
-                                                      <SectionLabel color="rgba(251,191,36,0.7)">Recent Activity</SectionLabel>
-                                                      <div style={{ display: "flex", flexDirection: "column" }}>
 
+                                                {/* Theme & Preferences */}
+                                                <Card delay={80} accentColor="rgba(165,180,252,0.3)">
+                                                      <SectionLabel color="rgba(165,180,252,0.8)">Preferences</SectionLabel>
+                                                      <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
                                                             {[
-                                                                  { icon: "✓", label: `Completed`, time: "2m ago", bg: "rgba(74,222,128,0.12)" },
-                                                                  { icon: "+", label: "Created 'Sprint Review' list", time: "1h ago", bg: "rgba(56,189,248,0.12)" },
-                                                                  { icon: "→", label: "Moved task to Done", time: "3h ago", bg: "rgba(165,180,252,0.12)" },
-                                                                  { icon: "✎", label: "Edited 'Auth flow' task", time: "1d ago", bg: "rgba(251,191,36,0.12)" },
-                                                                  { icon: "⊕", label: "Joined Q3 Sprint Squad", time: "2d ago", bg: C.accent2Soft },
-                                                            ].map((a, i, arr) => (
-                                                                  <div key={i} style={{
-                                                                        display: "flex", alignItems: "center", gap: 10,
-                                                                        padding: "10px 0",
-                                                                        borderBottom: i === arr.length - 1 ? "none" : `1px solid ${C.border}`,
+                                                                  { key: "darkMode", label: "Dark Mode" },
+                                                                  { key: "aiSuggestions", label: "AI Suggestions" },
+                                                                  { key: "emailNotifications", label: "Email Notifications" },
+                                                                  { key: "desktopAlerts", label: "Desktop Alerts" },
+                                                                  { key: "compactView", label: "Compact View" },
+                                                                  { key: "workspaceInvites", label: "Workspace Invites", last: true },
+                                                            ].map(({ key, label, last }) => (
+                                                                  <div key={key} style={{
+                                                                        display: "flex", justifyContent: "space-between", alignItems: "center",
+                                                                        padding: "11px 0",
+                                                                        borderBottom: last ? "none" : `1px solid ${C.border}`,
+                                                                        fontSize: 12.5, color: C.textSecondary,
                                                                   }}>
-                                                                        <div style={{
-                                                                              width: 28, height: 28, borderRadius: 6, flexShrink: 0,
-                                                                              background: a.bg,
-                                                                              display: "flex", alignItems: "center", justifyContent: "center",
-                                                                              fontSize: 12, color: C.text, fontWeight: 600,
-                                                                        }}>{a.icon}</div>
-                                                                        <span style={{ flex: 1, fontSize: 12, color: C.textSecondary, lineHeight: 1.4 }}>{a.label}</span>
-                                                                        <span style={{ fontFamily: C.mono, fontSize: 10, color: C.textMuted, flexShrink: 0 }}>{a.time}</span>
+                                                                        <span>{label}</span>
+                                                                        <Toggle on={prefs[key]} onChange={() => toggle(key)} />
                                                                   </div>
                                                             ))}
                                                       </div>
