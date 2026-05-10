@@ -159,10 +159,18 @@ export default function TodoProvider({ children }) {
       const updateTodo = async (id, updates) => {
             setError(null);
             try {
+                  const reminderChanged = 'due_date' in updates || 'reminder_minutes_before' in updates;
 
+                  const payload = {
+                        ...updates,
+                        ...TodoContext(reminderChanged
+                              ? { reminder_sent: false, reminder_sent_at: null }
+                              : {}
+                        );
+                  }
                   const { data, error } = await supabase
                         .from('todos')
-                        .update(updates)
+                        .update(payload)
                         .eq('id', id)
                         .eq('user_id', user.id)
                         .select()
