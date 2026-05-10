@@ -8,6 +8,10 @@ import AuthProvider from './lib/context/AuthContext.jsx'
 import TodoProvider from './lib/context/TodoContext.jsx'
 import { BrowserRouter } from "react-router-dom"
 import ListProvider from './lib/context/ListContext.jsx'
+import { registerSW } from './services/notificationService.js'
+
+//SW register is a browser API call
+registerSW();  //--> Runs immediately after the js bundles loads.
 
 createRoot(document.getElementById('root')).render(
 

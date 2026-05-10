@@ -9,6 +9,7 @@ import AIChatPanel from "../ai/AIChatPanel";
 import { useEffect, useRef, useState } from "react";
 import MyCalendar from "../ui/calendar";
 
+import { useNotifications } from "../../hooks/useNotifications";
 
 export default function AppShell() {
 
@@ -23,6 +24,9 @@ export default function AppShell() {
             setIsAIChatOpen,
             viewMode
       } = useAppState();
+
+      //Mount useNotification hook
+      useNotifications();   //Starts Listenning to SW messages.
 
       // const [calendarIsOpen, setCalendarIsOpen] = useState(false);
 

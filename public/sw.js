@@ -1,4 +1,4 @@
-const App_URL = self.location.origin   // Built-in Browser Property that runbs the Root Url (ex : http://localhost....)
+const APP_URL = self.location.origin   // self --> Service Worker itself, Built-in Browser Property that runbs the Root Url (ex : https://sync_task.com)
 
 self.addEventListener('push', (event) => {
       if (!event.data) return;
@@ -26,30 +26,22 @@ self.addEventListener('push', (event) => {
 
 
 //Handle notification Click 
-self.addEventListener('notifications', (event) => {
+self.addEventListener('notificationclick', (event) => {
       event.notification.close();
       const { action } = event;
-      const { todoId, url } = event.notification.data;
+      const { todoId, url } = event.notification.data || {};
 
       if (action === 'complete') {
             event.waitUntil(
-                  clients.matchAll({ type: 'window' }).then((clientList) => {
-                        //FOR EVERY USERS OF THE APPLICATION
-                        clientList.forEach(client => {
-                              client.pushMessage({ type: 'MARK_COMPLETED', todoId });
-                        });
-                  })
+                  //FOR EVERY USERS OF THE APPLICATION
+                  broadcastToClients({ type: 'SW_COMPLETE', todoId })
             );
             return;
       }
       if (action === 'snooze') {
             event.waitUntil(
-                  clients.matchAll({ type: 'window' }).then((clientList) => {
-                        //FOR EVERY USERS OF THE APPLICATION
-                        clientList.forEach(client => {
-                              client.pushMessage({ type: 'SNOOZED_TODO', todoId });
-                        });
-                  })
+                  //FOR EVERY USERS OF THE APPLICATION
+                  broadcastToClients({ type: 'SW_SNOOZE', todoId, minutes: 15 })
             );
             return;
 
@@ -68,3 +60,14 @@ self.addEventListener('notifications', (event) => {
       );
       return;
 })
+
+
+// Send Message to all open tabs
+
+async function broadcastToClients(message) {
+      const allClients = await clients.matchAll({
+            type: 'window',
+            includeUncontrolled: true
+      });
+      allClients.forEach(client => client.postMessage(message));
+}

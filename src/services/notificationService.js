@@ -1,6 +1,6 @@
-// import {} from '../../public/'
+// Handles SW registration, push subscription lifecycle, and Supabase persistence.
 
-import useMediaQuery from '@mui/material/useMediaQuery';
+
 import { supabase } from '../lib/supabase-client';
 
 const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY
@@ -12,18 +12,6 @@ function urlBase64ToUint8Array(base64String) {
       return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
 }
 
-// function formatRelativeTime(dateStr) {
-//       const diff = new Date(dateStr).getTime() - Date.now();
-//       const abs = Math.abs(diff);
-//       const past = diff < 0;
-//       if (abs < 60_000) return past ? 'just now' : 'in less than a minute';
-//       if (abs < 3_600_000) {
-//             const m = Math.round(abs / 60_000);
-//             return past ? `${m}m ago` : `in ${m}m`;
-//       }
-//       const h = Math.round(abs / 3_600_000);
-//       return past ? `${h}h ago` : `in ${h}h`;
-// }
 
 
 function detectDeviceName() {
@@ -40,16 +28,18 @@ function detectDeviceName() {
       return `${browser} on ${os}`;
 }
 
-
+export function isNotificationSupported() {
+      return 'Notification' in window && 'serviceWorker' in navigator && 'PushManager' in window;
+}
 
 //Register the service worker 
 
-export default async function registerSW() {
+export async function registerSW() {
       if (!('serviceWorker' in navigator)) return null;
 
       try {
-            const register = await navigator.serviceWorker.register('/serviceWorker.js', { scope: '/' });
-            console.log('Service Worker Registerd : ', register.scope);
+            const register = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+            console.log('Service Worker Registerd at scope : ', register.scope);
             return register;
       } catch (error) {
             console.error('Service Worker Register failed!!!');
@@ -60,14 +50,20 @@ export default async function registerSW() {
 // Request permission + create push subscription + save to Supabase
 export async function enablePushNotifications(userId) {
       const permission = await Notification.requestPermission();
+
+      if (!isNotificationSupported()) {
+            throw new Error('UNSUPPORTED');
+      }
+
       if (permission !== 'granted') {
             throw new Error('PERMISSION_DENIED');
       }
 
-      const reg = await navigator.serviceWorker.ready;
+      const reg = await navigator.serviceWorker.ready; //Wait for sw to be activated
 
-      // Reuse existing subscription if already subscribed
+      // Re-use existing subscription if already subscribed
       let sub = await reg.pushManager.getSubscription();
+
       if (!sub) {
             sub = await reg.pushManager.subscribe({
                   userVisibleOnly: true,

@@ -1,9 +1,10 @@
 import Button from '../ui/Button';
 import { useAppState } from "../../providers/AppProvider";
-import { LogOut, CalendarDays, ClipboardCheck } from 'lucide-react';
+import { LogOut, CalendarDays, ClipboardCheck, BellRing, BellOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import MyCalendar from '../ui/calendar';
+import { useNotifications } from '../../hooks/useNotifications';
 
 
 export default function Header() {
@@ -20,6 +21,8 @@ export default function Header() {
             setViewMode
       } = useAppState();
 
+      //From Use Notification hooks
+      const { isEnabled, enable, disable, permission, isSupported, loading, error } = useNotifications();
       const [calendarOpen, setCalendarOpen] = useState(false);
 
       const done = currentListTodos.filter(task => task.completed).length;
@@ -41,6 +44,15 @@ export default function Header() {
             setSelectedListId(null);
       }
 
+
+      const handleNotificationToggle = async () => {
+            if (isEnabled) {
+                  await disable();
+            } else {
+                  await enable();
+            }
+      };
+
       if (!currentList) return null;
 
       return (
@@ -61,10 +73,10 @@ export default function Header() {
                         >DELETE</button>
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center">
 
                         {!calendarOpen ? <CalendarDays
-                              className='text-neutral-500 hover:text-neutral-300 hover:translate-x-0.5 '
+                              className='text-neutral-500  hover:text-neutral-300 hover:translate-x-0.5 '
                               size="20px"
                               onClick={() => {
                                     setViewMode('calendar');
@@ -80,8 +92,33 @@ export default function Header() {
                                     }}
                               />
                         }
-                        {/* {calendarIsOpen &&
-                              <MyCalendar />} */}
+                        {/* <div className='flex items-center ml-3 mt-0.5 p-1 rounded-2xl border border-neutral-600 text-neutral-500 hover:text-neutral-300 hover:translate-x-0.5'>
+                              <BellRing size="18px" />
+                        </div> */}
+                        {isSupported && (
+                              <button
+                                    title={
+                                          permission === 'denied'
+                                                ? 'Notifications blocked — change in browser settings'
+                                                : isEnabled
+                                                      ? 'Notifications on — click to disable'
+                                                      : 'Enable task reminders'
+                                    }
+                                    onClick={handleNotificationToggle}
+                                    disabled={loading || permission === 'denied'}
+                                    className="text-neutral-500 hover:text-neutral-300 hover:translate-x-0.5 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                              >
+                                    {loading ? (
+                                          <svg className="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                                <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                                          </svg>
+                                    ) : isEnabled ? (
+                                          <BellRing size="18px" className="text-rose-400" />
+                                    ) : (
+                                          <BellOff size="18px" className='ml-3' />
+                                    )}
+                              </button>
+                        )}
                         <Button
                               variant="ghost"
                               size="md"

@@ -5,12 +5,16 @@ import toast from "react-hot-toast";
 import { MessageSquareDiff, CalendarDays, X } from 'lucide-react';
 import { DayPicker } from 'react-day-picker';
 import { format } from 'date-fns'
+import { REMINDERS } from "../../constants/reminderOption";
 
+
+const REMINDER_OPTIONS = REMINDERS;
 const INITIAL_DATA = {
       title: "",
       description: "",
       priority: "medium",
-      dueDate: ""
+      dueDate: "",
+      reminderMinutes: null
 };
 
 
@@ -82,7 +86,10 @@ export default function AddTaskForm({ onAdd }) {
                   {
                         priority: formData.priority,
                         due_date: formData.dueDate ? format(formData.dueDate, "yyyy-MM-dd") : getTommorowDate(),
-                        description: formData.description || null
+                        description: formData.description || null,
+                        reminder_minutes_before: formData.reminderMinutes,
+                        reminder_sent: false,
+                        reminder_sent_at: null,
                   }
             );
 
@@ -139,6 +146,32 @@ export default function AddTaskForm({ onAdd }) {
                                     <option value="medium" className="bg-neutral-800">🟠 Medium</option>
                                     <option value="low" className="bg-neutral-800">🟢 Low</option>
                               </select>
+                              {/** REMINDER PICKER */}
+                              <select
+                                    value={formData.reminderMinutes ?? ''}
+                                    onChange={(e) => {
+                                          const val = e.target.value;
+                                          setFormData(prev => ({
+                                                ...prev,
+                                                reminderMinutes: val === '' ? null : Number(val),
+                                          }));
+                                    }}
+                                    className="bg-neutral-800 border border-neutral-700 rounded-lg px-2 py-1
+             text-sm text-neutral-400 outline-none cursor-pointer
+             focus:border-neutral-600"
+                                    title="Set reminder"
+                              >
+                                    {REMINDER_OPTIONS.map((opt) => (
+                                          <option
+                                                key={String(opt.value)}
+                                                value={opt.value ?? ''}
+                                                className="bg-neutral-800"
+                                          >
+                                                {opt.label}
+                                          </option>
+                                    ))}
+                              </select>
+
                               {/** DATE PICKER */}
                               <div ref={calendarRef} className="flex relative items-center gap-3">
                                     <button
