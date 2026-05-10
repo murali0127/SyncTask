@@ -73,7 +73,7 @@ export default function TaskItems({ task, onToggle, onDelete }) {
                                     config.dot
                               )} />
                               {safeTask.due_date && (
-                                    <span className="text-xs text-neutral-500">{safeTask.due_date}</span>
+                                    <span className="text-xs text-neutral-500">{safeTask.due_date.split('T')[0]}</span>
                               )}
                               <span className={clsx(
                                     'text-xs px-2 py-0.5 rounded',

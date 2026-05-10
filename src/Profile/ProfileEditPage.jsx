@@ -1,6 +1,6 @@
 
 // import { useAppState } from "../providers/AppProvider"; import { useState } from "react"; import NavBar from '../components/NavBar'; import { EnhancedAuthBackground } from "../components/ui/FloatingUIElements"; import '../styles/auth-floating-ui.css'; // ─── Fonts: add to your index.html or g
-import { Pencil, UserPen } from "lucide-react";
+import { CameraIcon, Pencil, Save, UserPen } from "lucide-react";
 
 import { useAppState } from "../providers/AppProvider";
 import { useEffect, useState } from "react";
@@ -305,8 +305,10 @@ function SocialLink({ icon, label, href }) {
 
 // ─── Main Component ─────────────────────────────────────────────────────────
 
-export default function UserProfile() {
+export default function ProfileEditPage() {
       const { user: userData, profile, currentListTodos, userStats } = useAppState();
+
+
 
       useEffect(() => {
             // console.log('User data : ', userData);
@@ -375,6 +377,12 @@ export default function UserProfile() {
       };
 
       const [formData, setFormData] = useState({ name: "", bio: "", avatar_url: "", country: "", role: "", github_link: "", x_link: "" })
+      const [isEdituser, setIsEditUser] = useState(false);
+
+      // const handleSave= () => {
+      //       set
+      // }
+
 
       return (
             <>
@@ -388,89 +396,187 @@ export default function UserProfile() {
                                     {/* ══════════════════ LEFT PANEL ══════════════════ */}
                                     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
-                                          {/* Avatar + Identity */}
+
+
+                                          {/** Profile Edit Card */}
                                           <Card delay={0} accentColor="rgba(0,0,0)">
                                                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, paddingTop: 8 }}>
                                                       {/* Avatar */}
-                                                      <div style={{ position: "relative", animation: "float-slow 4s ease-in-out infinite" }}>
-                                                            <div style={{
-                                                                  width: 84, height: 84, borderRadius: "50%",
-                                                                  background: `linear-gradient(135deg, ${C.accent1}33, ${C.accent2}33)`,
-                                                                  display: "flex", alignItems: "center", justifyContent: "center",
-                                                                  fontSize: 36, fontWeight: 700,
-                                                                  animation: "avatar-ring 3s ease-in-out infinite",
-                                                                  border: `2px solid ${C.accent2Border}`,
-                                                                  color: C.text,
-                                                            }}>
-                                                                  {userData?.user_metadata?.name?.[0] || ":)"}
-                                                            </div>
-                                                            {/* Online dot */}
-                                                            <div style={{
-                                                                  position: "absolute", bottom: 0, right: 0,
-                                                                  width: 16, height: 16, borderRadius: "50%",
-                                                                  background: online ? C.green : C.textMuted,
-                                                                  border: `3px solid ${C.bg}`,
-                                                                  boxShadow: online ? `0 0 10px ${C.green}66` : "none",
-                                                            }} />
-                                                      </div>
 
-                                                      {/* Name & Role */}
-                                                      <div style={{ textAlign: "center", width: "100%" }}>
-                                                            <h2 style={{ margin: 0, fontSize: 22, fontWeight: 700, letterSpacing: "-0.3px", color: C.text }}>{displayName}</h2>
-                                                            <p style={{ margin: "4px 0 0", fontFamily: C.mono, fontSize: 11, color: C.textSecondary }}>{email}</p>
-                                                            <div style={{
-                                                                  marginTop: 12, display: "inline-flex", alignItems: "center", gap: 6,
-                                                                  padding: "6px 12px", borderRadius: 8,
-                                                                  background: C.accent2Soft, border: `1px solid ${C.accent2Border}`,
-                                                                  fontSize: 11, color: C.accent2, fontWeight: 600,
-                                                            }}>
-                                                                  <span>{roleLabel}</span>
-                                                            </div>
-                                                      </div>
+                                                      {!isEdituser ?
+                                                            <>
+                                                                  <div style={{ position: "relative", animation: "float-slow 4s ease-in-out infinite" }}>
+                                                                        <div style={{
+                                                                              width: 84, height: 84, borderRadius: "50%",
+                                                                              background: `linear-gradient(135deg, ${C.accent1}33, ${C.accent2}33)`,
+                                                                              display: "flex", alignItems: "center", justifyContent: "center",
+                                                                              fontSize: 36, fontWeight: 700,
+                                                                              animation: "avatar-ring 3s ease-in-out infinite",
+                                                                              border: `2px solid ${C.accent2Border}`,
+                                                                              color: C.text,
+                                                                        }}>
+                                                                              {userData?.user_metadata?.name?.[0] || ":)"}
 
-                                                      {/* Bio */}
-                                                      <p style={{
-                                                            margin: 0, fontSize: 12.5, color: C.text,
-                                                            textAlign: "center", lineHeight: 1.6,
-                                                            borderTop: `1px solid ${C.border}`,
-                                                            paddingTop: 14, width: "100%",
-                                                      }}>
-                                                            {bioText}
-                                                      </p>
-
-                                                      {/* Meta info */}
-                                                      <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 8 }}>
-                                                            {[
-                                                                  { icon: MapPinned, val: countryVal },
-                                                                  { icon: CalendarDays, val: joined ? `Joined ${joined}` : "-" },
-                                                            ].map((m, i) => {
-                                                                  const Icon = m.icon;
-                                                                  return (
-                                                                        <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: C.textSecondary }}>
-                                                                              <Icon size="15px" color="white" />
-                                                                              <span>{m.val}</span>
                                                                         </div>
-                                                                  )
-                                                            })}
-                                                      </div>
+                                                                        {/* Online dot */}
+                                                                        <div style={{
+                                                                              position: "absolute", bottom: 0, right: 0,
+                                                                              width: 16, height: 16, borderRadius: "50%",
+                                                                              background: online ? C.green : C.textMuted,
+                                                                              border: `3px solid ${C.bg}`,
+                                                                              boxShadow: online ? `0 0 10px ${C.green}66` : "none",
+                                                                        }} />
+                                                                  </div>
 
-                                                      {/* Social links */}
-                                                      <div style={{ width: "100%", display: "flex", gap: 8 }}>
-                                                            <SocialLink icon={<i className="bi bi-github"></i>} label="GitHub" href={githubUrl} />
-                                                            <SocialLink icon={<i className="bi bi-twitter-x"></i>} label="Twitter" href={twitterUrl} />
-                                                      </div>
+                                                                  {/* Name & Role */}
+                                                                  <div style={{ textAlign: "center", width: "100%" }}>
+                                                                        <h2 style={{ margin: 0, fontSize: 22, fontWeight: 700, letterSpacing: "-0.3px", color: C.text }}>{displayName}</h2>
+                                                                        <p style={{ margin: "4px 0 0", fontFamily: C.mono, fontSize: 11, color: C.textSecondary }}>{email}</p>
+                                                                        <div style={{
+                                                                              marginTop: 12, display: "inline-flex", alignItems: "center", gap: 6,
+                                                                              padding: "6px 12px", borderRadius: 8,
+                                                                              background: C.accent2Soft, border: `1px solid ${C.accent2Border}`,
+                                                                              fontSize: 11, color: C.accent2, fontWeight: 600,
+                                                                        }}>
+                                                                              <span>{roleLabel}</span>
+                                                                        </div>
+                                                                  </div>
 
-                                                      {/* Edit profile button */}
-                                                      <Link
-                                                            to="/profile/editProfile"
-                                                            className="flex items-center justify-center gap-2 mt-2 w-full text-md font-mono font-semibold text-white hover:text-neutral-300 py-2 hover:bg-rose-700 rounded-lg transition-colors border border-neutral-800"
-                                                      // onClick={() => <Navigate to="/profile/editProfile" />}>
-                                                      >
-                                                            <UserPen size={15} />
-                                                            <span>Edit Profile</span>
-                                                      </Link>
+                                                                  {/* Bio */}
+                                                                  <p style={{
+                                                                        margin: 0, fontSize: 12.5, color: C.text,
+                                                                        textAlign: "center", lineHeight: 1.6,
+                                                                        borderTop: `1px solid ${C.border}`,
+                                                                        paddingTop: 14, width: "100%",
+                                                                  }}>
+                                                                        {bioText}
+                                                                  </p>
+
+                                                                  {/* Meta info */}
+                                                                  <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 8 }}>
+                                                                        {[
+                                                                              { icon: MapPinned, val: countryVal },
+                                                                              { icon: CalendarDays, val: joined ? `Joined ${joined}` : "-" },
+                                                                        ].map((m, i) => {
+                                                                              const Icon = m.icon;
+                                                                              return (
+                                                                                    <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: C.textSecondary }}>
+                                                                                          <Icon size="15px" color="white" />
+                                                                                          <span>{m.val}</span>
+                                                                                    </div>
+                                                                              )
+                                                                        })}
+                                                                  </div>
+
+                                                                  {/* Social links */}
+                                                                  <div style={{ width: "100%", display: "flex", gap: 8 }}>
+                                                                        <SocialLink icon={<i className="bi bi-github"></i>} label="GitHub" href={githubUrl} />
+                                                                        <SocialLink icon={<i className="bi bi-twitter-x"></i>} label="Twitter" href={twitterUrl} />
+                                                                  </div>
+                                                                  <button
+                                                                        className="flex items-center justify-center gap-2 mt-2 w-full text-md font-mono font-semibold text-white hover:text-neutral-300 py-2 hover:bg-rose-700 rounded-lg transition-colors border border-neutral-800"
+                                                                        onClick={() => setIsEditUser(true)}
+                                                                  >
+
+                                                                        <UserPen size={15} />
+                                                                        <span>Edit Profile</span>
+                                                                  </button>
+                                                            </>
+
+                                                            :
+                                                            <>
+                                                                  <div style={{ position: "relative", animation: "float-slow 4s ease-in-out infinite" }}>
+                                                                        <div style={{
+                                                                              width: 84, height: 84, borderRadius: "50%",
+                                                                              background: `linear-gradient(135deg, ${C.accent1}33, ${C.accent2}33)`,
+                                                                              display: "flex", alignItems: "center", justifyContent: "center",
+                                                                              fontSize: 36, fontWeight: 700,
+                                                                              animation: "avatar-ring 3s ease-in-out infinite",
+                                                                              border: `2px solid ${C.accent2Border}`,
+                                                                              color: C.text,
+                                                                        }}>
+                                                                              {userData?.avatar_url || userData?.user_metadata?.name?.[0] || ":)"}
+                                                                        </div>
+                                                                        {/* Online dot */}
+
+                                                                        <div
+                                                                              onClick={() => <input type="file" />}
+                                                                              style={{
+                                                                                    position: "absolute", bottom: 0, right: 0,
+                                                                                    // width: 16, height: 16, borderRadius: "50%",
+                                                                                    // background: online ? C.green : C.textMuted,
+                                                                                    // border: `3px solid ${C.bg}`,
+                                                                                    // boxShadow: online ? `0 0 10px ${C.green}66` : "none",
+                                                                              }} ><CameraIcon size={25} fill="grey" color={C.bg} />
+                                                                              {/* <input
+                                                                                    // ref={fileInputRef}
+                                                                                    type="file"
+                                                                                    accept="image/*"
+                                                                                    style={{ display: "hidden" }}
+                                                                              // onChange={handleFileChange}
+                                                                              /> */}
+                                                                        </div>
+                                                                  </div>
+
+                                                                  {/* Name & Role */}
+                                                                  <div style={{ textAlign: "center", width: "100%" }}>
+                                                                        <h2 style={{ margin: 0, fontSize: 22, fontWeight: 700, letterSpacing: "-0.3px", color: C.text }}>{displayName}</h2>
+                                                                        <p style={{ margin: "4px 0 0", fontFamily: C.mono, fontSize: 11, color: C.textSecondary }}>{email}</p>
+                                                                        <div style={{
+                                                                              marginTop: 12, display: "inline-flex", alignItems: "center", gap: 6,
+                                                                              padding: "6px 12px", borderRadius: 8,
+                                                                              border: `1px solid ${C.accent2Border}`,
+                                                                              fontSize: 11, color: C.accent2, fontWeight: 600,
+                                                                        }}>
+                                                                              <span className="font-mono">{roleLabel}</span>
+                                                                        </div>
+                                                                  </div>
+
+                                                                  {/* Bio */}
+                                                                  <p style={{
+                                                                        margin: 0, fontSize: 12.5, color: C.text,
+                                                                        textAlign: "center", lineHeight: 1.6,
+                                                                        borderTop: `1px solid ${C.border}`,
+                                                                        paddingTop: 14, width: "100%",
+                                                                  }}>
+                                                                        {bioText}
+                                                                  </p>
+
+                                                                  {/* Meta info */}
+                                                                  <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 8 }}>
+                                                                        {[
+                                                                              { icon: MapPinned, val: countryVal },
+                                                                              { icon: CalendarDays, val: joined ? `Joined ${joined}` : "-" },
+                                                                        ].map((m, i) => {
+                                                                              const Icon = m.icon;
+                                                                              return (
+                                                                                    <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: C.textSecondary }}>
+                                                                                          <Icon size="15px" color="white" />
+                                                                                          <span>{m.val}</span>
+                                                                                    </div>
+                                                                              )
+                                                                        })}
+                                                                  </div>
+                                                                  {/* Social links */}
+                                                                  <div style={{ width: "100%", display: "flex", gap: 8 }}>
+                                                                        <SocialLink icon={<i className="bi bi-github"></i>} label="GitHub" href={githubUrl} />
+                                                                        <SocialLink icon={<i className="bi bi-twitter-x"></i>} label="Twitter" href={twitterUrl} />
+                                                                  </div>
+                                                                  {/* Edit profile button */}
+                                                                  < button
+                                                                        className="flex gap-2 justify-center items-center mt-2 w-full text-md font-mono font-semibold text-white hover:text-neutral-300 py-2 hover:bg-rose-700 rounded-lg transition-colors border border-neutral-800"
+                                                                        onClick={() => setIsEditUser(false)}
+                                                                  >
+                                                                        <Save size={15} />
+                                                                        <span>Save</span>
+
+                                                                  </button>
+                                                            </>
+                                                      }
+
                                                 </div>
                                           </Card>
+
 
 
                                           {/* Account Settings */}
@@ -557,29 +663,31 @@ export default function UserProfile() {
                                                 {/* Activity */}
 
                                                 {/* Theme & Preferences */}
-                                                <Card delay={80} accentColor="rgba(165,180,252,0.3)">
-                                                      <SectionLabel color="rgba(165,180,252,0.8)">Preferences</SectionLabel>
-                                                      <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-                                                            {[
-                                                                  { key: "darkMode", label: "Dark Mode" },
-                                                                  { key: "aiSuggestions", label: "AI Suggestions" },
-                                                                  { key: "emailNotifications", label: "Email Notifications" },
-                                                                  { key: "desktopAlerts", label: "Desktop Alerts" },
-                                                                  { key: "compactView", label: "Compact View" },
-                                                                  { key: "workspaceInvites", label: "Workspace Invites", last: true },
-                                                            ].map(({ key, label, last }) => (
-                                                                  <div key={key} style={{
-                                                                        display: "flex", justifyContent: "space-between", alignItems: "center",
-                                                                        padding: "11px 0",
-                                                                        borderBottom: last ? "none" : `1px solid ${C.border}`,
-                                                                        fontSize: 12.5, color: C.textSecondary,
-                                                                  }}>
-                                                                        <span>{label}</span>
-                                                                        <Toggle on={prefs[key]} onChange={() => toggle(key)} />
-                                                                  </div>
-                                                            ))}
-                                                      </div>
-                                                </Card>
+
+                                                {isEdituser &&
+                                                      <Card delay={80} accentColor="rgba(165,180,252,0.3)">
+                                                            <SectionLabel color="rgba(165,180,252,0.8)">Preferences</SectionLabel>
+                                                            <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+                                                                  {[
+                                                                        { key: "darkMode", label: "Dark Mode" },
+                                                                        { key: "aiSuggestions", label: "AI Suggestions" },
+                                                                        { key: "emailNotifications", label: "Email Notifications" },
+                                                                        { key: "desktopAlerts", label: "Desktop Alerts" },
+                                                                        { key: "compactView", label: "Compact View" },
+                                                                        { key: "workspaceInvites", label: "Workspace Invites", last: true },
+                                                                  ].map(({ key, label, last }) => (
+                                                                        <div key={key} style={{
+                                                                              display: "flex", justifyContent: "space-between", alignItems: "center",
+                                                                              padding: "11px 0",
+                                                                              borderBottom: last ? "none" : `1px solid ${C.border}`,
+                                                                              fontSize: 12.5, color: C.textSecondary,
+                                                                        }}>
+                                                                              <span>{label}</span>
+                                                                              <Toggle on={prefs[key]} onChange={() => toggle(key)} />
+                                                                        </div>
+                                                                  ))}
+                                                            </div>
+                                                      </Card>}
                                           </div>
 
                                     </div>

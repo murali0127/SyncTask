@@ -1,116 +1,119 @@
 // import {} from '../../public/'
 
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { supabase } from '../lib/supabase-client';
 
 const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY
 
-function urlBased64ToUint8Array(base64String) {
-      const now = new Date();
-      const windowEnd = new Date(now.getTime() + 60_000)  //60 seconds
+function urlBase64ToUint8Array(base64String) {
+      const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+      const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+      const raw = window.atob(base64);
+      return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
+}
+
+// function formatRelativeTime(dateStr) {
+//       const diff = new Date(dateStr).getTime() - Date.now();
+//       const abs = Math.abs(diff);
+//       const past = diff < 0;
+//       if (abs < 60_000) return past ? 'just now' : 'in less than a minute';
+//       if (abs < 3_600_000) {
+//             const m = Math.round(abs / 60_000);
+//             return past ? `${m}m ago` : `in ${m}m`;
+//       }
+//       const h = Math.round(abs / 3_600_000);
+//       return past ? `${h}h ago` : `in ${h}h`;
+// }
 
 
-      const { data: todos, error } = await supabase
-            .from('todos')
-            .select(
-                  `id, title, description, due_date, reminder_minutes_before, user_id`
-            )
-            .eq('completed', false)
-            .eq('reminder_sent', flase)
-            .not('reminder_minutes_before', 'is', null)
-            .not('due_date', 'is', null)
-            .gte(
-                  'due_date',
-                  new Date(now.getTime()).toISOString()
-            );
-      if (error) {
-            console.error('Query Error : ', error.message);
-            return new Response('Error', { status: 500 });
-      }
+function detectDeviceName() {
+      const us = navigator.userAgent;
+      const browser = ua.include('Edg') ? 'Edge'
+            : ua.include('Chrome') ? 'Chrome'
+                  : ua.include('Firefox') ? 'Firefox'
+                        : ua.include('Safari') ? 'Safari' : 'Browser';
 
-      //FILTER TASK 
-
-      const dueNow = (todos ?? []).filter(todo => {
-            const dueDate = new Date(todo.due_date);
-            const reminderTime = new Date(
-                  dueDate.getTime() - todo.reminder_minutes_before * 60_000
-            );
-
-            return reminderTime >= now && reminderTime < windowEnd;
-
-      });
-
-      for (const todo of dueNow) {
-            // Get all push subscriptions for this user
-            const { data: subs } = await supabase
-                  .from('push_subscriptions')
-                  .select('endpoint, p256dh, auth_key')
-                  .eq('user_id', todo.user_id);
-
-            if (!subs?.length) continue;
-
-            const isOverdue = new Date(todo.due_date) < now;
-            const minutesBefore = todo.reminder_minutes_before;
-
-            const notifTitle = isOverdue
-                  ? `⚠️ Overdue: ${todo.title}`
-                  : minutesBefore === 0
-                        ? `🔔 Due now: ${todo.title}`
-                        : `⏰ Reminder: ${todo.title}`;
-
-            const notifBody = todo.description
-                  || (isOverdue
-                        ? `This task was due ${formatRelativeTime(todo.due_date)}`
-                        : `Due ${formatRelativeTime(todo.due_date)}`);
-
-            const payload = JSON.stringify({
-                  title: notifTitle,
-                  body: notifBody,
-                  todoId: todo.id,
-                  tag: `todo-${todo.id}`,
-            });
-
-            // Send to all user devices in parallel
-            const pushPromises = subs.map(async (sub) => {
-                  try {
-                        await webpush.sendNotification(
-                              { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth_key } },
-                              payload
-                        );
-                  } catch (err) {
-                        // 410 Gone = subscription expired, clean it up
-                        if (err.statusCode === 410) {
-                              await supabase
-                                    .from('push_subscriptions')
-                                    .delete()
-                                    .eq('endpoint', sub.endpoint);
-                        }
-                  }
-            });
-
-            await Promise.allSettled(pushPromises);
-
-            // Mark reminder as sent — prevents duplicate notifications
-            await supabase
-                  .from('todos')
-                  .update({ reminder_sent: true, reminder_sent_at: now.toISOString() })
-                  .eq('id', todo.id);
-      }
-
-      return new Response(`Processed ${dueNow.length} reminders`, { status: 200 });
-};
-
-function formatRelativeTime(dateStr) {
-      const diff = new Date(dateStr).getTime() - Date.now();
-      const abs = Math.abs(diff);
-      const past = diff < 0;
-      if (abs < 60_000) return past ? 'just now' : 'in less than a minute';
-      if (abs < 3_600_000) {
-            const m = Math.round(abs / 60_000);
-            return past ? `${m}m ago` : `in ${m}m`;
-      }
-      const h = Math.round(abs / 3_600_000);
-      return past ? `${h}h ago` : `in ${h}h`;
+      const os = /iPhone|iPad/.test(ua) ? 'iOS'
+            : ua.include('Android') ? 'Android'
+                  : ua.include('Mac') ? 'Mac'
+                        : ua.include('Windows') ? 'Windows' : 'Unknown';
+      return `${browser} on ${os}`;
 }
 
 
 
+//Register the service worker 
+
+export default async function registerSW() {
+      if (!('serviceWorker' in navigator)) return null;
+
+      try {
+            const register = await navigator.serviceWorker.register('/serviceWorker.js', { scope: '/' });
+            console.log('Service Worker Registerd : ', register.scope);
+            return register;
+      } catch (error) {
+            console.error('Service Worker Register failed!!!');
+            return;
+      }
+}
+
+// Request permission + create push subscription + save to Supabase
+export async function enablePushNotifications(userId) {
+      const permission = await Notification.requestPermission();
+      if (permission !== 'granted') {
+            throw new Error('PERMISSION_DENIED');
+      }
+
+      const reg = await navigator.serviceWorker.ready;
+
+      // Reuse existing subscription if already subscribed
+      let sub = await reg.pushManager.getSubscription();
+      if (!sub) {
+            sub = await reg.pushManager.subscribe({
+                  userVisibleOnly: true,
+                  applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+            });
+      }
+
+      const json = sub.toJSON();
+
+      const { error } = await supabase
+            .from('push_subscriptions')
+            .upsert(
+                  {
+                        user_id: userId,
+                        endpoint: json.endpoint,
+                        p256dh: json.keys.p256dh,
+                        auth_key: json.keys.auth,
+                        device_name: detectDeviceName(),
+                        last_used_at: new Date().toISOString(),
+                  },
+                  { onConflict: 'endpoint' }
+            );
+
+      if (error) throw error;
+      return sub;
+}
+
+
+// Unsubscribe and remove from Supabase
+export async function disablePushNotifications(userId) {
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.getSubscription();
+      if (!sub) return;
+
+      const endpoint = sub.endpoint;
+      await sub.unsubscribe();
+
+      await supabase
+            .from('push_subscriptions')
+            .delete()
+            .eq('user_id', userId)
+            .eq('endpoint', endpoint);
+}
+
+export function getPermissionState() {
+      if (!('Notification' in window)) return 'unsupported';
+      if (!('serviceWorker' in navigator)) return 'unsupported';
+      return Notification.permission; // 'default' | 'granted' | 'denied'
+}

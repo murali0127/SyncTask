@@ -4,9 +4,9 @@ import HomePage from './pages/HomePage';
 import LoginForm from './pages/Login'
 import SignInForm from './pages/SignUp';
 import UserProfile from './Profile/Userprofile';
-import ProfileEditForm from './Profile/ProfileEditForm'
 import ProtectedRoutes from './routes/ProtectedRoutes';
 import MyCalendar from './components/ui/calendar';
+import ProfileEditPage from './Profile/ProfileEditPage';
 
 function App() {
   return (
@@ -23,7 +23,7 @@ function App() {
             </ProtectedRoutes>
           } />
           <Route path="profile" element={<UserProfile />} />
-          <Route path="profile/editProfile" element={<ProfileEditForm />} />
+          <Route path="profile/editProfile" element={<ProfileEditPage />} />
         </Route>
       </Routes>
     </div>

@@ -1,4 +1,4 @@
-const App_URL = self.location.origin
+const App_URL = self.location.origin   // Built-in Browser Property that runbs the Root Url (ex : http://localhost....)
 
 self.addEventListener('push', (event) => {
       if (!event.data) return;

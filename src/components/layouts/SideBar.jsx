@@ -80,7 +80,7 @@ export default function Sidebar() {
                                                 </MenuItem>
                                                 <div className=" border-t border-neutral-800" />
                                                 <MenuItem>
-                                                      <a href="#" className="block px-3 py-2 text-md text-neutral-300 hover:bg-neutral-800">
+                                                      <a href="/profile/#settings" className="block px-3 py-2 text-md text-neutral-300 hover:bg-neutral-800">
                                                             Settings
                                                       </a>
                                                 </MenuItem>
