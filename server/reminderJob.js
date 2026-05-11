@@ -3,9 +3,9 @@ import cron from 'node-cron';
 import { createClient } from '@supabase/supabase-js';
 import webpush from 'web-push';
 
-
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_SERVICE_ROLE_KEY = import.meta.env.VITE_SUPABASE_PRIVATE_KEY;
+import 'dotenv/config'
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_PRIVATE_KEY;
 const supabase = createClient(
       SUPABASE_URL,
       SUPABASE_SERVICE_ROLE_KEY
@@ -13,9 +13,9 @@ const supabase = createClient(
 
 
 webpush.setVapidDetails(
-      import.meta.env.VITE_VAPID_SUBJECT,
-      import.meta.env.VITE_VAPID_PUBLIC_KEY,
-      import.meta.env.VITE_VAPID_PRIVATE_KEY
+      process.env.VAPID_SUBJECT,
+      process.env.VAPID_PUBLIC_KEY,
+      process.env.VAPID_PRIVATE_KEY
 )
 
 function formatRelativeTime(dateStr) {
@@ -67,7 +67,7 @@ async function processReminders() {
             .select('id, title, description, due_date, reminder_minutes_before, user_id')
             .eq('completed', false)
             .eq('reminder_sent', false)
-            .eq('is_deleted', false)
+            // .eq('is_deleted', false)
             .not('reminder_minutes_before', 'is', null)
             .not('due_date', 'is', null);
 
