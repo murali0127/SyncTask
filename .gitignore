@@ -36,3 +36,4 @@ dist-ssr
 UserRoutes/
 Profile.js
 ProfileEditForm.jsx
+server/ .env

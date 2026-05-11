@@ -163,11 +163,11 @@ export default function TodoProvider({ children }) {
 
                   const payload = {
                         ...updates,
-                        ...TodoContext(reminderChanged
+                        ...(reminderChanged
                               ? { reminder_sent: false, reminder_sent_at: null }
                               : {}
-                        );
-                  }
+                        )
+                  };
                   const { data, error } = await supabase
                         .from('todos')
                         .update(payload)

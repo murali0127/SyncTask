@@ -15,16 +15,16 @@ function urlBase64ToUint8Array(base64String) {
 
 
 function detectDeviceName() {
-      const us = navigator.userAgent;
-      const browser = ua.include('Edg') ? 'Edge'
-            : ua.include('Chrome') ? 'Chrome'
-                  : ua.include('Firefox') ? 'Firefox'
-                        : ua.include('Safari') ? 'Safari' : 'Browser';
+      const ua = navigator.userAgent;
+      const browser = ua.includes('Edg') ? 'Edge'
+            : ua.includes('Chrome') ? 'Chrome'
+                  : ua.includes('Firefox') ? 'Firefox'
+                        : ua.includes('Safari') ? 'Safari' : 'Browser';
 
       const os = /iPhone|iPad/.test(ua) ? 'iOS'
-            : ua.include('Android') ? 'Android'
-                  : ua.include('Mac') ? 'Mac'
-                        : ua.include('Windows') ? 'Windows' : 'Unknown';
+            : ua.includes('Android') ? 'Android'
+                  : ua.includes('Mac') ? 'Mac'
+                        : ua.includes('Windows') ? 'Windows' : 'Unknown';
       return `${browser} on ${os}`;
 }
 
@@ -72,6 +72,7 @@ export async function enablePushNotifications(userId) {
       }
 
       const json = sub.toJSON();
+      // console.log(json);
 
       const { error } = await supabase
             .from('push_subscriptions')
@@ -100,6 +101,8 @@ export async function disablePushNotifications(userId) {
 
       const endpoint = sub.endpoint;
       await sub.unsubscribe();
+
+      // console.log('Disabled , Endpoint ->  ', endpoint);
 
       await supabase
             .from('push_subscriptions')

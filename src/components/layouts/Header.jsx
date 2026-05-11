@@ -113,9 +113,9 @@ export default function Header() {
                                                 <path d="M21 12a9 9 0 1 1-6.219-8.56" />
                                           </svg>
                                     ) : isEnabled ? (
-                                          <BellRing size="18px" className="text-rose-400" />
+                                          <BellRing size="20px" className="text-rose-800 ml-4" />
                                     ) : (
-                                          <BellOff size="18px" className='ml-3' />
+                                          <BellOff size="20px" className='text-neutral-500 ml-4' />
                                     )}
                               </button>
                         )}

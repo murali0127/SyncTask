@@ -14,7 +14,7 @@ const supabase = createClient(
 
 webpush.setVapidDetails(
       import.meta.env.VITE_VAPID_SUBJECT,
-      import.meta.env.VITE_sVAPID_PUBLIC_KEY,
+      import.meta.env.VITE_VAPID_PUBLIC_KEY,
       import.meta.env.VITE_VAPID_PRIVATE_KEY
 )
 
