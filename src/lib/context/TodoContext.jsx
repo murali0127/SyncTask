@@ -135,7 +135,10 @@ export default function TodoProvider({ children }) {
                               description: options.description || null,
                               priority: options.priority,
                               due_date: options.due_date || null,
-                              list_id: options.list_id || null
+                              list_id: options.list_id || null,
+                              reminder_minutes_before: options.reminder_minutes_before ?? null,
+                              reminder_sent: options.reminder_sent ?? false,
+                              reminder_sent_at: options.reminder_sent_at ?? null
                         })
                         .select()
                         .single()

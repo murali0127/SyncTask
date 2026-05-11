@@ -32,21 +32,6 @@ export function isNotificationSupported() {
       return 'Notification' in window && 'serviceWorker' in navigator && 'PushManager' in window;
 }
 
-//Register the service worker 
-
-export async function registerSW() {
-      if (!('serviceWorker' in navigator)) return null;
-
-      try {
-            const register = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
-            console.log('Service Worker Registerd at scope : ', register.scope);
-            return register;
-      } catch (error) {
-            console.error('Service Worker Register failed!!!');
-            return;
-      }
-}
-
 // Request permission + create push subscription + save to Supabase
 export async function enablePushNotifications(userId) {
       const permission = await Notification.requestPermission();
@@ -91,6 +76,24 @@ export async function enablePushNotifications(userId) {
       if (error) throw error;
       return sub;
 }
+
+
+
+//Register the service worker 
+
+export async function registerSW() {
+      if (!('serviceWorker' in navigator)) return null;
+
+      try {
+            const register = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+            console.log('Service Worker Registerd at scope : ', register.scope);
+            return register;
+      } catch (error) {
+            console.error('Service Worker Register failed!!!');
+            return;
+      }
+}
+
 
 
 // Unsubscribe and remove from Supabase

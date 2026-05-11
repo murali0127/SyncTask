@@ -10,4 +10,8 @@ export default defineConfig({
     tailwindcss(),
     babel({ presets: [reactCompilerPreset()] })
   ],
+  resolve: {
+    // Allows to leave off the extensions in your imports
+    extensions: ['.mjs', '.js', '.jsx', '.json', '.ts', '.tsx']
+  }
 })

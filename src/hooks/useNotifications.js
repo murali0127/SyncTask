@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../lib/context/AuthContext";
 import { registerSW, enablePushNotifications, disablePushNotifications, getPermissionState, isNotificationSupported } from '../services/notificationService'
 import { supabase } from '../lib/supabase-client'
-import { Network } from "lucide-react";
 
 
 export function useNotifications() {
@@ -19,7 +18,7 @@ export function useNotifications() {
 
       //Listen && Handles SW Messages
       useEffect(() => {
-            if (!navigator.serviceWorker) return null;
+            if (!navigator.serviceWorker) return;  //returns Undefined
 
             //Header of SW Message
             const header = (event) => {
