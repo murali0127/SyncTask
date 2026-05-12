@@ -1,10 +1,13 @@
 import Button from '../ui/Button';
 import { useAppState } from "../../providers/AppProvider";
-import { LogOut, CalendarDays, ClipboardCheck, BellRing, BellOff } from 'lucide-react';
+import { LogOut, CalendarDays, ClipboardCheck, BellRing, BellOff, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import MyCalendar from '../ui/calendar';
 import { useNotifications } from '../../hooks/useNotifications';
+import './header.css';
+import DeleteListModel from './DeleteModel';
+
 
 
 export default function Header() {
@@ -24,6 +27,8 @@ export default function Header() {
       //From Use Notification hooks
       const { isEnabled, enable, disable, permission, isSupported, loading, error } = useNotifications();
       const [calendarOpen, setCalendarOpen] = useState(false);
+
+      const [isModelOpen, setIsModelOpen] = useState(false);
 
       const done = currentListTodos.filter(task => task.completed).length;
       const total = currentListTodos.length;
@@ -55,6 +60,7 @@ export default function Header() {
 
       if (!currentList) return null;
 
+
       return (
             <header className="flex items-center justify-between px-4 h-14 border-b border-neutral-800 flex-shrink-0">
                   <div className="flex items-center gap-3">
@@ -68,9 +74,9 @@ export default function Header() {
                               </p>
                         </div>
                         <button
-                              className='self-start mt-2 bg-red-500/40 rounded px-1 font-semibold text-xs text-orange-100 hover:bg-rose-700 hover:text-white-200 '
-                              onClick={handleDeleteCurrentList}
-                        >DELETE</button>
+                              className='text-sm font-semibold px-2 py-1 text-neutral-500 hover:text-red-700 transition-all duration-1s ease-in'
+                              onClick={() => setIsModelOpen(true)}
+                        ><Trash2 size={'20px'} /></button>
                   </div>
 
                   <div className="flex items-center">
@@ -141,6 +147,7 @@ export default function Header() {
                               <LogOut className='py-1' />
                         </button>
                   </div>
+                  <DeleteListModel isOpen={isModelOpen} onClose={() => setIsModelOpen(!isModelOpen)} onDelete={handleDeleteCurrentList} />
             </header >
       )
 }

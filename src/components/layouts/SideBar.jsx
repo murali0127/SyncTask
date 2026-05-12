@@ -86,9 +86,9 @@ export default function Sidebar() {
                                                 </MenuItem>
                                                 <div className="border-t border-neutral-800" />
                                                 <MenuItem>
-                                                      <a href="/user/logout" className="block px-3 py-2 text-md text-red-400 hover:bg-neutral-800">
+                                                      <button href="#settings" className="block px-3 py-2 text-md text-red-400 hover:bg-neutral-800">
                                                             Sign out
-                                                      </a>
+                                                      </button>
                                                 </MenuItem>
                                           </MenuItems>
                                     </Menu>
