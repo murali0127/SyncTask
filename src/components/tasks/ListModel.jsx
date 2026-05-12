@@ -1,6 +1,7 @@
 import AddNewList from "./AddNewList";
 import ReactDOM from 'react-dom';
 
+
 export default function ListModel({ isOpen, onClose }) {
       if (!isOpen) {
             return null;
@@ -17,12 +18,7 @@ export default function ListModel({ isOpen, onClose }) {
 
                         <AddNewList onClose={onClose} />
 
-                        <button
-                              onClick={onClose}
-                              className="ml-77 mt-3 p-2 font-semibold text-md text-neutral-400 rounded-2xl bg-neutral-700 hover:text-white"
-                        >
-                              Cancel
-                        </button>
+
                   </div>
             </div>,
             document.body
