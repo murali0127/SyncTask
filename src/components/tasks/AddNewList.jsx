@@ -5,6 +5,9 @@ import toast from 'react-hot-toast';
 import { useAppState } from '../../providers/AppProvider';
 import Picker from '@emoji-mart/react';
 import data from '@emoji-mart/data';
+import './emojiPicker.css'
+import { MessageSquareDiff } from 'lucide-react';
+import { Description } from '@headlessui/react';
 
 const randomColor = () => {
       const r = Math.floor(Math.random() * 255) + 1;
@@ -19,10 +22,12 @@ export default function AddNewList({ onClose }) {
       const { createList, user } = useAppState();
 
       const [emoji, setEmoji] = useState('📋');
-      const [list, setList] = useState({ title: "", icon: "" })
+      const [list, setList] = useState({ title: "", icon: "", description: "" })
 
       const [showPicker, setShowPicker] = useState(false);
       const [submitting, setSubmitting] = useState(false);
+
+      const [isPanelOpen, setIsPanelOpen] = useState(false);
 
       //userRef for Emoji Picker
       const pickerRef = useRef(null);
@@ -62,6 +67,7 @@ export default function AddNewList({ onClose }) {
             });
             setShowPicker(false);
       }, []);
+
       function handleChange(evt) {
             const name = evt.target.name;
             const value = evt.target.value;
@@ -72,6 +78,7 @@ export default function AddNewList({ onClose }) {
                         [name]: value
                   }
             })
+            // console.log(list)
       }
       async function handleSubmit(evt) {
             evt.preventDefault();
@@ -86,6 +93,7 @@ export default function AddNewList({ onClose }) {
             const result = await createList(
                   list.title,
                   list.icon || '📋',
+                  list.description || null,
                   color,
                   user.id
             );
@@ -132,14 +140,16 @@ export default function AddNewList({ onClose }) {
                                     {/* Picker — portal-free, positioned absolutely */}
                                     {showPicker && (
                                           <div
+
                                                 ref={pickerRef}
-                                                className="absolute left-0 top-full mt-2 z-[9999]
+                                                className="emoji-picker absolute left-0 top-full mt-2 z-[9999]
                          rounded-2xl overflow-hidden shadow-2xl
                          border border-neutral-700"
                                                 // Prevent the modal's own click-outside from swallowing picker clicks
                                                 onClick={e => e.stopPropagation()}
                                           >
                                                 <Picker
+
                                                       set="Apple"
                                                       onEmojiSelect={handleEmojiSelect}
                                                       theme="dark"
@@ -164,8 +174,27 @@ export default function AddNewList({ onClose }) {
                               />
                         </div>
 
-                        {/* ── Actions ─────────────────────────────────────────────── */}
-                        <div className="flex gap-2 justify-end">
+                        {/** Description */}
+                        <div className='flex justify-end mr-2 text-neutral-500 font-bold gap-3 p-1'>
+                              Description :
+
+                              <button
+                                    type="button"
+                                    title="Description"
+                                    onClick={() => setIsPanelOpen(prev => !prev)}
+                                    className={`rounded-xl font-semibold p-2 text-sm transition-colors
+                                          ${isPanelOpen
+                                                ? 'bg-rose-700/40 text-neutral-300 border border-rose-700/50'
+                                                : 'bg-neutral-800 text-neutral-400'}`
+                                    }
+                              >
+
+                                    <MessageSquareDiff size={15} />
+                              </button>
+                        </div>
+
+                        {/* ─ Actions ─ */}
+                        <div className="flex gap-1 justify-end">
                               <button
                                     type="button"
                                     onClick={onClose}
@@ -180,13 +209,26 @@ export default function AddNewList({ onClose }) {
                                     type="submit"
                                     disabled={submitting || !list.title.trim()}
                                     className="px-4 py-2 text-sm font-semibold text-black rounded-xl
-                     bg-rose-300 hover:bg-rose-200 disabled:opacity-40
-                     disabled:cursor-not-allowed transition-colors"
+                                    bg-rose-300 hover:bg-rose-200 disabled:opacity-40
+                                    disabled:cursor-not-allowed transition-colors"
                               >
                                     {submitting ? 'Creating…' : 'Create List'}
                               </button>
                         </div>
-                  </form>
+                        <div className={`overflow-hidden transition-all duration-300 ease-in-out
+                                                            ${isPanelOpen ? 'max-h-60 opacity-100' : 'max-h-0 opacity-0'}`}
+                        >
+                              <div className='bg-neutral-900 border border-neutral-700/60 rounded-2xl p-2 shadow-xl ml-4 mr-4'>
+                                    <textarea
+                                          name='description'
+                                          value={list.description}
+                                          onChange={(e) => handleChange(e)}
+                                          placeholder='Enter description'
+                                          className='w-full bg-transparent resize-none outline-none text-sm text-neutral-300 p-1 placeholder-neutral-600 h-fit leading-relaxed"'
+                                    />
+                              </div>
+                        </div>
+                  </form >
 
             </>
       )

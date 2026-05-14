@@ -1,0 +1,10 @@
+.emoji-picker {
+      position: absolute;
+      z-index: 100;
+      /* max-width: 100%; */
+      max-height: 700%;
+      /* Ensures it doesn't break the screen on mobile */
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      overflow: hidden;
+}

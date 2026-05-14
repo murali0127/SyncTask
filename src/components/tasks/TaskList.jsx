@@ -22,6 +22,9 @@ export default function TaskList({ list, tasks, onAdd, onToggle, onDelete }) {
 
       return (
             <div className="flex flex-col flex-1 h-full overflow-hidden gap-2">
+                  <div className="flex gap-3 border border-neutral-700  rounded-xl px-2 p-1 text-neutral-400 font-semibold bg-neutral-800">
+                        Description : {list.list_description && <p>{list.list_description}</p>}
+                  </div>
                   {/** Progress Section */}
                   <div className="flex items-center gap-2 mb-2 flex-shrink-0">
                         <div className="flex-1 h-1.5 bg-neutral-800 rounded-full overflow-hidden">
