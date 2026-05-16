@@ -47,8 +47,10 @@ export const listService = {
             return { data: data || [], table };
       },
 
-      async createList({ title, icon, color, user_id }) {
-            const payload = { list_title: title, icon: icon || '📋', color, user_id };
+      async createList({ title, icon, list_description, color, user_id }) {
+            const payload = {
+                  list_title: title, icon: icon || '📋', list_description: list_description || null, color, user_id
+            };
 
             let lastError = null;
             const { data, error } = await runAgainstListTable((listTable) =>

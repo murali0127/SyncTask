@@ -4,7 +4,7 @@ import { useAuth } from '../lib/context/AuthContext';
 import { userListContext } from '../lib/context/ListContext';
 const AppContext = createContext(null)
 
-/**COMPLETE NEW APP PROVIDER 
+/**COMPLETE APP PROVIDER 
  * -------------------------*
  *          SupaBase
  *              | 
@@ -12,7 +12,7 @@ const AppContext = createContext(null)
  *      Contexts[AuthContext, ListContext, TodoContext]  
  *              |
  *              |
- *         AppProvider    
+ *         AppProvider [Combines All Contexts] 
  *              |
  *              |
  *         Components
@@ -180,6 +180,17 @@ export default function AppProvider({ children }) {
       }, [todo, user]);
 
       const addTodoWithValidation = useCallback(async (title, options = {}) => {
+            function getTommorowDate() {
+                  const now = new Date();
+                  now.setDate(now.getDate() + 1)
+                  now.setUTCHours(0, 0, 0, 0);
+                  const date = now.toISOString();
+                  // .replace('T', ' ')
+                  // .split('.')[0]
+                  // + '+00';
+                  return date;
+            }
+
             // Validation 1: Check if user is authenticated
             if (!user?.id) {
                   return { success: false, error: 'Please log in first' };
@@ -201,7 +212,7 @@ export default function AppProvider({ children }) {
                   const result = await addTodo(title.trim(), {
                         priority: options.priority || 'medium',
                         description: options.description || null,
-                        due_date: options.due_date || null,
+                        due_date: options.due_date || getTommorowDate(),
                         list_id: selectedListId
                   });
 
@@ -253,7 +264,7 @@ export default function AppProvider({ children }) {
       }, [deleteTodo]);
 
 
-      const createListWithValidation = useCallback(async (name, icon, color) => {
+      const createListWithValidation = useCallback(async (name, icon, list_description, color) => {
             if (!name || !name.trim()) {
                   return { success: false, error: 'List name cannot be empty' };
             }
@@ -262,6 +273,7 @@ export default function AppProvider({ children }) {
                   const result = await createList({
                         title: name.trim(),
                         icon,
+                        list_description,
                         color,
                         user_id: user?.id
                   });

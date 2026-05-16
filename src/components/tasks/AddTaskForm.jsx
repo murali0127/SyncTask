@@ -2,10 +2,12 @@ import { useState, useRef, useEffect } from "react";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
 import toast from "react-hot-toast";
-import { MessageSquareDiff, CalendarDays, X } from 'lucide-react';
+import { MessageSquareDiff, CalendarDays, X, Clock } from 'lucide-react';
 import { DayPicker } from 'react-day-picker';
 import { format } from 'date-fns'
 import { REMINDERS } from "../../constants/reminderOption";
+import WheelPicker from "./WheelPicker";
+import { minutesInDay } from "date-fns/constants";
 
 
 const REMINDER_OPTIONS = REMINDERS;
@@ -24,8 +26,25 @@ export default function AddTaskForm({ onAdd }) {
       const [isPanelOpen, setIsPanelOpen] = useState(false);
       const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
+      const [dueTime, setDueTime] = useState('0:0')
+      const [hour, setHour] = useState(5)
+      const [minute, setMinute] = useState(30)
+      const [period, setPeriod] = useState("PM")
+
       const calendarRef = useRef(null);
 
+      const HOURS = Array.from(
+            { length: 12 },
+            (_, i) => i + 1
+      )
+
+      const MINUTES = Array.from(
+            { length: 12 },
+            (_, i) => i * 5
+      )
+
+
+      const PERIODS = ["AM", "PM"];
       useEffect(() => {
             function handleOutside(e) {
                   if (!calendarRef.current) return;
@@ -54,9 +73,58 @@ export default function AddTaskForm({ onAdd }) {
 
       }
 
-      function handleDateSelect(date) {
-            setFormData((prev) => ({ ...prev, dueDate: date ?? null }));
+
+      // function handleDateSelect(date) {
+      //       setFormData((prev) => ({ ...prev, dueDate: date ?? null }));
+      //       setIsCalendarOpen(false);
+      // }
+
+      //Handlde due_time
+      function handleDateSelect(selectedDate) {
+            if (!selectedDate) return;
+
+            if (!selectedDate) return;
+
+            const merged = new Date(selectedDate);
+
+            // Preserve whatever hour/minute the wheels are showing
+
+            let h24 = hour % 12 + (period === "PM" ? 12 : 0);
+
+            if (period === "AM" && hour === 12) h24 = 0;
+            merged.setHours(h24, minute, 0, 0);
+            setFormData(prev => ({ ...prev, dueDate: merged }));
             setIsCalendarOpen(false);
+      }
+
+      function updateDueTime({
+            newHour = hour,
+            newMinute = minute,
+            newPeriod = period,
+      }) {
+            const current = formData.dueDate
+                  ? new Date(formData.dueDate)
+                  : new Date();
+
+            let h24 = newHour;
+
+            if (newPeriod === "PM" && newHour !== 12) {
+                  h24 += 12;
+            }
+
+            if (newPeriod === "AM" && newHour === 12) {
+                  h24 = 0;
+            }
+
+            current.setHours(h24);
+            current.setMinutes(newMinute);
+            current.setSeconds(0);
+            current.setMilliseconds(0);
+
+            setFormData(prev => ({
+                  ...prev,
+                  dueDate: current
+            }));
       }
 
       function clearDate(evt) {
@@ -65,34 +133,41 @@ export default function AddTaskForm({ onAdd }) {
       }
 
       // IF NOT SET DUE_DATE TO TODAY
-
       function getTommorowDate() {
             const now = new Date();
             now.setDate(now.getDate() + 1)
-            now.setUTCHours(0, 0, 0, 0);
-            const date = now.toISOString()
-                  .replace('T', ' ')
-                  .split('.')[0]
-                  + '+00';
-            return date;
+            now.setHours(0, 0, 0, 0);
+            // const date = now.toISOString();
+            // .replace('T', ' ')
+            // .split('.')[0]
+            // + '+00';
+            return now;
       }
 
+
+
       async function handleSubmit() {
-            // evt.preventDefault();
-            if (!formData.title.trim()) return
+            // console.log("Check : ", formData.dueDate);
 
-            const result = await onAdd(
-                  formData.title.trim(),
-                  {
-                        priority: formData.priority,
-                        due_date: formData.dueDate ? format(formData.dueDate, "yyyy-MM-dd") : getTommorowDate(),
-                        description: formData.description || null,
-                        reminder_minutes_before: formData.reminderMinutes,
-                        reminder_sent: false,
-                        reminder_sent_at: null,
-                  }
-            );
+            if (!formData.title.trim()) return;
 
+            let finalDueDate = formData.dueDate instanceof Date
+                  ? new Date(formData.dueDate)
+                  : getTommorowDate();
+
+            // Merge the wheel picker time onto the date
+            let h24 = hour % 12 + (period === "PM" ? 12 : 0);
+            if (period === "AM" && hour === 12) h24 = 0;
+            finalDueDate.setHours(h24, minute, 0, 0);
+
+            const result = await onAdd(formData.title.trim(), {
+                  priority: formData.priority,
+                  due_date: finalDueDate.toISOString(),
+                  description: formData.description || null,
+                  reminder_minutes_before: formData.reminderMinutes,
+                  reminder_sent: false,
+                  reminder_sent_at: null,
+            });
             if (result?.success === false) {
                   toast.error(result.error || 'Could not add task.');
                   return;
@@ -107,7 +182,20 @@ export default function AddTaskForm({ onAdd }) {
             // setIsPanelOpen(false);
       }
 
-      const dueDateLabel = formData.dueDate ? format(formData.dueDate, 'yyyy-MM-dd') : null;
+      const dueDateLabel = formData.dueDate instanceof Date && !isNaN(formData.dueDate)
+            ? format(formData.dueDate, "yyyy-MM-dd")
+            : null;
+
+      const timeOptions = []
+
+      for (let hour = 0; hour < 24; hour++) {
+            for (let minute = 0; minute < 60; minute += 30) {
+                  const h = hour.toString().padStart(2, "0")
+                  const m = minute.toString().padStart(2, "0")
+
+                  timeOptions.push(`${h}:${m}`)
+            }
+      }
 
       return (
             <>
@@ -195,7 +283,7 @@ export default function AddTaskForm({ onAdd }) {
                                           )}
                                     </button>
                                     {isCalendarOpen && (
-                                          <div className="absolute right-0 top-full mt-2 z-50 bg-neutral-800 border border-neutral-700 shadow-2xl rounded-2xl p-3 min-w-[280px]">
+                                          <div className="myCustomHeight absolute right-0 top-full mt-2 z-50 bg-neutral-800 border border-neutral-700 shadow-2xl rounded-2xl p-3 min-w-[280px]">
                                                 <DayPicker
                                                       mode="single"
                                                       selected={formData.dueDate}
@@ -229,6 +317,52 @@ export default function AddTaskForm({ onAdd }) {
                                                             </button>
                                                       }
                                                 />
+                                                {/** Due Time Picker */}
+                                                <div className="mt-2 border-t border-neutral-700 pt-4">
+                                                      <label className="text-xs font-semibold text-neutral-200 mb-1 block">
+                                                            Due Time
+                                                      </label>
+
+                                                      <div className="flex items-center justify-center gap-3">
+
+                                                            {/* HOURS */}
+                                                            <WheelPicker
+                                                                  items={HOURS}
+                                                                  value={hour}
+                                                                  onChange={(value) => setHour(value)}
+                                                                  format={(v) => String(v).padStart(2, "0")}
+                                                                  className="w-16"
+                                                            />
+
+                                                            <span className="text-xl text-neutral-500">:</span>
+
+                                                            {/* MINUTES */}
+                                                            <WheelPicker
+                                                                  items={MINUTES}
+                                                                  value={minute}
+                                                                  onChange={(value) =>
+                                                                        setMinute(value)
+                                                                  }
+                                                                  format={(v) => String(v).padStart(2, "0")}
+                                                                  className="w-16"
+                                                            />
+
+                                                            {/* PERIOD */}
+                                                            <WheelPicker
+                                                                  items={PERIODS}
+                                                                  value={period}
+                                                                  onChange={(value) =>
+                                                                        setPeriod(value)
+                                                                  }
+                                                                  className="w-20"
+                                                            />
+
+                                                      </div>
+
+                                                      <div className="flex justify-center align-middle text-center text-sm font-semibold text-neutral-200">
+                                                            <span className="px-2 mt-0.5"><Clock size={"17px"} /></span>{`${String(hour).padStart(2, '0')} : ${String(minute).padStart(2, '0')} ${period}`}
+                                                      </div>
+                                                </div>
                                           </div>
                                     )}
 
@@ -248,7 +382,7 @@ export default function AddTaskForm({ onAdd }) {
                         </div >
                   </div >
                   <div className={`overflow-hidden transition-all duration-300 ease-in-out
-            ${isPanelOpen ? 'max-h-60 opacity-100' : 'max-h-0 opacity-0'}`}
+                                                            ${isPanelOpen ? 'max-h-60 opacity-100' : 'max-h-0 opacity-0'}`}
                   >
                         <div className="bg-neutral-900 border border-neutral-700/60 rounded-2xl p-4 shadow-xl ml-4 mr-4">
                               <textarea

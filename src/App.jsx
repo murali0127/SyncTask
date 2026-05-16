@@ -6,7 +6,7 @@ import SignInForm from './pages/SignUp';
 import UserProfile from './Profile/Userprofile';
 import ProtectedRoutes from './routes/ProtectedRoutes';
 import MyCalendar from './components/ui/calendar';
-import ProfileEditPage from './Profile/ProfileEditPage';
+
 
 function App() {
   return (
@@ -23,7 +23,6 @@ function App() {
             </ProtectedRoutes>
           } />
           <Route path="profile" element={<UserProfile />} />
-          <Route path="profile/editProfile" element={<ProfileEditPage />} />
         </Route>
       </Routes>
     </div>

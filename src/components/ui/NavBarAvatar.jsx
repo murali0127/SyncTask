@@ -1,16 +1,10 @@
 import clsx from 'clsx';
+import { useAppState } from '../../providers/AppProvider';
+import { Avatar } from '../../Profile/Userprofile';
 
 export default function NavBarAvatar({ size = 'md' }) {
+      const { user, profile } = useAppState();
       return (
-            <img
-                  src="https://placehold.net/avatar.svg"
-                  alt="Profile"
-                  className={clsx(
-                        'rounded-full bg-neutral-800 outline outline-1 outline-neutral-700 mr-3',
-                        size === 'sm' && 'size-7',
-                        size === 'md' && 'size-8',
-                        size === 'lg' && 'size-10'
-                  )}
-            />
+            <Avatar user_avatar={user?.avatar_url || user?.user_metadata?.name[0]} name={user?.full_name || profile?.name} size={30} />
       )
 }

@@ -33,6 +33,7 @@ import {
       Star,
       Lock,
 } from "lucide-react";
+import { Link } from "react-router-dom"
 
 // // ─── CSS injected once ───────────────────────────────────────────────────────
 const GLOBAL_CSS = `
@@ -330,7 +331,7 @@ function Toggle({ on, onChange }) {
       );
 }
 
-function Avatar({ user_avatar, name, size = 72 }) {
+export function Avatar({ user_avatar, name, size = 72 }) {
       const initial = name?.[0]?.toUpperCase() || "?";
       return (
             <div
@@ -995,7 +996,7 @@ function SettingsPanel({ signout }) {
       });
 
       return (
-            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div id="settings" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                   {/* Danger zone */}
                   <div className="up-card" style={{ padding: "22px 24px" }}>
                         <p className="up-section-label">Security</p>
@@ -1298,9 +1299,9 @@ export default function UserProfile() {
       return (
             <>
                   <NavBar homePage={false} />
-                  {/* <EnhancedAuthBackground> */}
+                  <EnhancedAuthBackground>
 
-                  <div className="bg-black">
+                        {/** <div className="bg-black"> */}
 
                         <div
                               style={{
@@ -1367,8 +1368,6 @@ export default function UserProfile() {
                                                                   position: "absolute",
                                                                   bottom: 2,
                                                                   right: 2,
-                                                                  background: "#0f0f11",
-                                                                  borderRadius: "50%",
                                                                   padding: 3,
                                                             }}
                                                       >
@@ -1664,8 +1663,11 @@ export default function UserProfile() {
                                     )}
                               </div>
                         </div>
-                  </div>
-                  {/* </EnhancedAuthBackground > */}
+                        <div>
+                              <Link to="/dashboard" />
+                        </div>
+                        {/** </div> */}
+                  </EnhancedAuthBackground >
 
 
                   {/* Edit Profile Modal */}

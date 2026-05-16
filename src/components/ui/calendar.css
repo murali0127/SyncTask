@@ -1,18 +1,25 @@
 .myCustomHeight {
-      height: 75vh;
       min-height: 400px;
-      max-height: 800px;
+      max-height: 600%;
       width: 100%;
       padding: 1rem;
       box-sizing: border-box;
 
       border-radius: 16px;
-      overflow: hidden;
+      overflow-y: auto;
 
       background-color: #242432;
       border: 1px solid #030303;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
+
+/** Scroll styling */
+.myCustomHeight::-webkit-scrollbar {
+      display: none;
+
+
+}
+
 
 .rbc-calendar {
       height: 100% !important;

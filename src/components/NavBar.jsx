@@ -4,6 +4,7 @@ import NavBarAvatar from './ui/NavBarAvatar';
 import clsx from 'clsx';
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../lib/context/AuthContext';
+import { useAppState } from '../providers/AppProvider';
 const navigation = [
       { name: 'Dashboard', href: '/dashboard' },
       // { name: 'Features', href: '#features' },
@@ -46,14 +47,14 @@ export default function NavBar({ homePage = true }) {
                                     </DisclosureButton>
                               </div>
                               <div className="flex flex-1 gap-1 items-center justify-center sm:items-stretch sm:justify-start">
-                                    <div className={clsx(
-                                          "flex w-8 h-8 rounded-md mx-auto bg-gradient-to-br from-rose-500 via-transparent to-purple-500 flex items-center justify-center text-white text-sm font-bold",
-                                    )}>
-                                          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2">
-                                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-                                          </svg>
-                                    </div>
-                                    <Link to="/Dashboard" className='text-bold font-mono text-2xl px-1 text-rose-400 text-shadow-rose-300  hover:text-rose-300 transition-colors'>
+                                    <Link to="/Dashboard" className='flex gap-2 text-bold font-mono text-2xl px-1 text-rose-400 text-shadow-rose-300  hover:text-rose-300 transition-colors'>
+                                          <div className={clsx(
+                                                "flex w-8 h-8 rounded-md mx-auto bg-gradient-to-br from-rose-500 via-transparent to-purple-500 flex items-center justify-center text-white text-sm font-bold",
+                                          )}>
+                                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2">
+                                                      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                                                </svg>
+                                          </div>
                                           SyncTask
                                     </Link>
                                     <div className="flex flex-1 hidden sm:flex justify-center">
@@ -78,7 +79,7 @@ export default function NavBar({ homePage = true }) {
                                           <button
                                                 onClick={handleLogout}
                                                 type="logout"
-                                                className="relative rounded-full p-1 text-white font-semibold rounded-xl shadow-lg transition-all duration-300 hover:text-red-500 hover:translate-y-0.5"
+                                                className="relative rounded-full p-1 text-neutral-500 font-semibold rounded-xl shadow-lg transition-all duration-300 hover:text-red-500 hover:translate-y-0.5"
                                           >Logout
                                                 <span className="absolute -inset-1.5" />
                                                 <span className="sr-only">View notifications</span>

@@ -31,7 +31,13 @@ export default function TaskItems({ task, onToggle, onDelete }) {
             }
             notify();
       }
+      const dateObject = new Date(safeTask?.due_date);
 
+      const formattedTime = dateObject.toLocaleString('en-US', {
+            hour: 'numeric',
+            minute: "2-digit",
+            hour12: true   // Provides AM/ PM
+      })
       return (
             <div
                   className={clsx(
@@ -72,8 +78,10 @@ export default function TaskItems({ task, onToggle, onDelete }) {
                                     'w-1.5 h-1.5 rounded-full',
                                     config.dot
                               )} />
-                              {safeTask.due_date && (
-                                    <span className="text-xs text-neutral-500">{safeTask.due_date.split('T')[0]}</span>
+                              {safeTask.due_date && (<>
+                                    <span className="text-xs text-neutral-500 font-semibold">Due date : {safeTask.due_date.split('T')[0]}</span>
+                                    <span className="text-xs text-neutral-500 font-semibold">Due time : {formattedTime}</span>
+                              </>
                               )}
                               <span className={clsx(
                                     'text-xs px-2 py-0.5 rounded',

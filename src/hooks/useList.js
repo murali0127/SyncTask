@@ -53,9 +53,9 @@ export function useList() {
             return () => supabase.removeChannel(channel);
       }, [fetchLists, user?.id, listTable]);
 
-      const createList = async (title, icon, color, user_id) => {
+      const createList = async (title, icon, list_description, color, user_id) => {
             try {
-                  const newList = await listService.createList(title, icon, color, user_id);
+                  const newList = await listService.createList(title, icon, list_description, color, user_id);
                   setLists((prev) => [...prev, newList]); // optimistic update
                   return newList;
             } catch (err) {

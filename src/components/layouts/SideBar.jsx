@@ -3,7 +3,7 @@ import { useAppState } from '../../providers/AppProvider';
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/react';
 import NavBarAvatar from '../ui/NavBarAvatar';
 import { useState } from 'react';
-import { PanelLeft, ListPlus, PlugZap, BriefcaseBusiness } from 'lucide-react';
+import { PanelLeft, ListPlus, PlugZap, BriefcaseBusiness, Users, Laptop } from 'lucide-react';
 import AddNewList from '../tasks/AddNewList';
 import ListModel from '../tasks/ListModel';
 import { Link } from 'react-router-dom';
@@ -117,10 +117,10 @@ export default function Sidebar() {
                                                 <a
                                                       key={item.id}
                                                       onClick={handleClick}
-                                                      className='text-neutral-400 flex items-center gap-3 px-3 py-2 rounded-lg w-full text-left text-md  hover:bg-neutral-800/90 hover:text-neutral-300 rounded-2xl w-fit transition-all'
+                                                      className='text-neutral-500 flex items-center gap-3 px-3 py-2 rounded-lg w-full text-left text-md  hover:bg-neutral-800/90 hover:text-neutral-300 rounded-2xl w-fit transition-all'
                                                 >
 
-                                                      {item.name === 'Sync' ? <PlugZap /> : <BriefcaseBusiness />}
+                                                      {item.name === 'Sync' ? <Users /> : <Laptop />}
                                                       {item.name}
                                                 </a>
                                           ))
@@ -135,10 +135,10 @@ export default function Sidebar() {
                                                       key={item.id}
                                                       onClick={handleClick}
                                                       // href={item.name === 'Sync' ? `/:${user_id}/sync_task` : `'/:${user_id}/workspace`}
-                                                      className='text-neutral-400 flex items-center gap-3 px-3 py-2 rounded-lg w-full text-left text-md hover:bg-neutral-800/90 hover:text-neutral-300 rounded-2xl w-fit transition-all'
+                                                      className='text-neutral-500 flex items-center gap-3 px-3 py-2 rounded-lg w-full text-left text-md hover:bg-neutral-800/90 hover:text-neutral-300 rounded-2xl w-fit transition-all'
                                                 >
 
-                                                      {item.name === 'Sync' ? <PlugZap /> : <BriefcaseBusiness />}
+                                                      {item.name === 'Sync' ? <Users /> : <Laptop />}
                                                 </a>
                                           ))
                                     }
