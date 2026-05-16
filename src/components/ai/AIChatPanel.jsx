@@ -4,6 +4,8 @@ import Button from '../ui/Button';
 import main from '../../lib/functions/groq-sdk';
 import ReactMarkdown from 'react-markdown';
 import { Toaster } from 'react-hot-toast';
+import NavBarAvatar from '../ui/NavBarAvatar';
+import { BotIcon } from 'lucide-react';
 
 const DEFAULT_PROMPTS = [
       //PLANNING
@@ -109,23 +111,34 @@ export default function AIChatPanel({ isOpen, onClose }) {
                               <div
                                     key={message.id}
                                     className={clsx(
-                                          'flex',
+                                          'flex items-end gap-2.5', // Added items-end to align bottoms, and gap-2.5 for spacing
                                           message.role === 'user' ? 'justify-end' : 'justify-start'
                                     )}
                               >
+                                    {message.role !== 'user' && (
+                                          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-neutral-800 border  border-neutral-700 flex items-center justify-center text-xs">
+                                                <BotIcon size="20px" />
+                                          </div>
+                                    )}
                                     <div
                                           className={clsx(
-                                                'max-w-[75%] h-fit px-4 py-2.5 rounded-lg text-sm leading-relaxed',
+                                                'max-w-[75%] h-fit px-4 py-2.5 rounded-xl text-sm leading-relaxed', // Upgraded to rounded-xl for a softer look
                                                 message.role === 'user'
-                                                      ? 'bg-red-900 text-white rounded-br-sm'
-                                                      : 'bg-neutral-800 text-neutral-200 rounded-bl-md border border-neutral-700'
+                                                      ? 'bg-red-950/70 text-red-100 rounded-br-none border border-red-900/40' // Softened the harsh solid red to a sleek translucent dark red match
+                                                      : 'bg-neutral-800 text-neutral-200 rounded-bl-none border border-neutral-700'
                                           )}
                                     >
                                           <ReactMarkdown>
                                                 {message.content}
-
                                           </ReactMarkdown>
                                     </div>
+
+                                    {/* User Avatar stays perfectly on the right side of the user bubble */}
+                                    {message.role === 'user' && (
+                                          <div className='flex-shrink-0'>
+                                                <NavBarAvatar size="sm" />
+                                          </div>
+                                    )}
                               </div>
                         ))}
 

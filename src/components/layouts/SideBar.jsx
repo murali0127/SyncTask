@@ -9,7 +9,6 @@ import ListModel from '../tasks/ListModel';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 
-
 const sideBarItems = [
       { id: 1, name: 'Sync' },
       { id: 2, name: 'Workspace' }
@@ -117,7 +116,7 @@ export default function Sidebar() {
                                                 <a
                                                       key={item.id}
                                                       onClick={handleClick}
-                                                      className='text-neutral-500 flex items-center gap-3 px-3 py-2 rounded-lg w-full text-left text-md  hover:bg-neutral-800/90 hover:text-neutral-300 rounded-2xl w-fit transition-all'
+                                                      className='font-mono text-neutral-500 flex items-center gap-3 px-3 py-2 rounded-lg w-full text-left text-md  hover:bg-neutral-800/90 hover:text-neutral-300 rounded-2xl w-fit transition-all'
                                                 >
 
                                                       {item.name === 'Sync' ? <Users /> : <Laptop />}
@@ -146,24 +145,35 @@ export default function Sidebar() {
                               </div>
                   }
                   <p className={clsx(
-                        'text-xs font-semibold font-medium text-neutral-500 tracking-wide uppercase transition-all duration-300 whitespace-nowrap',
-                        isExpanded ? 'opacity-100 mx-0 ml-3' : 'opacity-0 ml-4'
+                        'font-semibold ml-3 text-xs font-semibold font-medium text-neutral-500 tracking-wide uppercase transition-all duration-300 whitespace-nowrap',
+                        // isExpanded ? 'opacity-100 mx-0 ml-3' : 'opacity-0 ml-4'
 
                   )} >
 
-                        <span className='flex items-center gap-2 text-md'>
+                        {isExpanded ?
+                              <span className='flex items-center gap-2 text-md'>
 
 
-                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
-                              </svg>
-                              My List
-                        </span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                                    </svg>
+                                    My List
+                              </span>
+                              :
+                              <span className='flex items-center gap-2 text-md'>
 
+
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                                    </svg>
+
+                              </span>
+
+                        }
                   </p >
 
                   {/** List items */}
-                  < div className="flex flex-col gap-1 flex-1 overflow-y-auto px-2" >
+                  < div className="flex flex-col gap-1 flex-1 overflow-y-auto px-2 font-mono" >
                         {
                               lists.map(list => (
                                     <button

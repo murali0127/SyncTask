@@ -66,7 +66,7 @@ export default function Header() {
                   <div className="flex items-center gap-3">
                         <span className="text-2xl">{currentList.icon}</span>
                         <div className='felx flex-col'>
-                              <h1 className="font-mogra text-base font-semibold text-white">
+                              <h1 className="font-mono text-base font-semibold text-white">
                                     {currentList.list_title}
                               </h1>
                               <p className="text-xs text-neutral-500">
