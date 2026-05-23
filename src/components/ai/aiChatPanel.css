@@ -1,0 +1,13 @@
+@keyframes aiAvatarPulse {
+
+      0%,
+      100% {
+            /* Changed 70% to 100% to fix the loop jump */
+            box-shadow: 0 0 0 4px #650c22, 0 0 8px #650c22;
+      }
+
+      50% {
+            /* Reduced spread from 5px to 3px, and blur from 10px to 6px */
+            box-shadow: 0 0 0 3px #db3055, 0 0 10px #db3055;
+      }
+}

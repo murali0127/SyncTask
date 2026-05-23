@@ -5,8 +5,8 @@ import main from '../../lib/functions/groq-sdk';
 import ReactMarkdown from 'react-markdown';
 import { Toaster } from 'react-hot-toast';
 import NavBarAvatar from '../ui/NavBarAvatar';
-import { BotIcon } from 'lucide-react';
-
+import { Brain } from 'lucide-react';
+import "./aiChatPanel.css"
 const DEFAULT_PROMPTS = [
       //PLANNING
       "Prioritize my tasks for today",
@@ -35,6 +35,39 @@ const DEFAULT_PROMPTS = [
       "What’s the easiest task I can start with?"
 
 ];
+
+function AiAvatar() {
+      const randomColor = () => {
+            const r = math.floor(Math.random() * 255) + 1;
+            const g = math.floor(Math.random() * 255) + 1;
+            const b = math.floor(Math.random() * 255) + 1;
+            return `rgb(${r},${g},${b})`
+      }
+
+      return (
+            <div
+                  style={{
+                        width: "25px",
+                        height: "25px",
+                        borderRadius: "50%",
+                        // background: "linear-gradient(135deg,rgba(139,0,0,0.4),rgba(220,38,38,0.25))",
+                        background: "#31363F",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        // fontSize: size * 0.42,
+                        fontWeight: 700,
+                        fontFamily: "'Syne', sans-serif",
+                        color: "#C84B31",
+                        animation: "aiAvatarPulse 3.5s ease-in-out infinite ",
+                        flexShrink: 0,
+                  }}
+            >
+                  <Brain size={"20px"} />
+            </div>
+      );
+}
+
 
 export default function AIChatPanel({ isOpen, onClose }) {
       const [messages, setMessages] = useState([
@@ -87,7 +120,7 @@ export default function AIChatPanel({ isOpen, onClose }) {
       return (
             <div
                   className={clsx(
-                        'fixed right-0 top-0 h-full w-100 bg-neutral-950 border-l border-neutral-800 gap-4',
+                        'fixed right-0 font-mogra top-0 h-full w-100 bg-neutral-950 border-l border-neutral-800 gap-4',
                         'flex flex-col z-50 transition-transform duration-300 ease-out',
                         isOpen ? 'translate-x-0' : 'translate-x-full'
                   )}
@@ -96,7 +129,7 @@ export default function AIChatPanel({ isOpen, onClose }) {
                   <div className="flex gap-2 items-center justify-between px-4 h-14 border-b border-neutral-800 flex-shrink-0">
                         <div className="flex items-center gap-2">
                               <i className="bi bi-openai text-lg text-neutral-400"></i>
-                              <span className="text-sm font-medium text-white">AI Assistant</span>
+                              <span className="text-sm font-inter       font-medium text-white">AI Assistant</span>
                         </div>
                         <button
                               onClick={onClose}
@@ -106,7 +139,7 @@ export default function AIChatPanel({ isOpen, onClose }) {
                         </button>
                   </div>
 
-                  <div className="flex-1 overflow-y-auto px-4 space-y-4">
+                  <div className="flex-1  overflow-y-auto px-4 space-y-4">
                         {messages.map((message) => (
                               <div
                                     key={message.id}
@@ -117,7 +150,8 @@ export default function AIChatPanel({ isOpen, onClose }) {
                               >
                                     {message.role !== 'user' && (
                                           <div className="flex-shrink-0 w-8 h-8 rounded-full bg-neutral-800 border  border-neutral-700 flex items-center justify-center text-xs">
-                                                <BotIcon size="20px" />
+                                                {/* <Brain size="20px" width={"25px"} className='text-red-700/50' /> */}
+                                                <AiAvatar />
                                           </div>
                                     )}
                                     <div
@@ -125,7 +159,7 @@ export default function AIChatPanel({ isOpen, onClose }) {
                                                 'max-w-[75%] h-fit px-4 py-2.5 rounded-xl text-sm leading-relaxed', // Upgraded to rounded-xl for a softer look
                                                 message.role === 'user'
                                                       ? 'bg-red-950/70 text-red-100 rounded-br-none border border-red-900/40' // Softened the harsh solid red to a sleek translucent dark red match
-                                                      : 'bg-neutral-800 text-neutral-200 rounded-bl-none border border-neutral-700'
+                                                      : 'text-red-200 bg-neutral-800 text-neutral-200 rounded-bl-none border border-neutral-700'
                                           )}
                                     >
                                           <ReactMarkdown>
@@ -164,17 +198,17 @@ export default function AIChatPanel({ isOpen, onClose }) {
                                     onChange={(e) => setInputValue(e.target.value)}
                                     onKeyDown={handleKeyDown}
                                     placeholder="Ask anything..."
-                                    className="h-7 flex-1 bg-neutral-900 border border-neutral-700 rounded-lg px-4 py-2.5 text-sm text-white placeholder-neutral-500 outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600 transition-all"
+                                    className="h-8 flex-1 bg-neutral-900 border border-neutral-700 rounded-lg px-4 py-2.5 text-sm text-white placeholder-neutral-500 outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600 transition-all"
                               />
-                              <Button
-                                    variant="default"
+                              <button
+                                    // variant="default"
                                     size="md"
                                     onClick={handleSend}
                                     disabled={!inputValue.trim() || isTyping}
-                                    className="!px-3"
+                                    className="px-2 py-1 rounded-xl border border-neutral-700 text-neutral-400 bg-neutral-800 hover:bg-neutral-600 hover:text-white transition-all duration-100"
                               >
                                     <i className="bi bi-send"></i>
-                              </Button>
+                              </ button>
                         </div>
                         <p className="text-xs text-neutral-600 mt-2 text-center">
                               AI responses may not always be accurate
