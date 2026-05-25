@@ -6,6 +6,7 @@ import { EnhancedAuthBackground } from "../components/ui/FloatingUIElements";
 import "../styles/auth-floating-ui.css";
 import { supabase } from "../lib/supabase-client";
 import './profile.css';
+import { useNotifications } from "../hooks/useNotifications";
 import {
       MapPin,
       CalendarDays,
@@ -32,6 +33,11 @@ import {
       Building2,
       Star,
       Lock,
+      CheckCircleIcon,
+      CircleCheckBigIcon,
+      Loader,
+      SigmaIcon,
+      ActivityIcon,
 } from "lucide-react";
 import { Link } from "react-router-dom"
 
@@ -331,7 +337,14 @@ function Toggle({ on, onChange }) {
       );
 }
 
-export function Avatar({ user_avatar, name, size = 72 }) {
+export function Avatar({ user_avatar, user_avatar_color, name, size = 72 }) {
+      const randomColor = () => {
+            const r = math.floor(Math.random() * 255) + 1;
+            const g = math.floor(Math.random() * 255) + 1;
+            const b = math.floor(Math.random() * 255) + 1;
+            return `rgb(${r},${g},${b})`
+      }
+
       const initial = name?.[0]?.toUpperCase() || "?";
       return (
             <div
@@ -339,14 +352,15 @@ export function Avatar({ user_avatar, name, size = 72 }) {
                         width: size,
                         height: size,
                         borderRadius: "50%",
-                        background: "linear-gradient(135deg,rgba(139,0,0,0.4),rgba(220,38,38,0.25))",
+                        // background: "linear-gradient(135deg,rgba(139,0,0,0.4),rgba(220,38,38,0.25))",
+                        background: user_avatar_color,
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
                         fontSize: size * 0.42,
                         fontWeight: 700,
                         fontFamily: "'Syne', sans-serif",
-                        color: "#fca5a5",
+                        color: "#800000",
                         animation: "avatarPulse 3.5s ease-in-out infinite",
                         flexShrink: 0,
                   }}
@@ -416,7 +430,7 @@ function ShimmerBlock({ width = "100%", height = 14, style = {} }) {
 
 // ─── Tab panels ──────────────────────────────────────────────────────────────
 
-function OverviewPanel({ userStats, prefs, setPrefs }) {
+function OverviewPanel({ userData, userStats, prefs, setPrefs }) {
       const pct =
             userStats?.totalTodos > 0
                   ? Math.round((userStats.completedTodos / userStats.totalTodos) * 100)
@@ -428,24 +442,28 @@ function OverviewPanel({ userStats, prefs, setPrefs }) {
                   count: userStats?.completedTodos ?? 0,
                   color: "#4ade80",
                   border: "rgba(74,222,128,0.2)",
+                  icon: <CircleCheckBigIcon />
             },
             {
                   label: "In Progress",
                   count: (userStats?.totalTodos ?? 0) - (userStats?.completedTodos ?? 0),
                   color: "#fbbf24",
                   border: "rgba(251,191,36,0.2)",
+                  icon: <Loader />
             },
             {
                   label: "Total Tasks",
                   count: userStats?.totalTodos ?? 0,
                   color: "#a5b4fc",
                   border: "rgba(165,180,252,0.2)",
+                  icon: <SigmaIcon />
             },
             {
                   label: "Active Lists",
                   count: userStats?.currentList ?? 0,
                   color: "#38bdf8",
                   border: "rgba(56,189,248,0.2)",
+                  icon: <ActivityIcon />
             },
       ];
 
@@ -504,6 +522,7 @@ function OverviewPanel({ userStats, prefs, setPrefs }) {
                                     >
                                           <span
                                                 style={{
+                                                      display: 'flex',
                                                       fontFamily: "'DM Mono', monospace",
                                                       fontSize: 20,
                                                       fontWeight: 600,
@@ -511,6 +530,7 @@ function OverviewPanel({ userStats, prefs, setPrefs }) {
                                                 }}
                                           >
                                                 {item.count}
+                                                <span className="relative ml-auto">{item.icon}</span>
                                           </span>
                                           <span
                                                 style={{
@@ -537,7 +557,7 @@ function OverviewPanel({ userStats, prefs, setPrefs }) {
                                     { key: "aiSuggestions", label: "AI Suggestions", icon: Zap },
                                     { key: "emailNotifications", label: "Email Notifications", icon: Bell },
                                     { key: "desktopAlerts", label: "Desktop Alerts", icon: Bell },
-                                    { key: "compactView", label: "Compact View", icon: LayoutGrid },
+                                    // { key: "compactView", label: "Compact View", icon: LayoutGrid },
                               ].map(({ key, label, icon: Icon }, i, arr) => (
                                     <div
                                           key={key}
@@ -562,8 +582,42 @@ function OverviewPanel({ userStats, prefs, setPrefs }) {
                                                 on={prefs[key]}
                                                 onChange={() => setPrefs((p) => ({ ...p, [key]: !p[key] }))}
                                           />
+
                                     </div>
                               ))}
+                        </div>
+                  </div>
+                  <div
+                        className="up-card"
+                  >
+
+                        <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+
+                              <div
+                                    style={{
+                                          marginLeft: "25px",
+                                          display: "flex",
+                                          justifyContent: "space-between",
+                                          alignItems: "center",
+                                          padding: "13px 0",
+                                          borderBottom:
+                                                "1px solid rgba(255,255,255,0.04)"
+                                    }}
+                              >
+                                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                                          <i className="bi bi-rocket-takeoff" size={14} style={{ color: "rgba(160,160,170,0.5)" }} />
+                                          <span style={{ fontSize: 14, color: "rgba(200,200,210,0.8)" }}>
+                                                on-boarding
+                                          </span>
+                                    </div>
+                                    <button
+                                          disabled={userData?.onboarding_completed ? true : false}
+                                          className="px-3 font-semibold text-red-600 border rounded-lg mr-5 hover:bg-red-500/90 hover:text-black transition-all 0.2s ease-out"
+                                          style={{ fontSize: "13px" }}>
+                                          {userData?.onboarding_completed === true ? "COMPLETED" : "COMPLETE"}
+                                    </button>
+
+                              </div>
                         </div>
                   </div>
             </div>
@@ -1241,6 +1295,10 @@ const TABS = [
 
 export default function UserProfile() {
       const { user: userData, profile, userStats, signout } = useAppState();
+      // handles Notifications
+      const { isEnabled, enable, disable, permission, isSupported, loading, error } = useNotifications();
+
+
 
       const [activeTab, setActiveTab] = useState("overview");
       const [editOpen, setEditOpen] = useState(false);
@@ -1252,6 +1310,30 @@ export default function UserProfile() {
             compactView: false,
       });
       const [localProfile, setLocalProfile] = useState(null);
+
+
+      useEffect(() => {
+            async function syncNotifications() {
+                  try {
+                        if (!isSupported) {
+                              console.warn("Notifications not supported");
+                              return;
+                        }
+
+                        if (prefs.desktopAlerts) {
+                              await enable();
+                              // console.log("Push notifications enabled");
+                        } else {
+                              await disable();
+                              // console.log("Push notifications disabled");
+                        }
+                  } catch (err) {
+                        console.error("Notification toggle failed:", err);
+                  }
+            }
+
+            syncNotifications();
+      }, [prefs.desktopAlerts, enable, disable, isSupported]);
 
       const displayName =
             localProfile?.name ||
@@ -1362,7 +1444,7 @@ export default function UserProfile() {
                                                 }}
                                           >
                                                 <div style={{ position: "relative" }}>
-                                                      <Avatar user_avatar={userData?.avatar_url} name={displayName} size={76} />
+                                                      <Avatar user_avatar={userData?.avatar_url} user_avatar_color='#FFFFFF' name={displayName} size={76} />
                                                       <div
                                                             style={{
                                                                   position: "absolute",
@@ -1371,7 +1453,7 @@ export default function UserProfile() {
                                                                   padding: 3,
                                                             }}
                                                       >
-                                                            <StatusDot online={online} />
+                                                            {/* <StatusDot online={online} /> */}
                                                       </div>
                                                 </div>
 
@@ -1650,6 +1732,7 @@ export default function UserProfile() {
                               >
                                     {activeTab === "overview" && (
                                           <OverviewPanel
+                                                userData={userData}
                                                 userStats={userStats}
                                                 prefs={prefs}
                                                 setPrefs={setPrefs}
