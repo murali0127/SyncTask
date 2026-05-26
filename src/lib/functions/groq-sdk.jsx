@@ -1,5 +1,6 @@
 import Groq from "groq-sdk";
 import { supabase } from "../supabase-client.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
 
 const SYSTEM_PROMPT = `
 You are an AI assistant inside a task management (To-Do) application.
@@ -194,6 +195,7 @@ async function main(input) {
                   content: input
             }]
       })
+      console.log(response.choices[0].message);
       return response.choices[0].message.content
 }
 
