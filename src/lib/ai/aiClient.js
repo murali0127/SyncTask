@@ -1,24 +1,17 @@
-// GROK-SDK
+// src/lib/ai/aiClient.js
 import Groq from "groq-sdk";
-// import { supabase } from "../supabase-client.jsx";
 import executeTool from './toolExecuter.js';
-import TOOLS from './tools.js'
-import { Reply } from "lucide-react";
+import TOOLS from './tools.js';
 
-
-
-
-// It automatically looks for process.env.GROQ_API_KEY
 const groq = new Groq({
       apiKey: import.meta.env.VITE_GROQ_API_KEY,
       dangerouslyAllowBrowser: true
 });
 
-//Build System Promts for more optimzed workflow
 function buildSystemPrompt(userId) {
-      return `You are an intelligent task management assistent embedded inside SyncTask(A AI-Assisted Task Manager Platform, which automated Human Tasks). 
-      Today : ${new Date().toISOString().split('T')[0]}. User id : ${userId}
-     
+      return `You are an intelligent task management assistant embedded inside SyncTask (an AI-Assisted Task Manager Platform).
+      Today: ${new Date().toISOString().split('T')[0]}. User ID: ${userId}
+
       STRICT OPERATING RULES:
       1. Before ANY update or delete, ALWAYS call get_todos or get_lists first to get real IDs.
       2. When user mentions a list by name (e.g. "my Shopping list"), call get_lists, match by list_title, use the numeric id.
@@ -36,91 +29,78 @@ function buildSystemPrompt(userId) {
       7. Keep confirmations brief: "Done — added 'Buy milk' to Shopping (high priority, due tomorrow)."
       8. For delete operations: always confirm what you found before deleting.
       9. If the user asks something unrelated to task management, answer briefly and bring focus back.
-      
-      ABOUT YOU            
-      Your job is to:
-      - Help users create, update, delete, and manage tasks and task lists efficiently
-      - Suggest priorities, scheduling, and improvements
-      - Keep responses short and actionable
-      - delete tasks and task, list if user asks you to, with user permission.
-      
-      Rules:
-      - Always respond in 2-5 lines max only if the user not specify anything about the content detail.
-      - Prefer bullet points over paragraphs
-      - Do NOT give long explanations unless explicitly asked
-      - Focus only on productivity and task management
-      - If user asks general knowledge, answer briefly and relate it back to productivity if possible
-      - If unclear, ask a short clarifying question
-      
-      Tone:
-      - Clear
-      - professional
-      - Direct
-      - Practical
-      - No fluff, sugarcoat or halucination`;
+
+      Your job is to help users create, update, delete, and manage tasks and task lists efficiently.
+      Keep responses short and actionable. Do NOT give long explanations unless explicitly asked.`;
 }
 
-const MAX_ITERATION = 8; //Prevents tool-use loop
+const MAX_ITERATIONS = 8;
 
-async function main({ message, history = [], supabase, userId }) {
-      if (!userId) throw new Error("User not Authenticated");
+export async function main({ message, history = [], supabase, userId }) {
+      if (!userId) throw new Error("User not authenticated");
+
+      // Build the running message list for this turn
       const messages = [
             ...history,
             { role: "user", content: message },
-      ]
+      ];
 
       let finalResponse = null;
 
-      for (let i = 0; i <= MAX_ITERATION; i++) {
-
+      for (let i = 0; i < MAX_ITERATIONS; i++) {
             const response = await groq.chat.completions.create({
-                  model: "openai/gpt-oss-120b",
-                  messages: [{
-                        role: "system",
-                        content: buildSystemPrompt(userId)
-                  },
-                  ...messages //user message
+                  model: "llama-3.3-70b-versatile", // ← use a real Groq model
+                  messages: [
+                        { role: "system", content: buildSystemPrompt(userId) },
+                        ...messages,
                   ],
                   tools: TOOLS,
                   tool_choice: "auto",
-                  temperature: 0.2,  //This 0.2 Lower Temperature Value make it Determinitic
-            })
-      }
-      const choice = response.choices[0];
-      const assistantMessage = choice.message;
+                  temperature: 0.2,
+            });
 
-      console.log(choice);
-      // if (choice.finish_reason === "stop" || !assistantMessage.tool_calls?.length) {
-      //       finalResponse = assistantMessage.content || "Done.";
-      //       messages.push({ role: "assistant", content: finalResponse });
-      //       break;
-      // }
-      messages.push(assistantMessage);
+            const choice = response.choices[0];
+            const assistantMessage = choice.message;
 
-      const toolResults = [];
-
-      for (const toolCall of assistantMessage.tool_calls) {
-            let toolInput;
-            try {
-                  toolInput = JSON.parse(toolCall.function.arguments)
-            } catch {
-                  toolInput = {};
+            // ── STOP: model is done ──────────────────────────────────────────
+            if (
+                  choice.finish_reason === "stop" ||
+                  !assistantMessage.tool_calls?.length
+            ) {
+                  finalResponse = assistantMessage.content || "Done.";
+                  messages.push({ role: "assistant", content: finalResponse });
+                  break;
             }
 
-            // Executes Tools
-            const result = await executeTool(
-                  toolCall.function.name,
-                  toolInput,
-                  supabase,
-                  userId
-            )
-            toolResults.push({
-                  role: "tool",
-                  tool_call_id: toolCall.id,
-                  content: JSON.stringify(result)
-            });
+            // ── CONTINUE: model wants to call tools ─────────────────────────
+            messages.push(assistantMessage); // push the assistant's tool-call message
+
+            const toolResults = [];
+
+            for (const toolCall of assistantMessage.tool_calls) {
+                  let toolInput;
+                  try {
+                        toolInput = JSON.parse(toolCall.function.arguments);
+                  } catch {
+                        toolInput = {};
+                  }
+
+                  const result = await executeTool(
+                        toolCall.function.name,
+                        toolInput,
+                        supabase,
+                        userId
+                  );
+
+                  toolResults.push({
+                        role: "tool",
+                        tool_call_id: toolCall.id,
+                        content: JSON.stringify(result),
+                  });
+            }
+
+            messages.push(...toolResults); // feed results back for next iteration
       }
-      messages.push(...toolResults);
 
       if (!finalResponse) {
             finalResponse = "I completed the action but had trouble generating a summary.";
@@ -128,8 +108,8 @@ async function main({ message, history = [], supabase, userId }) {
 
       return {
             reply: finalResponse,
-            history: messages
+            history: messages,
       };
 }
 
-export default main;     
+export default main;

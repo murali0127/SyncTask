@@ -25,7 +25,7 @@ const TOOLS = [
             }
       },
       {
-            type: 'funtion',
+            type: 'function',
             function: {
                   name: 'get_lists',
                   description: 'Fetch all list for the user. Returns id, list_title, color, icon. Call this when user mention a list by name so you resolve its numeric id before creating a todo.',
