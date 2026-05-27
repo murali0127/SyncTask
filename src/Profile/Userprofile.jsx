@@ -41,284 +41,6 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom"
 
-// // ─── CSS injected once ───────────────────────────────────────────────────────
-const GLOBAL_CSS = `
-  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@600;700;800&display=swap');
-
-  @keyframes avatarPulse {
-    0%,100% { box-shadow: 0 0 0 3px rgba(220,38,38,0.25), 0 0 24px rgba(220,38,38,0.1); }
-    50%      { box-shadow: 0 0 0 5px rgba(220,38,38,0.4),  0 0 40px rgba(220,38,38,0.2); }
-  }
-  @keyframes fadeUp {
-    from { opacity:0; transform:translateY(10px); }
-    to   { opacity:1; transform:translateY(0); }
-  }
-  @keyframes tabSlide {
-    from { opacity:0; transform:translateX(-6px); }
-    to   { opacity:1; transform:translateX(0); }
-  }
-  @keyframes counterUp {
-    from { opacity:0; transform:translateY(6px); }
-    to   { opacity:1; transform:translateY(0); }
-  }
-  @keyframes dotBlink {
-    0%,100% { opacity:1; }
-    50%     { opacity:0.3; }
-  }
-  @keyframes shimmer {
-    0%   { background-position:-400px 0; }
-    100% { background-position:400px 0; }
-  }
-  @keyframes spin { to { transform:rotate(360deg); } }
-  @keyframes meshFloat {
-    0%,100% { transform:translateY(0) scale(1); }
-    50%     { transform:translateY(-12px) scale(1.03); }
-  }
-
-  .up-card {
-    background: rgba(15,15,17,0.8);
-    border: 1px solid rgba(255,255,255,0.05);
-    border-radius: 16px;
-    position: relative;
-    overflow: hidden;
-    animation: fadeUp 0.4s ease both;
-    backdrop-filter: blur(12px);
-    transition: border-color 0.25s;
-  }
-  .up-card:hover { border-color: rgba(255,255,255,0.09); }
-
-  .up-card::before {
-    content:'';
-    position:absolute; top:0; left:0; right:0; height:1px;
-    background:linear-gradient(90deg,transparent,rgba(220,38,38,0.4),transparent);
-    pointer-events:none;
-  }
-
-  .up-tab-btn {
-    position: relative;
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    padding: 10px 16px;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    transition: color 0.2s;
-    white-space: nowrap;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .up-tab-btn.active { color: #f87171; }
-  .up-tab-btn:not(.active) { color: rgba(160,160,170,0.7); }
-  .up-tab-btn:not(.active):hover { color: rgba(220,220,230,0.9); }
-
-  .up-tab-indicator {
-    position:absolute; bottom:0; left:16px; right:16px; height:2px;
-    background:linear-gradient(90deg,#dc2626,#f87171);
-    border-radius:2px;
-    transform:scaleX(0);
-    transition:transform 0.25s cubic-bezier(.4,0,.2,1);
-    transform-origin:left;
-  }
-  .up-tab-btn.active .up-tab-indicator { transform:scaleX(1); }
-
-  .up-stat-card {
-    flex:1; min-width:0;
-    padding: 18px 16px;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.05);
-    background: rgba(255,255,255,0.02);
-    display:flex; flex-direction:column; gap:4px;
-    animation: counterUp 0.5s ease both;
-    transition: background 0.2s, border-color 0.2s, transform 0.2s;
-    cursor:default;
-  }
-  .up-stat-card:hover {
-    background: rgba(255,255,255,0.04);
-    border-color: rgba(255,255,255,0.08);
-    transform: translateY(-2px);
-  }
-
-  .up-input {
-    width:100%; padding:10px 14px;
-    background:rgba(255,255,255,0.04);
-    border:1px solid rgba(255,255,255,0.08);
-    border-radius:10px;
-    color:#e8e8e8;
-    font-family:'DM Mono',monospace;
-    font-size:13px;
-    outline:none;
-    transition:border-color 0.2s, background 0.2s;
-  }
-  .up-input:focus {
-    border-color:rgba(220,38,38,0.5);
-    background:rgba(220,38,38,0.04);
-  }
-
-  .up-input-label {
-    font-family:'DM Mono',monospace;
-    font-size:10px;
-    letter-spacing:0.12em;
-    text-transform:uppercase;
-    color:rgba(160,160,170,0.6);
-    margin-bottom:6px;
-    display:block;
-  }
-
-  .up-future-pill {
-    display:inline-flex; align-items:center; gap:5px;
-    padding:3px 10px;
-    border-radius:99px;
-    background:rgba(99,102,241,0.12);
-    border:1px solid rgba(99,102,241,0.2);
-    font-family:'DM Mono',monospace;
-    font-size:9px;
-    letter-spacing:0.1em;
-    text-transform:uppercase;
-    color:rgba(165,180,252,0.8);
-  }
-
-  .up-empty-illustration {
-    display:flex; flex-direction:column; align-items:center; gap:12px;
-    padding:48px 24px;
-    opacity:0.7;
-  }
-
-  .up-toggle {
-    width:38px; height:20px; border-radius:99px;
-    position:relative; cursor:pointer; border:none; outline:none;
-    transition: background 0.3s;
-    flex-shrink:0;
-  }
-  .up-toggle-thumb {
-    position:absolute; top:2px; width:16px; height:16px;
-    border-radius:50%; background:#fff;
-    box-shadow:0 1px 4px rgba(0,0,0,0.3);
-    transition: left 0.3s cubic-bezier(.4,0,.2,1);
-  }
-
-  .up-section-label {
-    font-family:'DM Mono',monospace;
-    font-size:9px; font-weight:700;
-    letter-spacing:0.18em;
-    text-transform:uppercase;
-    color:rgba(160,160,170,0.5);
-    margin-bottom:16px;
-  }
-
-  .up-connection-card {
-    display:flex; align-items:center; gap:12px;
-    padding:12px 14px;
-    border-radius:12px;
-    border:1px solid rgba(255,255,255,0.05);
-    background:rgba(255,255,255,0.02);
-    transition: background 0.2s, border-color 0.2s;
-  }
-  .up-connection-card:hover {
-    background:rgba(255,255,255,0.05);
-    border-color:rgba(255,255,255,0.09);
-  }
-
-  .up-workspace-card {
-    display:flex; align-items:center; gap:14px;
-    padding:14px 16px;
-    border-radius:12px;
-    border:1px solid rgba(255,255,255,0.06);
-    background:rgba(255,255,255,0.02);
-    cursor:pointer;
-    transition: background 0.2s, border-color 0.2s, transform 0.2s;
-  }
-  .up-workspace-card:hover {
-    background:rgba(255,255,255,0.05);
-    border-color:rgba(255,255,255,0.1);
-    transform:translateY(-1px);
-  }
-
-  .up-activity-item {
-    display:flex; gap:12px; align-items:flex-start;
-    padding:10px 0;
-    border-bottom:1px solid rgba(255,255,255,0.04);
-    animation: fadeUp 0.3s ease both;
-  }
-  .up-activity-item:last-child { border-bottom:none; }
-
-  .shimmer-line {
-    height:14px; border-radius:4px;
-    background:linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%);
-    background-size:400px 100%;
-    animation:shimmer 1.8s infinite;
-  }
-
-  .up-btn-primary {
-    display:inline-flex; align-items:center; justify-content:center; gap:7px;
-    padding:9px 20px;
-    border-radius:10px;
-    background:rgba(220,38,38,0.15);
-    border:1px solid rgba(220,38,38,0.3);
-    color:#f87171;
-    font-family:'DM Mono',monospace;
-    font-size:12px; font-weight:500;
-    letter-spacing:0.06em;
-    cursor:pointer;
-    transition: all 0.2s;
-  }
-  .up-btn-primary:hover {
-    background:rgba(220,38,38,0.25);
-    border-color:rgba(220,38,38,0.5);
-    color:#fca5a5;
-    transform:translateY(-1px);
-  }
-  .up-btn-ghost {
-    display:inline-flex; align-items:center; justify-content:center; gap:7px;
-    padding:9px 16px;
-    border-radius:10px;
-    background:transparent;
-    border:1px solid rgba(255,255,255,0.07);
-    color:rgba(200,200,210,0.7);
-    font-family:'DM Mono',monospace;
-    font-size:12px;
-    cursor:pointer;
-    transition: all 0.2s;
-  }
-  .up-btn-ghost:hover {
-    background:rgba(255,255,255,0.05);
-    border-color:rgba(255,255,255,0.12);
-    color:#e8e8e8;
-  }
-
-  .up-progress-track {
-    height:5px; border-radius:99px;
-    background:rgba(255,255,255,0.06);
-    overflow:hidden;
-  }
-  .up-progress-fill {
-    height:100%; border-radius:99px;
-    transition:width 1.2s cubic-bezier(.4,0,.2,1);
-  }
-
-  .up-badge {
-    display:inline-flex; align-items:center;
-    padding:3px 10px; border-radius:6px;
-    font-family:'DM Mono',monospace;
-    font-size:10px; font-weight:600;
-    letter-spacing:0.08em;
-  }
-
-  .mesh-bg {
-    position:absolute; border-radius:50%; filter:blur(80px);
-    pointer-events:none; animation:meshFloat 8s ease-in-out infinite;
-  }
-`;
-
-if (typeof document !== "undefined" && !document.getElementById("up-css-v3")) {
-      const s = document.createElement("style");
-      s.id = "up-css-v3";
-      s.textContent = GLOBAL_CSS;
-      document.head.appendChild(s);
-}
-
 // ─── Tiny primitives ─────────────────────────────────────────────────────────
 
 function Toggle({ on, onChange }) {
@@ -430,7 +152,7 @@ function ShimmerBlock({ width = "100%", height = 14, style = {} }) {
 
 // ─── Tab panels ──────────────────────────────────────────────────────────────
 
-function OverviewPanel({ userData, userStats, prefs, setPrefs }) {
+function OverviewPanel({ onboarding_completed, userStats, prefs, setPrefs }) {
       const pct =
             userStats?.totalTodos > 0
                   ? Math.round((userStats.completedTodos / userStats.totalTodos) * 100)
@@ -611,10 +333,10 @@ function OverviewPanel({ userData, userStats, prefs, setPrefs }) {
                                           </span>
                                     </div>
                                     <button
-                                          disabled={userData?.onboarding_completed ? true : false}
-                                          className="px-3 font-semibold text-red-600 border rounded-lg mr-5 hover:bg-red-500/90 hover:text-black transition-all 0.2s ease-out"
+                                          disabled={onboarding_completed}
+                                          className={`px-3 font-semibold border rounded-lg mr-5 hover:bg-red-500/90 hover:text-black transition-all duration-200 ease-out ${onboarding_completed ? "bg-red-900" : "text-red-700"}`}
                                           style={{ fontSize: "13px" }}>
-                                          {userData?.onboarding_completed === true ? "COMPLETED" : "COMPLETE"}
+                                          {onboarding_completed ? "COMPLETED" : "COMPLETE"}
                                     </button>
 
                               </div>
@@ -1112,21 +834,11 @@ function SettingsPanel({ signout }) {
                                           border: "1px solid rgba(239,68,68,0.12)",
                                     }}
                               >
-                                    <div
-                                          style={{
-                                                fontFamily: "'DM Mono', monospace",
-                                                fontSize: 10,
-                                                letterSpacing: "0.12em",
-                                                textTransform: "uppercase",
-                                                color: "rgba(239,68,68,0.6)",
-                                                marginBottom: 8,
-                                          }}
-                                    >
-                                          Danger Zone
-                                    </div>
+
                                     <button
                                           className="up-btn-ghost"
                                           style={{
+                                                fontWeight: "25px",
                                                 color: "rgba(239,68,68,0.7)",
                                                 borderColor: "rgba(239,68,68,0.15)",
                                                 fontSize: 12,
@@ -1732,7 +1444,7 @@ export default function UserProfile() {
                               >
                                     {activeTab === "overview" && (
                                           <OverviewPanel
-                                                userData={userData}
+                                                onboarding_completed={profile?.onboarding_completed}
                                                 userStats={userStats}
                                                 prefs={prefs}
                                                 setPrefs={setPrefs}
