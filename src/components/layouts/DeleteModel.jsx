@@ -3,6 +3,10 @@ import ReactDOM from 'react-dom';
 
 export default function DeleteListModel({ isOpen, onClose, onDelete }) {
       if (!isOpen) return null;
+      function handleClick() {
+            onDelete();
+            onClose();
+      }
       return ReactDOM.createPortal(
             <div className="modal-overlay"
                   onClick={onClose}
@@ -24,8 +28,7 @@ export default function DeleteListModel({ isOpen, onClose, onDelete }) {
                               </button>
 
                               <button
-                                    onClick={onDelete}
-                                    onClick={onDelete}
+                                    onClick={handleClick}
                                     className='ml-auto text-md font-semibold text-white bg-red-500 rounded-2xl p-2 hover:bg-neutral-500'
                               >
                                     Delete

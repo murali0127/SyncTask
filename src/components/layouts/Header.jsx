@@ -62,11 +62,11 @@ export default function Header() {
 
 
       return (
-            <header className="flex items-center justify-between px-4 h-14 border-b border-neutral-800 flex-shrink-0">
-                  <div className="flex items-center gap-3">
+            <header className="list-header flex items-center justify-between px-4 h-14 border-b border-neutral-800 flex-shrink-0">
+                  <div className=" flex items-center gap-3">
                         <span className="text-2xl">{currentList.icon}</span>
-                        <div className='felx flex-col'>
-                              <h1 className="font-mono text-base font-semibold text-white">
+                        <div className='  flex flex-col'>
+                              <h1 id="list-heading" className="font-mogra text-base font-semibold text-white">
                                     {currentList.list_title}
                               </h1>
                               <p className="text-xs text-neutral-500">
@@ -74,7 +74,7 @@ export default function Header() {
                               </p>
                         </div>
                         <button
-                              className='text-sm font-semibold px-2 py-1 text-neutral-500 hover:text-red-700 transition-all duration-1s ease-in'
+                              className='text-sm font-syne font-semibold px-2 py-1 text-neutral-500 hover:text-red-700 transition-all duration-1s ease-in'
                               onClick={() => setIsModelOpen(true)}
                         ><Trash2 size={'20px'} /></button>
                   </div>
@@ -83,7 +83,7 @@ export default function Header() {
 
                         {!calendarOpen ? <CalendarDays
                               className='text-neutral-500  hover:text-neutral-300 hover:translate-x-0.5 '
-                              size="20px"
+                              size="18px"
                               onClick={() => {
                                     setViewMode('calendar');
                                     setCalendarOpen(!calendarOpen);
@@ -101,7 +101,7 @@ export default function Header() {
                         {/* <div className='flex items-center ml-3 mt-0.5 p-1 rounded-2xl border border-neutral-600 text-neutral-500 hover:text-neutral-300 hover:translate-x-0.5'>
                               <BellRing size="18px" />
                         </div> */}
-                        {isSupported && (
+                        {/* {isSupported && (
                               <button
                                     title={
                                           permission === 'denied'
@@ -124,7 +124,7 @@ export default function Header() {
                                           <BellOff size="20px" className='text-neutral-500 ml-4' />
                                     )}
                               </button>
-                        )}
+                        )} */}
                         <Button
                               variant="ghost"
                               size="md"
