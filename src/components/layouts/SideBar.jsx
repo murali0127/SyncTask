@@ -56,7 +56,7 @@ export default function Sidebar() {
                                     </svg>
                               </div>
                               <span className={clsx(
-                                    "text-base text-lg transition-all duration-200 font-semibold text-white",
+                                    "heading text-base text-lg transition-all duration-200 font-semibold text-white",
                                     isExpanded ? 'opacity-100 ml-0' : 'opacity-0 ml-4'
                               )}
                               >SyncTask</span>

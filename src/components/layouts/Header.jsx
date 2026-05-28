@@ -7,7 +7,7 @@ import MyCalendar from '../ui/calendar';
 import { useNotifications } from '../../hooks/useNotifications';
 import './header.css';
 import DeleteListModel from './DeleteModel';
-
+import Notifications from './Notifications'
 
 
 export default function Header() {
@@ -28,6 +28,7 @@ export default function Header() {
       const { isEnabled, enable, disable, permission, isSupported, loading, error } = useNotifications();
       const [calendarOpen, setCalendarOpen] = useState(false);
 
+      const [notificationisOpen, setNotificationisOpen] = useState(false);
       const [isModelOpen, setIsModelOpen] = useState(false);
 
       const done = currentListTodos.filter(task => task.completed).length;
@@ -82,8 +83,8 @@ export default function Header() {
                   <div className="flex items-center">
 
                         {!calendarOpen ? <CalendarDays
-                              className='text-neutral-500  hover:text-neutral-300 hover:translate-x-0.5 '
-                              size="18px"
+                              className='mb-1 text-neutral-500  hover:text-neutral-300 hover:translate-x-0.5 '
+                              size="19px"
                               onClick={() => {
                                     setViewMode('calendar');
                                     setCalendarOpen(!calendarOpen);
@@ -98,33 +99,7 @@ export default function Header() {
                                     }}
                               />
                         }
-                        {/* <div className='flex items-center ml-3 mt-0.5 p-1 rounded-2xl border border-neutral-600 text-neutral-500 hover:text-neutral-300 hover:translate-x-0.5'>
-                              <BellRing size="18px" />
-                        </div> */}
-                        {/* {isSupported && (
-                              <button
-                                    title={
-                                          permission === 'denied'
-                                                ? 'Notifications blocked — change in browser settings'
-                                                : isEnabled
-                                                      ? 'Notifications on — click to disable'
-                                                      : 'Enable task reminders'
-                                    }
-                                    onClick={handleNotificationToggle}
-                                    disabled={loading || permission === 'denied'}
-                                    className="text-neutral-500 hover:text-neutral-300 hover:translate-x-0.5 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                              >
-                                    {loading ? (
-                                          <svg className="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                                <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                                          </svg>
-                                    ) : isEnabled ? (
-                                          <BellRing size="20px" className="text-rose-800 ml-4" />
-                                    ) : (
-                                          <BellOff size="20px" className='text-neutral-500 ml-4' />
-                                    )}
-                              </button>
-                        )} */}
+
                         <Button
                               variant="ghost"
                               size="md"
@@ -139,6 +114,20 @@ export default function Header() {
                         >
                               <i className="bi bi-openai"></i>Ask AI
                         </Button>
+                        <div className="notification-wrapper">
+
+                              <button
+                                    className='notification-trigger'
+                                    onClick={() => setNotificationisOpen((prev) => !prev)}
+                              >
+                                    <i className="bi bi-bell"></i>
+                              </button>
+
+                              {notificationisOpen && (
+                                    <Notifications />
+                              )}
+
+                        </div>
                         <button
                               title="Logout"
                               className="text-neutral-500 border-0 bg-transparent hover:text-neutral-300 hover:translate-x-0.5"

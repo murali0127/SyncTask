@@ -5,3 +5,269 @@
       padding-top: "5px";
       padding-bottom: "5px";
 }
+
+/*   NOTIFICATION WRAPPER  */
+
+.notification-wrapper {
+
+      position: relative;
+
+      display: flex;
+      align-items: center;
+}
+
+/*  TRIGGER BUTTON  */
+
+.notification-trigger {
+
+      width: 30px;
+      height: 30px;
+      margin-right: 5px;
+      border-radius: 50%;
+
+      border: 1px solid rgba(255, 255, 255, 0.08);
+
+      background: #262626;
+
+      color: #a3a3a3;
+
+      cursor: pointer;
+
+      transition: all 0.2s ease;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+}
+
+.notification-trigger:hover {
+
+      color: white;
+
+      background: #323232;
+
+      transform: translateY(-1px);
+}
+
+/* DROPDOWN PANEL  */
+
+.notification-dropdown {
+
+      position: absolute;
+
+      top: 55px;
+      right: 0;
+
+      width: 360px;
+
+      background: #1f1f1f;
+
+      border: 1px solid rgba(255, 255, 255, 0.08);
+
+      border-radius: 20px;
+
+      overflow: hidden;
+
+      z-index: 999;
+
+      box-shadow:
+            0 10px 25px -5px rgba(0, 0, 0, 0.4),
+            0 8px 10px -6px rgba(0, 0, 0, 0.25);
+
+      animation: notificationSlide 0.25s ease;
+}
+
+/*   ANIMATION  */
+
+@keyframes notificationSlide {
+
+      from {
+
+            opacity: 0;
+
+            transform: translateY(-10px);
+      }
+
+      to {
+
+            opacity: 1;
+
+            transform: translateY(0px);
+      }
+}
+
+/* HEADER  */
+
+.notification-header {
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 18px 20px;
+
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.notification-header h3 {
+      color: rgb(208, 81, 81);
+      font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+}
+
+.notification-count {
+
+      min-width: 24px;
+      height: 24px;
+
+      padding: 0 8px;
+
+      border-radius: 999px;
+      color: white;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+}
+
+/*    BODY  */
+
+.notification-body {
+
+      max-height: 420px;
+
+      overflow-y: auto;
+
+      padding: 10px;
+      font-family: "syne", 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+/*  CARD  */
+
+.notification-card {
+
+      display: flex;
+
+      gap: 14px;
+
+      padding: 14px;
+
+      border-radius: 16px;
+
+      cursor: pointer;
+
+      transition: all 0.2s ease;
+}
+
+.notification-card:hover {
+
+      background: rgba(255, 255, 255, 0.04);
+}
+
+
+/*  CONTENT  */
+
+.notification-content {
+
+      flex: 1;
+}
+
+.notification-top {
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 12px;
+
+      margin-bottom: 6px;
+}
+
+.notification-top h4 {
+
+      color: white;
+
+      font-size: 14px;
+      font-weight: 600;
+}
+
+.notification-top span {
+
+      color: #737373;
+
+      font-size: 11px;
+
+      flex-shrink: 0;
+}
+
+.notification-content p {
+
+      color: #a3a3a3;
+
+      font-size: 13px;
+
+      line-height: 1.5;
+}
+
+/*  FOOTER  */
+
+.notification-footer {
+      font-family: 'Syne', 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+      padding: 14px 16px;
+      font-weight: 600;
+
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.notification-footer button {
+      width: 100%;
+
+      border: none;
+
+      background: #2d2d2d;
+
+      color: white;
+
+      padding: 5px;
+
+      border-radius: 14px;
+
+      cursor: pointer;
+
+      transition: all 0.2s ease;
+}
+
+.notification-footer button:hover {
+
+      background: #383838;
+}
+
+/* SCROLLBAR */
+
+.notification-body::-webkit-scrollbar {
+
+      width: 6px;
+}
+
+.notification-body::-webkit-scrollbar-thumb {
+
+      background: #444;
+
+      border-radius: 999px;
+}
+
+/*    MOBILE */
+
+@media (max-width: 768px) {
+
+      .notification-dropdown {
+
+            width: 92vw;
+
+            right: -20px;
+      }
+}
