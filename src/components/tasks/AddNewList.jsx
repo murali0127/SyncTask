@@ -22,7 +22,7 @@ export default function AddNewList({ onClose }) {
       const { createList, user } = useAppState();
 
       const [emoji, setEmoji] = useState('📋');
-      const [list, setList] = useState({ title: "", icon: "", description: "" })
+      const [list, setList] = useState({ title: "", icon: emoji, description: "" })
 
       const [showPicker, setShowPicker] = useState(false);
       const [submitting, setSubmitting] = useState(false);
@@ -36,25 +36,31 @@ export default function AddNewList({ onClose }) {
       // Close Picker on putside click.
       useEffect(() => {
             if (!showPicker) return;
-            function handleOutsideClick() {
+
+            function handleOutside(e) {
                   if (
-                        pickerRef.current && !pickerRef.current.contains(e.target) &&
-                        triggerRef.current && !triggerRef.current.contains(e.target)
+                        pickerRef.current &&
+                        !pickerRef.current.contains(e.target) &&
+                        triggerRef.current &&
+                        !triggerRef.current.contains(e.target)
                   ) {
                         setShowPicker(false);
                   }
-
-                  // Delay one tick so the triggering click doesn't immediately close the picker
-                  const id = setTimeout(() =>
-                        document.addEventListener('mousedown', handleOutside), 0
-                  );
-
-                  return () => {
-                        clearTimeout(id);
-                        document.removeEventListener('mousedown', handleOutside);
-                  };
             }
+
+            // Delay one tick so the triggering click that opened the picker
+            // doesn't immediately fire this listener and close it again
+            const id = setTimeout(() => {
+                  document.addEventListener('mousedown', handleOutside);
+            }, 0);
+
+            return () => {
+                  clearTimeout(id);
+                  document.removeEventListener('mousedown', handleOutside);
+            };
       }, [showPicker]);
+
+
 
       const handleEmojiSelect = useCallback((emojiObj) => {
             const selectedEmoji = emojiObj.native;
@@ -128,7 +134,7 @@ export default function AddNewList({ onClose }) {
                                           ref={triggerRef}
                                           type="button"
                                           title="Choose icon"
-                                          onClick={() => setShowPicker(prev => !prev)}
+                                          onClick={() => setShowPicker((prev) => !prev)}
                                           className="text-2xl w-10 h-10 flex items-center justify-center rounded-xl
                        bg-neutral-700 hover:bg-neutral-600 transition-colors
                        border border-neutral-600 hover:border-neutral-500
@@ -142,21 +148,19 @@ export default function AddNewList({ onClose }) {
                                           <div
 
                                                 ref={pickerRef}
-                                                className="emoji-picker absolute left-0 top-full mt-2 z-[9999]
-                         rounded-2xl overflow-hidden shadow-2xl
-                         border border-neutral-700"
+                                                className="emoji-picker-popover"
                                                 // Prevent the modal's own click-outside from swallowing picker clicks
-                                                onClick={e => e.stopPropagation()}
+                                                onClick={(e) => e.stopPropagation()}
                                           >
                                                 <Picker
-
-                                                      set="Apple"
-                                                      onEmojiSelect={handleEmojiSelect}
+                                                      data={data}
                                                       theme="dark"
+                                                      set="default"
                                                       previewPosition="none"
                                                       skinTonePosition="none"
                                                       perLine={8}
                                                       maxFrequentRows={2}
+                                                      onEmojiSelect={handleEmojiSelect}
                                                 />
                                           </div>
                                     )}

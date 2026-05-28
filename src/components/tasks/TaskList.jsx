@@ -23,7 +23,7 @@ export default function TaskList({ list, tasks, onAdd, onToggle, onDelete }) {
       return (
             <div className="flex flex-col flex-1 h-full overflow-hidden gap-2">
                   {list?.list_description &&
-                        < div className="flex gap-3 border border-neutral-700  rounded-xl px-2 p-1 text-neutral-400 font-semibold bg-neutral-800">
+                        <div id="list-description" className="flex gap-3 border border-neutral-700  rounded-xl px-2 py-1 text-neutral-400 font-semibold bg-neutral-800">
                               Description : <p>{list.list_description}</p>
                         </div>}
                   {/** Progress Section */}

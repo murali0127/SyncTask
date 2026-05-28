@@ -1,10 +1,18 @@
-.emoji-picker {
+.emoji-picker-popover {
       position: absolute;
-      z-index: 100;
-      /* max-width: 100%; */
-      max-height: 700%;
-      /* Ensures it doesn't break the screen on mobile */
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      top: calc(100% + 10px);
+      left: 0;
+      min-height: 750%;
+      max-height: 600%;
+
+      z-index: 9999;
+
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
       border-radius: 12px;
+
       overflow: hidden;
+}
+
+.emoji-picker::-webkit-scrollbar {
+      display: none;
 }
