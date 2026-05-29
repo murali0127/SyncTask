@@ -1,7 +1,12 @@
 import { CircleXIcon } from "lucide-react";
+import { useAuth } from "../../lib/context/AuthContext";
 import "./header.css";
+import { useAppState } from "../../providers/AppProvider";
 
 export default function Notifications() {
+      const { user, profile } = useAuth();
+      const { isNotificationOpen, setIsNotificationOpen } = useAppState();
+
       //MOCK DATA'S
       const notifications = [
             {
@@ -24,61 +29,78 @@ export default function Notifications() {
             },
       ];
 
+
+      if (!isNotificationOpen) return;
+
       return (
+            <>
 
-            <div className="notification-dropdown">
+                  {
+                        < div className="notification-dropdown" >
 
-                  {/* HEADER */}
-                  <div className="notification-header">
+                              {/* HEADER */}
+                              < div className="notification-header" >
 
-                        <h3>Notifications</h3>
+                                    <h3>Notifications</h3>
 
-                        <span className="notification-count bg-neutral-600 py-1">
-                              {notifications.length}
-                        </span>
+                                    <span className="notification-count bg-neutral-600 py-1">
+                                          {notifications.length}
+                                    </span>
 
-                  </div>
+                              </div >
 
-                  {/* BODY */}
-                  <div className="notification-body">
+                              {/* BODY */}
+                              {
+                                    profile?.messages ? < div className="notification-body">
 
-                        {notifications.map((item) => (
+                                          {notifications.map((item) => (
 
-                              <div
-                                    key={item.id}
-                                    className="notification-card"
-                              >
+                                                <div
+                                                      key={item.id}
+                                                      className="notification-card"
+                                                >
 
 
 
-                                    <div className="notification-content">
+                                                      <div className="notification-content">
 
-                                          <div className="notification-top">
+                                                            <div className="notification-top">
 
-                                                <h4>{item.title}</h4>
+                                                                  <h4>{item.title}</h4>
 
-                                                <span>{item.time}</span>
+                                                                  <span>{item.time}</span>
 
-                                          </div>
+                                                            </div>
 
-                                          <p>{item.message}</p>
+                                                            <p>{item.message}</p>
+
+                                                      </div>
+
+                                                </div>
+                                          ))}
 
                                     </div>
+                                          : <div className="notification-body">
+                                                <p className="flex justify-center text-neutral-400 font-semibold">
+                                                      No Messages.📝
+                                                </p>
+                                          </div>
+                              }
+
+                              {/* FOOTER */}
+                              <div className="notification-footer">
+
+                                    <button
+                                          onClick={() => setIsNotificationOpen(false)}
+                                          className="flex justify-center align-center gap-2"
+                                    >
+                                          close <CircleXIcon className="mt-1" size="17px" />
+                                    </button>
 
                               </div>
-                        ))}
 
-                  </div>
-
-                  {/* FOOTER */}
-                  <div className="notification-footer">
-
-                        <button className="flex justify-center align-center gap-2">
-                              close <CircleXIcon className="mt-1" size="17px" />
-                        </button>
-
-                  </div>
-
-            </div>
+                        </div >
+                  }
+            </>
       );
 }

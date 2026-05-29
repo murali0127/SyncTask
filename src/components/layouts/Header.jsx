@@ -2,7 +2,7 @@ import Button from '../ui/Button';
 import { useAppState } from "../../providers/AppProvider";
 import { LogOut, CalendarDays, ClipboardCheck, BellRing, BellOff, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import MyCalendar from '../ui/calendar';
 import { useNotifications } from '../../hooks/useNotifications';
 import './header.css';
@@ -21,14 +21,15 @@ export default function Header() {
             deleteList,
             setSelectedListId,
             signout,
-            setViewMode
+            setViewMode,
+            isNotificationOpen,
+            setIsNotificationOpen
       } = useAppState();
 
       //From Use Notification hooks
       const { isEnabled, enable, disable, permission, isSupported, loading, error } = useNotifications();
       const [calendarOpen, setCalendarOpen] = useState(false);
 
-      const [notificationisOpen, setNotificationisOpen] = useState(false);
       const [isModelOpen, setIsModelOpen] = useState(false);
 
       const done = currentListTodos.filter(task => task.completed).length;
@@ -60,6 +61,7 @@ export default function Header() {
       };
 
       if (!currentList) return null;
+
 
 
       return (
@@ -118,12 +120,12 @@ export default function Header() {
 
                               <button
                                     className='notification-trigger'
-                                    onClick={() => setNotificationisOpen((prev) => !prev)}
+                                    onClick={() => setIsNotificationOpen(!isNotificationOpen)}
                               >
                                     <i className="bi bi-bell"></i>
                               </button>
 
-                              {notificationisOpen && (
+                              {isNotificationOpen && (
                                     <Notifications />
                               )}
 
