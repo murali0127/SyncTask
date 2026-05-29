@@ -44,6 +44,9 @@ export default function AppProvider({ children }) {
       const [isAIChatOpen, setIsAIChatOpen] = useState(false);
       const [addingTodo, setAddingTodo] = useState(false);
 
+      //Message Panel Open & Close
+      const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+
       // Search/filter text
       const [searchText, setSearchText] = useState('');
 
@@ -362,13 +365,15 @@ export default function AppProvider({ children }) {
             setViewMode,
             isAIChatOpen,
             setIsAIChatOpen,
+            isNotificationOpen,
+            setIsNotificationOpen,
 
             /**
              * ─────────────────────────────────────────────────────
              * OPERATIONS SECTION
              * ─────────────────────────────────────────────────────
              */
-            // Todo operations
+
             addTodo: addTodoWithValidation,
             updateTodo: updateTodoWithValidation,
             toggleTodo,
@@ -418,7 +423,7 @@ export default function AppProvider({ children }) {
             createListWithValidation, updateList, deleteList, refetchLists,
             signup, login, signout,
             isLoading, isAppReady, addingTodo, authLoading, listLoading, todoLoading,
-            combinedError, authError, listError, todoError
+            combinedError, authError, listError, todoError, isNotificationOpen
       ]);
 
 
