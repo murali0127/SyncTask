@@ -146,8 +146,15 @@ const TOOLS = [
                         required: ["id"]
                   }
             }
-      }
+      },
+      {
+            type: "function",
+            function: {
+                  name: "get-user-details",
+                  description: "Get the information of the user from the database. call this function whenever user wan their informations, Don't use user information if not required",
 
+            }
+      }
 
 ]
 

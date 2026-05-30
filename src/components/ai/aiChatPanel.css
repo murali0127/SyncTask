@@ -8,6 +8,120 @@
 
       50% {
             /* Reduced spread from 5px to 3px, and blur from 10px to 6px */
-            box-shadow: 0 0 0 3px #db3055, 0 0 10px #db3055;
+            box-shadow: 0 0 0 3px #9c2c44, 0 0 10px #8f223a;
+      }
+}
+
+
+/* 1. REGISTER THE VARIABLE  */
+@property --angle {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false;
+}
+
+.loading-box {
+      border: 2px solid transparent;
+
+      /* 2. Add a starting point (0deg) to ensure fallback */
+      background-image:
+            linear-gradient(#1e1e1e, #1e1e1e),
+            /**conical gradient effect**/
+            conic-gradient(from var(--angle), transparent, #c43064, transparent 60%);
+
+      background-size: 100% 100%, 100% 100%;
+      background-clip: padding-box, border-box;
+      background-origin: padding-box, border-box;
+
+      animation: spin-border 2s linear infinite;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+}
+
+/* 3. FIX: Animate from 0deg to 360deg for a full seamless rotation */
+@keyframes spin-border {
+      from {
+            --angle: 0deg;
+      }
+
+      to {
+            --angle: 360deg;
+      }
+}
+
+/* aiChatPanel.css */
+
+.emoji-picker-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+}
+
+.emoji-trigger-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: #262626;
+      color: #f59e0b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition:
+            background 0.2s ease,
+            border-color 0.2s ease,
+            transform 0.15s ease;
+}
+
+.emoji-trigger-btn:hover {
+      background: #3a3a3a;
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
+}
+
+.emoji-picker {
+      position: absolute;
+      bottom: 50px;
+      right: 0;
+
+      z-index: 999;
+
+      border-radius: 18px;
+      overflow: hidden;
+
+      background: rgba(20, 20, 20, 0.92);
+      backdrop-filter: blur(18px);
+
+      border: 1px solid rgba(255, 255, 255, 0.08);
+
+      box-shadow:
+            0 12px 40px rgba(0, 0, 0, 0.45),
+            0 0 0 1px rgba(255, 255, 255, 0.03);
+
+      animation: emojiFade 0.18s ease;
+}
+
+@keyframes emojiFade {
+      from {
+            opacity: 0;
+            transform: translateY(8px) scale(0.98);
+      }
+
+      to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+      }
+}
+
+/* Mobile */
+
+@media (max-width: 640px) {
+      .emoji-picker {
+            right: -40px;
+            transform: scale(0.9);
+            transform-origin: bottom right;
       }
 }

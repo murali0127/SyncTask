@@ -20,7 +20,7 @@ function buildInitialMessage(user) {
 }
 
 export default function AiProvider({ children }) {
-      const { user } = useAuth();
+      const { user, profile } = useAuth();
 
       const [messages, setMessages] = useState(() => [buildInitialMessage(user)]);
       const [loading, setLoading] = useState(false);

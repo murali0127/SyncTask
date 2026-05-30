@@ -115,8 +115,12 @@ export default async function executeTools(toolName, input, supabase, userId) {
 
                   return error ? { error: error.message } : { deleted: true, id: input.id };
             }
-
-
+            case "get-user-details":
+                  const { data, error } = await supabase
+                        .from('profiles')
+                        .select('*')
+                        .eq('id', userId)
+                  return error ? { error: error } : { userData: data };
 
             default:
                   return { error: `Unknown Tool : ${toolName}` }
