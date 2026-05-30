@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "start": "npm run dev",
     "dev": "vite --host",
     "build": "vite build",
     "lint": "eslint .",
@@ -36,8 +37,10 @@
     "react-day-picker": "^9.14.0",
     "react-dom": "^19.2.5",
     "react-hot-toast": "^2.6.0",
+    "react-is": "^19.2.6",
     "react-markdown": "^10.1.0",
     "react-router-dom": "^7.14.0",
+    "recharts": "^3.8.1",
     "tailwindcss": "^4.2.2",
     "uuid": "^13.0.0",
     "web-push": "^3.6.7"
