@@ -332,17 +332,29 @@ function OverviewPanel({ onboarding_completed, userStats, prefs, setPrefs }) {
                                                 on-boarding
                                           </span>
                                     </div>
-                                    <button
-                                          disabled={onboarding_completed}
-                                          className={`px-3 font-semibold border rounded-lg mr-5 hover:bg-red-500/90 hover:text-black transition-all duration-200 ease-out ${onboarding_completed ? "bg-red-900" : "text-red-700"}`}
-                                          style={{ fontSize: "13px" }}>
-                                          {onboarding_completed ? "COMPLETED" : "COMPLETE"}
-                                    </button>
 
+                                    {onboarding_completed ?
+                                          <button
+                                                disabled="true"
+                                                className="px-3 font-semibold  rounded-lg mr-5 bg-red-900"
+                                                style={{ fontSize: "13px" }}>
+                                                COMPLETED
+                                          </button>
+                                          :
+                                          <button
+                                                // onClick={}
+                                                disabled="false"
+                                                className="px-3 font-semibold border rounded-lg mr-5 hover:bg-red-500/90 hover:text-black transition-all duration-200 ease-out text-red-700"
+                                                style={{ fontSize: "13px" }}
+                                          >
+                                                COMPLETE
+                                          </button>
+
+                                    }
                               </div>
                         </div>
                   </div>
-            </div>
+            </div >
       );
 }
 
@@ -405,7 +417,7 @@ function ActivityPanel() {
                                           <div
                                                 className="up-activity-item"
                                                 key={i}
-                                                style={{ animationDelay: `${i * 60}ms` }}
+                                                style={{ animationDelay: `${i * 60} ms` }}
                                           >
                                                 <div
                                                       style={{
@@ -1165,7 +1177,6 @@ export default function UserProfile() {
                                                                   padding: 3,
                                                             }}
                                                       >
-                                                            {/* <StatusDot online={online} /> */}
                                                       </div>
                                                 </div>
 
@@ -1189,16 +1200,7 @@ export default function UserProfile() {
                                                             >
                                                                   {displayName}
                                                             </h1>
-                                                            <span
-                                                                  className="up-badge"
-                                                                  style={{
-                                                                        background: "rgba(220,38,38,0.12)",
-                                                                        border: "1px solid rgba(220,38,38,0.25)",
-                                                                        color: "#f87171",
-                                                                  }}
-                                                            >
-                                                                  {roleLabel}
-                                                            </span>
+
                                                             {online && (
                                                                   <span
                                                                         className="up-badge"

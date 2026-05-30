@@ -353,13 +353,14 @@
        gap: 7px;
        padding: 9px 16px;
        border-radius: 10px;
-       background: transparent;
+       background: rgba(76, 76, 94, 0.5);
        border: 1px solid rgba(255, 255, 255, 0.07);
        color: rgba(200, 200, 210, 0.7);
        font-family: 'DM Mono', monospace;
        font-size: 12px;
        cursor: pointer;
        transition: all 0.2s;
+       font-weight: 500;
  }
 
  .up-btn-ghost:hover {
