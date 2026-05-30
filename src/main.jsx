@@ -9,6 +9,7 @@ import TodoProvider from './lib/context/TodoContext.jsx'
 import { BrowserRouter } from "react-router-dom"
 import ListProvider from './lib/context/ListContext.jsx'
 import { registerSW } from './services/notificationService.js'
+import AiProvider from './lib/context/AiContext.jsx'
 
 //SW register is a browser API call
 registerSW();  //--> Runs immediately after the js bundles loads.
@@ -21,7 +22,9 @@ createRoot(document.getElementById('root')).render(
         <ListProvider>
           <TodoProvider>
             <AppProvider>
-              <App />
+              <AiProvider>
+                <App />
+              </AiProvider>
             </AppProvider>
           </TodoProvider>
         </ListProvider>
