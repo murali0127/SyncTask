@@ -76,7 +76,7 @@ export default function TaskItems({ task, onToggle, onDelete }) {
                               <p
                                     id="task-heading"
                                     className={clsx(
-                                          'flex-1 min-w-0 truncate text-sm font-medium',
+                                          'flex-1 min-w-0 truncate text-sm font-medium font-semibold',
                                           safeTask.completed
                                                 ? 'line-through text-neutral-500'
                                                 : 'text-neutral-200'
@@ -103,48 +103,53 @@ export default function TaskItems({ task, onToggle, onDelete }) {
 
 
                         {/* META ROW */}
-                        <div className="flex items-center gap-2 mt-1">
+                        {(!viewDescription) &&
+                              <div className="flex items-center gap-2 mt-1">
 
-                              <span
-                                    className={clsx(
-                                          'w-1.5 h-1.5 rounded-full',
-                                          config.dot
+                                    <span
+                                          className={clsx(
+                                                'w-1.5 h-1.5 rounded-full',
+                                                config.dot
+                                          )}
+                                    />
+
+                                    {safeTask.due_date && (
+                                          <>
+                                                <span className="text-xs text-neutral-500 font-semibold">
+                                                      Due date : {safeTask.due_date.split('T')[0]}
+                                                </span>
+
+                                                <span className="text-xs text-neutral-500 font-semibold">
+                                                      Due time : {formattedTime}
+                                                </span>
+                                          </>
                                     )}
-                              />
 
-                              {safeTask.due_date && (
-                                    <>
-                                          <span className="text-xs text-neutral-500 font-semibold">
-                                                Due date : {safeTask.due_date.split('T')[0]}
-                                          </span>
+                                    <span
+                                          className={clsx(
+                                                'text-xs px-2 py-0.5 rounded',
+                                                safePriority === 'high' &&
+                                                'bg-red-500/20 text-red-400',
 
-                                          <span className="text-xs text-neutral-500 font-semibold">
-                                                Due time : {formattedTime}
-                                          </span>
-                                    </>
-                              )}
+                                                safePriority === 'medium' &&
+                                                'bg-orange-500/20 text-orange-400',
 
-                              <span
-                                    className={clsx(
-                                          'text-xs px-2 py-0.5 rounded',
-                                          safePriority === 'high' &&
-                                          'bg-red-500/20 text-red-400',
+                                                safePriority === 'low' &&
+                                                'bg-green-500/20 text-green-400'
+                                          )}
+                                    >
+                                          {safePriority}
+                                    </span>
 
-                                          safePriority === 'medium' &&
-                                          'bg-orange-500/20 text-orange-400',
-
-                                          safePriority === 'low' &&
-                                          'bg-green-500/20 text-green-400'
-                                    )}
-                              >
-                                    {safePriority}
-                              </span>
-
-                        </div>
-                        {(viewDescription && safeTask?.description) &&
-                              <div className='py-1 px-2 w-fit rounded-2xl bg-neutral-700 text-neutral-300'>
-                                    <p className='task-description text-sm'>{safeTask?.description}</p>
                               </div>
+                        }
+                        {viewDescription && safeTask?.description &&
+                              <div className='py-1'>
+                                    <div className='text-sm py-1 px-2 w-fit rounded-2xl h-fit  bg-neutral-700/30 text-neutral-200'>
+                                          <p className='task-description text-sm'>{safeTask?.description}</p>
+                                    </div>
+                              </div>
+
                         }
 
                   </div>
